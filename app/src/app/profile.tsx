@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/bottom-nav';
@@ -10,7 +10,7 @@ import { transformerLessons } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 
 export default function ProfileScreen() {
-  const { completedLessonIds, xp, streak, favoriteKnowledgeIds, reviewQueue, resumeFile, projectProfile } = useProgress();
+  const { completedLessonIds, xp, streak, favoriteKnowledgeIds, reviewQueue, resumeFile, projectProfile, soundEnabled, setSoundEnabled } = useProgress();
 
   return (
     <ScreenShell>
@@ -30,6 +30,21 @@ export default function ProfileScreen() {
             <Stat value={String(xp)} label="总 XP" icon="◆" />
             <Stat value={String(favoriteKnowledgeIds.length)} label="收藏" icon="★" />
             <Stat value={String(reviewQueue.length)} label="复习项" icon="◷" />
+          </View>
+
+          <View style={styles.soundCard}>
+            <View style={styles.soundIcon}><Text style={styles.soundIconText}>{soundEnabled ? '♪' : '×'}</Text></View>
+            <View style={styles.soundCopy}>
+              <Text style={styles.soundTitle}>学习音效</Text>
+              <Text style={styles.soundText}>答对、答错与课程完成提示音 · 遵循系统静音</Text>
+            </View>
+            <Switch
+              accessibilityLabel="学习音效开关"
+              value={soundEnabled}
+              onValueChange={setSoundEnabled}
+              trackColor={{ false: colors.locked, true: '#B9E9DD' }}
+              thumbColor={soundEnabled ? colors.success : colors.surface}
+            />
           </View>
 
           <View style={styles.sectionHeader}>
@@ -92,6 +107,9 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontSize: 27, fontWeight: '900', marginTop: 3 }, subtitle: { color: colors.textMuted, fontSize: 10, marginTop: 3 },
   stats: { flexDirection: 'row', gap: 8, marginTop: 21 }, stat: { flex: 1, alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 16, paddingVertical: 12 },
   statIcon: { fontSize: 15 }, statValue: { color: colors.text, fontSize: 17, fontWeight: '900', marginTop: 3 }, statLabel: { color: colors.textMuted, fontSize: 8, fontWeight: '700', marginTop: 2 },
+  soundCard: { flexDirection: 'row', alignItems: 'center', gap: 11, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 13, marginTop: 12 },
+  soundIcon: { width: 40, height: 40, borderRadius: 13, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  soundIconText: { color: colors.primary, fontSize: 18, fontWeight: '900' }, soundCopy: { flex: 1 }, soundTitle: { color: colors.text, fontSize: 13, fontWeight: '900' }, soundText: { color: colors.textMuted, fontSize: 9, lineHeight: 14, marginTop: 3 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, marginBottom: 10 },
   sectionTitle: { color: colors.text, fontSize: 17, fontWeight: '900' }, sectionLink: { color: colors.primary, fontSize: 11, fontWeight: '900' }, sectionMeta: { color: colors.textMuted, fontSize: 9 },
   resumeCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.successSoft, borderBottomWidth: 5, borderBottomColor: '#B8E5D9', borderRadius: 19, padding: 15 },

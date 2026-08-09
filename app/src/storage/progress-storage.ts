@@ -8,6 +8,7 @@ export type PersistedProgress = {
   reviewQueue?: ReviewQueueItem[];
   resumeFile?: ResumeFileMeta | null;
   projectProfile?: ProjectProfile | null;
+  soundEnabled?: boolean;
 };
 
 const key = 'bagu-progress-v1';

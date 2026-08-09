@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { KeywordSheet } from '@/components/keyword-sheet';
 import { ScreenShell } from '@/components/screen-shell';
+import { useSounds } from '@/context/sound-context';
 import { transformerLessons, keywords } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 import type { KnowledgeKeyword } from '@/types/course';
@@ -16,6 +17,7 @@ export default function LessonScreen() {
   const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [activeKeyword, setActiveKeyword] = useState<KnowledgeKeyword | null>(null);
+  const { playCorrect, playWrong } = useSounds();
 
   if (!lesson || !exercise) {
     return (
@@ -36,7 +38,11 @@ export default function LessonScreen() {
 
   const submitOrContinue = () => {
     if (!submitted) {
-      if (selectedChoiceId) setSubmitted(true);
+      if (selectedChoiceId) {
+        setSubmitted(true);
+        if (selectedChoiceId === exercise.correctChoiceId) playCorrect();
+        else playWrong();
+      }
       return;
     }
     router.replace({ pathname: '/complete/[id]', params: { id: lesson.id, correct: String(isCorrect) } });

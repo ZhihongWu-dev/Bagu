@@ -1,6 +1,6 @@
 # Bagu App
 
-Bagu 是一个面向大模型/NLP 校招算法岗的每日八股训练 App。当前 V0.1 使用 Expo、React Native、TypeScript 和 Expo Router。
+Bagu 是一个面向大模型/NLP 校招算法岗的每日八股训练 App。当前 V0.1 使用 Expo SDK 54、React Native、TypeScript 和 Expo Router，可由 iPhone App Store 版 Expo Go 直接打开。
 
 ## 当前功能
 
@@ -11,6 +11,7 @@ Bagu 是一个面向大模型/NLP 校招算法岗的每日八股训练 App。当
 - 课程、通用知识和项目追问统一复习队列
 - PDF 文件选择与手动项目档案；第一版不上传或解析简历正文
 - 通用、简历与综合三种模拟面试模式
+- 答对、答错与课程完成三个原创本地音效，可在“我的”中关闭
 - Web `localStorage` 与 Android/iOS 文件持久化
 
 ## 本地运行
@@ -20,20 +21,28 @@ npm install
 npm run web
 ```
 
-也可以使用与项目 SDK 兼容的 Expo Go：
+使用 iPhone Expo Go：
 
 ```bash
 npm start
 ```
 
-然后使用 Expo Go 扫描终端中的二维码。若 App Store 当前提供的 Expo Go SDK 与项目 SDK 不一致，可先使用 Web 版，或后续生成 iOS development build。
+确保电脑与 iPhone 可以访问互联网，然后使用 App Store 中的 Expo Go 扫描终端二维码。本项目固定使用 SDK 54，以兼容当前 iPhone App Store 版 Expo Go。
+
+重新生成原创音效：
+
+```bash
+npm run generate-sounds
+```
 
 ## 验证命令
 
 ```bash
 npx tsc --noEmit
 npm run lint
+npx expo-doctor
 npx expo export --platform web --output-dir dist
+npx expo export --platform ios --output-dir dist-ios
 ```
 
 公共知识与双模块设计见仓库根目录的 `docs/superpowers/specs/2026-08-09-bagu-public-knowledge-agent-design.md`。

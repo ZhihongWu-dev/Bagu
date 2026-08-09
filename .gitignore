@@ -1,5 +1,7 @@
 node_modules/
 node_modules_*/
+.node_modules*/
+.dependency-backups/
 .expo/
 dist/
 web-build/

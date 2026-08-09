@@ -1,22 +1,31 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
+import { useSounds } from '@/context/sound-context';
 import { transformerLessons } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 
 export default function CompleteScreen() {
   const { id, correct } = useLocalSearchParams<{ id: string; correct?: string }>();
   const { completeLesson } = useProgress();
+  const { playComplete } = useSounds();
+  const playedSound = useRef(false);
   const lesson = useMemo(() => transformerLessons.find((item) => item.id === id), [id]);
   const earnedXp = correct === 'true' ? 10 : 5;
 
   useEffect(() => {
     if (lesson) completeLesson(lesson.id, earnedXp);
   }, [completeLesson, earnedXp, lesson]);
+
+  useEffect(() => {
+    if (!lesson || playedSound.current) return;
+    playedSound.current = true;
+    playComplete();
+  }, [lesson, playComplete]);
 
   return (
     <ScreenShell>

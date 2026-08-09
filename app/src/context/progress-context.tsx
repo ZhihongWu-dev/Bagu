@@ -14,6 +14,7 @@ type ProgressContextValue = {
   reviewQueue: ReviewQueueItem[];
   resumeFile: ResumeFileMeta | null;
   projectProfile: ProjectProfile | null;
+  soundEnabled: boolean;
   completeLesson: (lessonId: string, earnedXp: number) => void;
   isUnlocked: (lessonId: string) => boolean;
   toggleFavorite: (knowledgeId: string) => void;
@@ -21,6 +22,7 @@ type ProgressContextValue = {
   removeFromReview: (reviewItemId: string) => void;
   setResumeFile: (file: ResumeFileMeta | null) => void;
   saveProjectProfile: (profile: ProjectProfile | null) => void;
+  setSoundEnabled: (enabled: boolean) => void;
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -33,6 +35,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
   const [reviewQueue, setReviewQueue] = useState<ReviewQueueItem[]>([]);
   const [resumeFile, setResumeFileState] = useState<ResumeFileMeta | null>(null);
   const [projectProfile, setProjectProfile] = useState<ProjectProfile | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const completedRef = useRef<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -49,6 +52,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
         setReviewQueue(stored.reviewQueue ?? []);
         setResumeFileState(stored.resumeFile ?? null);
         setProjectProfile(stored.projectProfile ?? null);
+        setSoundEnabled(stored.soundEnabled ?? true);
       })
       .finally(() => {
         if (active) setHydrated(true);
@@ -60,8 +64,8 @@ export function ProgressProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!hydrated) return;
-    void saveProgress({ completedLessonIds, xp, reviewSchedule, favoriteKnowledgeIds, reviewQueue, resumeFile, projectProfile });
-  }, [completedLessonIds, favoriteKnowledgeIds, hydrated, projectProfile, resumeFile, reviewQueue, reviewSchedule, xp]);
+    void saveProgress({ completedLessonIds, xp, reviewSchedule, favoriteKnowledgeIds, reviewQueue, resumeFile, projectProfile, soundEnabled });
+  }, [completedLessonIds, favoriteKnowledgeIds, hydrated, projectProfile, resumeFile, reviewQueue, reviewSchedule, soundEnabled, xp]);
 
   const completeLesson = useCallback((lessonId: string, earnedXp: number) => {
     if (completedRef.current.includes(lessonId)) return;
@@ -118,6 +122,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
       reviewQueue,
       resumeFile,
       projectProfile,
+      soundEnabled,
       completeLesson,
       isUnlocked,
       toggleFavorite,
@@ -125,8 +130,9 @@ export function ProgressProvider({ children }: PropsWithChildren) {
       removeFromReview,
       setResumeFile: setResumeFileState,
       saveProjectProfile: setProjectProfile,
+      setSoundEnabled,
     }),
-    [addToReview, completeLesson, completedLessonIds, favoriteKnowledgeIds, isUnlocked, projectProfile, removeFromReview, resumeFile, reviewQueue, reviewSchedule, toggleFavorite, xp],
+    [addToReview, completeLesson, completedLessonIds, favoriteKnowledgeIds, isUnlocked, projectProfile, removeFromReview, resumeFile, reviewQueue, reviewSchedule, soundEnabled, toggleFavorite, xp],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
