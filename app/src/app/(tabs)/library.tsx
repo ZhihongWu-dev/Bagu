@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomNav } from '@/components/bottom-nav';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
@@ -97,7 +96,6 @@ export default function LibraryScreen() {
             </View>
           )}
         </ScrollView>
-        <BottomNav />
       </SafeAreaView>
     </ScreenShell>
   );

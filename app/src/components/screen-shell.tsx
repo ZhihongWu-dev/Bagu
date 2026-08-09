@@ -4,6 +4,10 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { colors } from '@/theme/colors';
 
 export function ScreenShell({ children }: PropsWithChildren) {
+  if (Platform.OS !== 'web') {
+    return <View style={styles.native}>{children}</View>;
+  }
+
   return (
     <View style={styles.page}>
       <View style={styles.phone}>{children}</View>
@@ -12,6 +16,7 @@ export function ScreenShell({ children }: PropsWithChildren) {
 }
 
 const styles = StyleSheet.create({
+  native: { flex: 1, backgroundColor: colors.background },
   page: {
     flex: 1,
     alignItems: 'center',
@@ -31,4 +36,3 @@ const styles = StyleSheet.create({
     }),
   },
 });
-

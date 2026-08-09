@@ -2,7 +2,6 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomNav } from '@/components/bottom-nav';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
@@ -88,7 +87,6 @@ export default function ProfileScreen() {
             <View style={styles.interviewArrow}><Text style={styles.interviewArrowText}>→</Text></View>
           </Pressable>
         </ScrollView>
-        <BottomNav />
       </SafeAreaView>
     </ScreenShell>
   );

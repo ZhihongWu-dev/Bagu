@@ -5,8 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { KeywordSheet } from '@/components/keyword-sheet';
 import { ScreenShell } from '@/components/screen-shell';
-import { useSounds } from '@/context/sound-context';
 import { transformerLessons, keywords } from '@/data/transformer-course';
+import { useAnswerSounds } from '@/hooks/use-feedback-sounds';
 import { colors } from '@/theme/colors';
 import type { KnowledgeKeyword } from '@/types/course';
 
@@ -17,7 +17,7 @@ export default function LessonScreen() {
   const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [activeKeyword, setActiveKeyword] = useState<KnowledgeKeyword | null>(null);
-  const { playCorrect, playWrong } = useSounds();
+  const { playCorrect, playWrong } = useAnswerSounds();
 
   if (!lesson || !exercise) {
     return (
@@ -129,7 +129,7 @@ export default function LessonScreen() {
           </View>
         )}
       </SafeAreaView>
-      <KeywordSheet keyword={activeKeyword} onClose={() => setActiveKeyword(null)} />
+      {activeKeyword && <KeywordSheet keyword={activeKeyword} onClose={() => setActiveKeyword(null)} />}
     </ScreenShell>
   );
 }
