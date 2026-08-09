@@ -1,7 +1,13 @@
+import type { ProjectProfile, ResumeFileMeta, ReviewQueueItem } from '@/types/course';
+
 export type PersistedProgress = {
   completedLessonIds: string[];
   xp: number;
   reviewSchedule: Record<string, string>;
+  favoriteKnowledgeIds?: string[];
+  reviewQueue?: ReviewQueueItem[];
+  resumeFile?: ResumeFileMeta | null;
+  projectProfile?: ProjectProfile | null;
 };
 
 const key = 'bagu-progress-v1';
@@ -21,4 +27,3 @@ export async function saveProgress(progress: PersistedProgress): Promise<void> {
   if (typeof localStorage === 'undefined') return;
   localStorage.setItem(key, JSON.stringify(progress));
 }
-

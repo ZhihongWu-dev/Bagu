@@ -1,53 +1,100 @@
 import { router } from 'expo-router';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/bottom-nav';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
+import { domainById, knowledgeById } from '@/data/knowledge-base';
 import { transformerLessons } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
+import type { ReviewSource } from '@/types/course';
+
+type Filter = 'all' | ReviewSource;
 
 export default function ReviewScreen() {
-  const { reviewSchedule } = useProgress();
-  const reviewItems = Object.entries(reviewSchedule)
-    .map(([lessonId, date]) => ({ lesson: transformerLessons.find((item) => item.id === lessonId), date }))
-    .filter((item) => item.lesson);
+  const { reviewQueue, reviewSchedule, projectProfile, removeFromReview } = useProgress();
+  const [filter, setFilter] = useState<Filter>('all');
+
+  const items = useMemo(() => {
+    const legacyItems = Object.entries(reviewSchedule)
+      .filter(([lessonId]) => !reviewQueue.some((item) => item.source === 'lesson' && item.targetId === lessonId))
+      .map(([lessonId, dueAt]) => ({ id: `legacy-${lessonId}`, source: 'lesson' as const, targetId: lessonId, dueAt }));
+    return [...reviewQueue, ...legacyItems].filter((item) => filter === 'all' || item.source === filter);
+  }, [filter, reviewQueue, reviewSchedule]);
+
+  const openItem = (source: ReviewSource, targetId: string) => {
+    if (source === 'lesson') router.push({ pathname: '/lesson/[id]', params: { id: targetId } });
+    else if (source === 'knowledge') router.push({ pathname: '/knowledge/[id]', params: { id: targetId } });
+    else router.push('/resume');
+  };
 
   return (
     <ScreenShell>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.eyebrow}>SPACED REPETITION</Text>
-          <Text style={styles.title}>今日复习</Text>
-          <Text style={styles.subtitle}>通过间隔复习，把“看过”变成面试时能说出来。</Text>
+          <Text style={styles.title}>统一复习队列</Text>
+          <Text style={styles.subtitle}>通用知识和项目追问放在一起复习，同时保留清晰来源。</Text>
 
           <View style={styles.summary}>
-            <View><Text style={styles.summaryValue}>{reviewItems.length}</Text><Text style={styles.summaryLabel}>已安排知识点</Text></View>
-            <View style={styles.summaryBadge}><Text style={styles.summaryBadgeText}>明日到期</Text></View>
+            <View><Text style={styles.summaryValue}>{items.length}</Text><Text style={styles.summaryLabel}>当前复习项</Text></View>
+            <View style={styles.summaryStats}>
+              <Text style={styles.summaryStatsValue}>{reviewQueue.filter((item) => item.source === 'knowledge').length}</Text>
+              <Text style={styles.summaryStatsLabel}>知识卡</Text>
+            </View>
+            <View style={styles.summaryStats}>
+              <Text style={styles.summaryStatsValue}>{reviewQueue.filter((item) => item.source === 'project').length}</Text>
+              <Text style={styles.summaryStatsLabel}>项目题</Text>
+            </View>
           </View>
 
-          {reviewItems.length === 0 ? (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>
+            <FilterChip label="全部" active={filter === 'all'} onPress={() => setFilter('all')} />
+            <FilterChip label="课程" active={filter === 'lesson'} onPress={() => setFilter('lesson')} />
+            <FilterChip label="通用知识" active={filter === 'knowledge'} onPress={() => setFilter('knowledge')} />
+            <FilterChip label="简历项目" active={filter === 'project'} onPress={() => setFilter('project')} />
+          </ScrollView>
+
+          {items.length === 0 ? (
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>◆</Text>
-              <Text style={styles.emptyTitle}>复习队列还是空的</Text>
-              <Text style={styles.emptyText}>完成第一节课程后，知识点会自动安排到明天复习。</Text>
-              <Pressable onPress={() => router.replace('/')} style={styles.button}>
-                <Text style={styles.buttonText}>去完成今日课程</Text>
+              <Text style={styles.emptyTitle}>{filter === 'project' && !projectProfile ? '先建立项目档案' : '这里还没有复习项'}</Text>
+              <Text style={styles.emptyText}>{filter === 'project' && !projectProfile ? '通用学习不受影响；有项目档案后再加入项目追问。' : '完成课程，或从知识详情加入明日复习。'}</Text>
+              <Pressable onPress={() => router.push(filter === 'project' ? '/resume' : '/library')} style={styles.button}>
+                <Text style={styles.buttonText}>{filter === 'project' ? '建立项目档案' : '去知识库看看'}</Text>
               </Pressable>
             </View>
           ) : (
             <View style={styles.list}>
-              {reviewItems.map(({ lesson, date }) => lesson && (
-                <View key={lesson.id} style={styles.reviewCard}>
-                  <View style={styles.lessonIcon}><Text style={styles.lessonIconText}>{lesson.icon}</Text></View>
-                  <View style={styles.lessonCopy}>
-                    <Text style={styles.lessonTitle}>{lesson.shortTitle}</Text>
-                    <Text style={styles.lessonDate}>{new Date(date).toLocaleDateString('zh-CN')} 复习</Text>
-                  </View>
-                  <Text style={styles.scheduled}>已安排</Text>
-                </View>
-              ))}
+              {items.map((item) => {
+                const lesson = item.source === 'lesson' ? transformerLessons.find((entry) => entry.id === item.targetId) : null;
+                const card = item.source === 'knowledge' ? knowledgeById[item.targetId] : null;
+                const domain = card ? domainById[card.domainId] : null;
+                const title = lesson?.shortTitle ?? card?.title ?? projectProfile?.name ?? '项目深挖';
+                const sourceLabel = item.source === 'lesson' ? '课程节点' : item.source === 'knowledge' ? '通用知识' : '简历项目';
+                const icon = lesson?.icon ?? domain?.icon ?? 'P';
+                const color = domain?.color ?? (item.source === 'project' ? colors.success : colors.primary);
+                const softColor = domain?.softColor ?? (item.source === 'project' ? colors.successSoft : colors.primarySoft);
+                return (
+                  <Pressable key={item.id} onPress={() => openItem(item.source, item.targetId)} style={styles.reviewCard}>
+                    <View style={[styles.itemIcon, { backgroundColor: softColor }]}><Text style={[styles.itemIconText, { color }]}>{icon}</Text></View>
+                    <View style={styles.itemCopy}>
+                      <View style={styles.metaRow}>
+                        <Text style={[styles.sourceLabel, { color }]}>{sourceLabel}</Text>
+                        <Text style={styles.due}>{new Date(item.dueAt).toLocaleDateString('zh-CN')}</Text>
+                      </View>
+                      <Text numberOfLines={2} style={styles.itemTitle}>{title}</Text>
+                    </View>
+                    {!item.id.startsWith('legacy-') && (
+                      <Pressable hitSlop={10} onPress={(event) => { event.stopPropagation(); removeFromReview(item.id); }}>
+                        <Text style={styles.remove}>×</Text>
+                      </Pressable>
+                    )}
+                  </Pressable>
+                );
+              })}
             </View>
           )}
         </ScrollView>
@@ -57,30 +104,41 @@ export default function ReviewScreen() {
   );
 }
 
+function FilterChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return <Pressable onPress={onPress} style={[styles.filter, active && styles.filterActive]}><Text style={[styles.filterText, active && styles.filterTextActive]}>{label}</Text></Pressable>;
+}
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  content: { padding: 22, paddingBottom: 35 },
-  eyebrow: { color: colors.primary, fontSize: 11, fontWeight: '900', letterSpacing: 1 },
-  title: { color: colors.text, fontSize: 30, fontWeight: '900', marginTop: 6 },
-  subtitle: { color: colors.textMuted, lineHeight: 21, marginTop: 8 },
-  summary: { backgroundColor: colors.primary, borderBottomWidth: 7, borderBottomColor: colors.primaryDark, borderRadius: 22, padding: 19, marginTop: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  summaryValue: { color: colors.surface, fontSize: 28, fontWeight: '900' },
-  summaryLabel: { color: '#DFD9FF', fontSize: 11, marginTop: 3 },
-  summaryBadge: { backgroundColor: colors.surface, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 8 },
-  summaryBadgeText: { color: colors.primaryDark, fontSize: 11, fontWeight: '900' },
-  empty: { alignItems: 'center', backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderRadius: 22, padding: 26, marginTop: 18 },
+  content: { padding: 20, paddingBottom: 35 },
+  eyebrow: { color: colors.primary, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
+  title: { color: colors.text, fontSize: 29, fontWeight: '900', marginTop: 6 },
+  subtitle: { color: colors.textMuted, lineHeight: 21, marginTop: 7 },
+  summary: { backgroundColor: colors.primary, borderBottomWidth: 7, borderBottomColor: colors.primaryDark, borderRadius: 22, padding: 18, marginTop: 21, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  summaryValue: { color: colors.surface, fontSize: 29, fontWeight: '900' },
+  summaryLabel: { color: '#DFD9FF', fontSize: 10, marginTop: 3 },
+  summaryStats: { alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.14)', borderRadius: 12, minWidth: 68, paddingVertical: 9 },
+  summaryStatsValue: { color: colors.surface, fontSize: 17, fontWeight: '900' },
+  summaryStatsLabel: { color: '#E5E0FF', fontSize: 9, marginTop: 2 },
+  filters: { gap: 8, paddingVertical: 15 },
+  filter: { backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 11, paddingHorizontal: 13, paddingVertical: 8 },
+  filterActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  filterText: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
+  filterTextActive: { color: colors.surface },
+  empty: { alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 22, padding: 27, marginTop: 2 },
   emptyIcon: { color: colors.primary, fontSize: 35 },
   emptyTitle: { color: colors.text, fontSize: 18, fontWeight: '900', marginTop: 12 },
   emptyText: { color: colors.textMuted, textAlign: 'center', lineHeight: 20, marginTop: 7 },
   button: { alignSelf: 'stretch', alignItems: 'center', backgroundColor: colors.primary, borderBottomWidth: 5, borderBottomColor: colors.primaryDark, borderRadius: 15, padding: 15, marginTop: 20 },
   buttonText: { color: colors.surface, fontWeight: '900' },
-  list: { gap: 11, marginTop: 18 },
-  reviewCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderRadius: 18, padding: 14 },
-  lessonIcon: { width: 44, height: 44, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.currentSoft },
-  lessonIconText: { color: colors.currentDark, fontSize: 18, fontWeight: '900' },
-  lessonCopy: { flex: 1, marginLeft: 12 },
-  lessonTitle: { color: colors.text, fontWeight: '900' },
-  lessonDate: { color: colors.textMuted, fontSize: 11, marginTop: 4 },
-  scheduled: { color: colors.successDark, backgroundColor: colors.successSoft, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 6, fontSize: 10, fontWeight: '900' },
+  list: { gap: 10 },
+  reviewCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 13 },
+  itemIcon: { width: 45, height: 45, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  itemIconText: { fontSize: 17, fontWeight: '900' },
+  itemCopy: { flex: 1 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  sourceLabel: { fontSize: 9, fontWeight: '900' },
+  due: { color: colors.textMuted, fontSize: 9 },
+  itemTitle: { color: colors.text, fontWeight: '900', lineHeight: 19, marginTop: 4 },
+  remove: { color: '#AAA3B6', fontSize: 24, paddingHorizontal: 4 },
 });
-

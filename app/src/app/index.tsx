@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/bottom-nav';
@@ -31,6 +31,32 @@ export default function HomeScreen() {
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          <View style={styles.welcomeRow}>
+            <View>
+              <Text style={styles.welcomeEyebrow}>大模型 / NLP 算法岗</Text>
+              <Text style={styles.welcomeTitle}>今天想练哪一部分？</Text>
+            </View>
+            <Pressable onPress={() => router.push('/interview')} style={styles.mockButton}>
+              <Text style={styles.mockButtonText}>模拟面试</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.entrances}>
+            <Pressable onPress={() => router.push('/library')} style={[styles.entranceCard, styles.generalCard]}>
+              <View style={styles.entranceIcon}><Text style={styles.entranceIconText}>∞</Text></View>
+              <Text style={styles.entranceTag}>无需简历 · 随时开始</Text>
+              <Text style={styles.entranceTitle}>通用八股</Text>
+              <Text style={styles.entranceText}>Transformer、LLM、微调、Loss、深度学习与强化学习</Text>
+              <Text style={styles.entranceLink}>进入知识库  →</Text>
+            </Pressable>
+            <Pressable onPress={() => router.push('/resume')} style={[styles.entranceCard, styles.projectCard]}>
+              <View style={[styles.entranceIcon, styles.projectIcon]}><Text style={[styles.entranceIconText, styles.projectIconText]}>P</Text></View>
+              <Text style={[styles.entranceTag, styles.projectTag]}>独立模块 · 个性深挖</Text>
+              <Text style={styles.entranceTitle}>简历项目</Text>
+              <Text style={styles.entranceText}>从项目背景、技术选型、指标、难点到追问建立答题档案</Text>
+              <Text style={[styles.entranceLink, styles.projectLink]}>建立项目档案  →</Text>
+            </Pressable>
+          </View>
           <View style={styles.hero}>
             <View style={styles.heroCopy}>
               <Text style={styles.kicker}>TRANSFORMER · 第 1 单元</Text>
@@ -79,6 +105,25 @@ const styles = StyleSheet.create({
   statIcon: { fontSize: 18 },
   statText: { color: colors.textMuted, fontWeight: '900', fontSize: 14 },
   scrollContent: { padding: 18, paddingBottom: 30 },
+  welcomeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 3, marginBottom: 15 },
+  welcomeEyebrow: { color: colors.primary, fontSize: 10, fontWeight: '900', letterSpacing: 0.8 },
+  welcomeTitle: { color: colors.text, fontSize: 21, fontWeight: '900', marginTop: 5 },
+  mockButton: { backgroundColor: colors.primarySoft, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 },
+  mockButtonText: { color: colors.primaryDark, fontSize: 11, fontWeight: '900' },
+  entrances: { flexDirection: 'row', gap: 10, marginBottom: 14 },
+  entranceCard: { flex: 1, minHeight: 206, borderRadius: 21, padding: 15, borderBottomWidth: 6 },
+  generalCard: { backgroundColor: colors.primarySoft, borderBottomColor: '#CEC3FA' },
+  projectCard: { backgroundColor: colors.successSoft, borderBottomColor: '#BCEADD' },
+  entranceIcon: { width: 38, height: 38, borderRadius: 13, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+  entranceIconText: { color: colors.surface, fontSize: 19, fontWeight: '900' },
+  projectIcon: { backgroundColor: colors.success },
+  projectIconText: { fontSize: 16 },
+  entranceTag: { color: colors.primaryDark, fontSize: 9, fontWeight: '900', marginTop: 12 },
+  projectTag: { color: colors.successDark },
+  entranceTitle: { color: colors.text, fontSize: 18, fontWeight: '900', marginTop: 4 },
+  entranceText: { color: colors.textMuted, fontSize: 11, lineHeight: 17, marginTop: 7 },
+  entranceLink: { color: colors.primaryDark, fontSize: 11, fontWeight: '900', marginTop: 'auto' },
+  projectLink: { color: colors.successDark },
   hero: {
     minHeight: 134,
     padding: 20,
@@ -107,4 +152,3 @@ const styles = StyleSheet.create({
   sectionTitle: { color: colors.text, fontSize: 19, fontWeight: '900', marginTop: 5 },
   progressText: { color: colors.primary, backgroundColor: colors.primarySoft, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, fontWeight: '900' },
 });
-

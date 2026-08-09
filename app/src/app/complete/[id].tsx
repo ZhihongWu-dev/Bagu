@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenShell } from '@/components/screen-shell';
@@ -52,7 +52,7 @@ export default function CompleteScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  burst: { width: 104, height: 104, borderRadius: 52, backgroundColor: colors.success, borderBottomWidth: 9, borderBottomColor: colors.successDark, alignItems: 'center', justifyContent: 'center', shadowColor: colors.success, shadowOpacity: 0.25, shadowRadius: 22, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  burst: { width: 104, height: 104, borderRadius: 52, backgroundColor: colors.success, borderBottomWidth: 9, borderBottomColor: colors.successDark, alignItems: 'center', justifyContent: 'center', ...Platform.select({ web: { boxShadow: '0 10px 24px rgba(37, 185, 149, 0.25)' }, default: { shadowColor: colors.success, shadowOpacity: 0.25, shadowRadius: 22, shadowOffset: { width: 0, height: 8 }, elevation: 8 } }) },
   burstText: { color: colors.surface, fontSize: 48, fontWeight: '900' },
   kicker: { color: colors.successDark, fontSize: 12, fontWeight: '900', letterSpacing: 1, marginTop: 24 },
   title: { color: colors.text, fontSize: 28, fontWeight: '900', marginTop: 7 },
@@ -72,4 +72,3 @@ const styles = StyleSheet.create({
   buttonPressed: { transform: [{ translateY: 3 }], borderBottomWidth: 2 },
   buttonText: { color: colors.surface, fontWeight: '900' },
 });
-

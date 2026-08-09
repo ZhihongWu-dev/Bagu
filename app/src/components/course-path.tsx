@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Lesson } from '@/types/course';
 import { colors } from '@/theme/colors';
@@ -72,11 +72,10 @@ const styles = StyleSheet.create({
   current: {
     backgroundColor: colors.current,
     borderBottomColor: colors.currentDark,
-    shadowColor: colors.current,
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
+    ...Platform.select({
+      web: { boxShadow: '0 8px 18px rgba(255, 181, 38, 0.35)' },
+      default: { shadowColor: colors.current, shadowOpacity: 0.35, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 8 },
+    }),
   },
   locked: { backgroundColor: '#E9E6EF', borderBottomColor: '#D1CBD9' },
   pressed: { transform: [{ translateY: 4 }], borderBottomWidth: 3 },
@@ -86,4 +85,3 @@ const styles = StyleSheet.create({
   currentTitle: { color: colors.text },
   startHint: { marginTop: 4, color: colors.currentDark, fontSize: 11, fontWeight: '700' },
 });
-

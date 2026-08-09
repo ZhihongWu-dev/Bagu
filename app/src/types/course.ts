@@ -34,3 +34,63 @@ export type Lesson = {
   exercises: Exercise[];
 };
 
+export type KnowledgeDomainId =
+  | 'transformer'
+  | 'llm'
+  | 'finetuning'
+  | 'loss'
+  | 'deep-learning'
+  | 'reinforcement-learning';
+
+export type KnowledgeDomain = {
+  id: KnowledgeDomainId;
+  label: string;
+  shortLabel: string;
+  icon: string;
+  color: string;
+  softColor: string;
+};
+
+export type KnowledgeSource = {
+  title: string;
+  url: string;
+  kind: 'paper' | 'docs' | 'course';
+};
+
+export type KnowledgeCard = {
+  id: string;
+  domainId: KnowledgeDomainId;
+  title: string;
+  aliases: string[];
+  difficulty: '基础' | '进阶' | '高频';
+  summary: string;
+  answer: string;
+  intuition: string;
+  formula?: string;
+  keyPoints: string[];
+  followUps: string[];
+  sources: KnowledgeSource[];
+};
+
+export type ReviewSource = 'lesson' | 'knowledge' | 'project';
+
+export type ReviewQueueItem = {
+  id: string;
+  source: ReviewSource;
+  targetId: string;
+  dueAt: string;
+};
+
+export type ResumeFileMeta = {
+  name: string;
+  size?: number;
+  selectedAt: string;
+};
+
+export type ProjectProfile = {
+  name: string;
+  role: string;
+  summary: string;
+  stack: string[];
+  challenge: string;
+};

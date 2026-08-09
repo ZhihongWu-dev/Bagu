@@ -4,12 +4,13 @@ Bagu 是一个面向大模型/NLP 校招算法岗的每日八股训练 App。当
 
 ## 当前功能
 
-- 多邻国式纵向学习路径
-- 三个 Transformer 知识节点
-- 单选题与即时结构化反馈
-- 关键词底部解释弹窗
-- 课程完成、经验值和下一节点解锁
-- 间隔复习队列
+- 通用八股与简历项目深挖双入口，未上传简历不阻塞学习
+- 6 个算法方向、17 张结构化知识卡，支持搜索、领域筛选和收藏
+- 30 秒主动回忆、面试参考回答、直觉解释、追问和原始资料链接
+- 多邻国式 Transformer 闯关路径、即时反馈、经验值和节点解锁
+- 课程、通用知识和项目追问统一复习队列
+- PDF 文件选择与手动项目档案；第一版不上传或解析简历正文
+- 通用、简历与综合三种模拟面试模式
 - Web `localStorage` 与 Android/iOS 文件持久化
 
 ## 本地运行
@@ -19,13 +20,13 @@ npm install
 npm run web
 ```
 
-也可以使用 Expo Go：
+也可以使用与项目 SDK 兼容的 Expo Go：
 
 ```bash
 npm start
 ```
 
-然后使用 Expo Go 扫描终端中的二维码。
+然后使用 Expo Go 扫描终端中的二维码。若 App Store 当前提供的 Expo Go SDK 与项目 SDK 不一致，可先使用 Web 版，或后续生成 iOS development build。
 
 ## 验证命令
 
@@ -35,4 +36,4 @@ npm run lint
 npx expo export --platform web --output-dir dist
 ```
 
-产品设计见仓库根目录的 `docs/superpowers/specs/2026-08-04-bagu-v01-design.md`。
+公共知识与双模块设计见仓库根目录的 `docs/superpowers/specs/2026-08-09-bagu-public-knowledge-agent-design.md`。
