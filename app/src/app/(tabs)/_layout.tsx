@@ -4,8 +4,7 @@ import { StyleSheet, Text } from 'react-native';
 import { colors } from '@/theme/colors';
 
 const tabIcons: Record<string, string> = {
-  index: '⌂',
-  today: '✓',
+  index: '●',
   library: '▦',
   review: '◆',
   profile: '☺',
@@ -23,9 +22,8 @@ export default function TabLayout() {
         tabBarStyle: styles.bar,
         tabBarIcon: ({ color }) => <Text style={[styles.icon, { color }]}>{tabIcons[route.name] ?? '•'}</Text>,
       })}>
-      <Tabs.Screen name="index" options={{ title: '首页' }} />
-      <Tabs.Screen name="today" options={{ title: '今日' }} />
-      <Tabs.Screen name="library" options={{ title: '知识库' }} />
+      <Tabs.Screen name="index" options={{ title: '学习' }} />
+      <Tabs.Screen name="library" options={{ title: '知识' }} />
       <Tabs.Screen name="review" options={{ title: '复习' }} />
       <Tabs.Screen name="profile" options={{ title: '我的' }} />
     </Tabs>
@@ -34,7 +32,7 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   bar: {
-    height: 72,
+    height: 70,
     paddingTop: 7,
     paddingBottom: 8,
     borderTopWidth: 1,
@@ -42,5 +40,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   label: { fontSize: 10, fontWeight: '800' },
-  icon: { fontSize: 22, fontWeight: '900', lineHeight: 24 },
+  icon: { fontSize: 21, fontWeight: '900', lineHeight: 24 },
 });

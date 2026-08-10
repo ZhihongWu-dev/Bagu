@@ -30,14 +30,13 @@ export default function LibraryScreen() {
   return (
     <ScreenShell>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.eyebrow}>STRUCTURED KNOWLEDGE</Text>
-          <Text style={styles.title}>算法知识库</Text>
-          <Text style={styles.subtitle}>先用 30 秒回答，再展开解释与经典资料。内容均为结构化总结。</Text>
+        <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <Text style={styles.title}>知识</Text>
 
           <View style={styles.searchBox}>
             <Text style={styles.searchIcon}>⌕</Text>
             <TextInput
+              accessibilityLabel="搜索知识点"
               value={query}
               onChangeText={setQuery}
               placeholder="搜索 Attention、LoRA、PPO…"
@@ -66,6 +65,8 @@ export default function LibraryScreen() {
               const favorite = favoriteKnowledgeIds.includes(card.id);
               return (
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`打开知识点：${card.title}`}
                   key={card.id}
                   onPress={() => router.push({ pathname: '/knowledge/[id]', params: { id: card.id } })}
                   style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
@@ -78,9 +79,12 @@ export default function LibraryScreen() {
                       <Text style={styles.difficulty}>{card.difficulty}</Text>
                     </View>
                     <Text style={styles.cardTitle}>{card.title}</Text>
-                    <Text numberOfLines={2} style={styles.cardSummary}>{card.summary}</Text>
                   </View>
-                  <Pressable hitSlop={10} onPress={(event) => { event.stopPropagation(); toggleFavorite(card.id); }}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={favorite ? `取消收藏：${card.title}` : `收藏：${card.title}`}
+                    hitSlop={10}
+                    onPress={(event) => { event.stopPropagation(); toggleFavorite(card.id); }}>
                     <Text style={[styles.favorite, favorite && styles.favoriteActive]}>{favorite ? '★' : '☆'}</Text>
                   </Pressable>
                 </Pressable>
@@ -91,8 +95,7 @@ export default function LibraryScreen() {
           {visibleCards.length === 0 && (
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>⌕</Text>
-              <Text style={styles.emptyTitle}>没有找到匹配内容</Text>
-              <Text style={styles.emptyText}>换一个关键词，或切回“全部”看看。</Text>
+              <Text style={styles.emptyTitle}>未找到</Text>
             </View>
           )}
         </ScrollView>
@@ -112,10 +115,8 @@ function FilterChip({ label, active, onPress }: { label: string; active: boolean
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   content: { padding: 20, paddingBottom: 35 },
-  eyebrow: { color: colors.primary, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
-  title: { color: colors.text, fontSize: 29, fontWeight: '900', marginTop: 6 },
-  subtitle: { color: colors.textMuted, lineHeight: 20, marginTop: 7 },
-  searchBox: { height: 50, flexDirection: 'row', alignItems: 'center', gap: 9, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 14, marginTop: 19 },
+  title: { color: colors.text, fontSize: 29, fontWeight: '900' },
+  searchBox: { height: 50, flexDirection: 'row', alignItems: 'center', gap: 9, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 14, marginTop: 15 },
   searchIcon: { color: colors.primary, fontSize: 21, fontWeight: '900' },
   searchInput: { flex: 1, color: colors.text, fontSize: 14, outlineStyle: 'none' } as never,
   clear: { color: colors.textMuted, fontSize: 22 },
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   resultTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },
   count: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
   cards: { gap: 10 },
-  card: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 14 },
+  card: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 14 },
   cardPressed: { transform: [{ scale: 0.99 }], borderColor: colors.primary },
   domainIcon: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   domainIconText: { fontSize: 17, fontWeight: '900' },
@@ -137,11 +138,9 @@ const styles = StyleSheet.create({
   domainLabel: { fontSize: 10, fontWeight: '900' },
   difficulty: { color: colors.textMuted, backgroundColor: colors.surfaceMuted, borderRadius: 7, paddingHorizontal: 6, paddingVertical: 3, fontSize: 9, fontWeight: '800' },
   cardTitle: { color: colors.text, fontSize: 15, lineHeight: 21, fontWeight: '900', marginTop: 5 },
-  cardSummary: { color: colors.textMuted, fontSize: 11, lineHeight: 17, marginTop: 4 },
   favorite: { color: '#B8B0C4', fontSize: 24 },
   favoriteActive: { color: colors.current },
   empty: { alignItems: 'center', padding: 35, backgroundColor: colors.surface, borderRadius: 20, borderWidth: 1.5, borderColor: colors.border },
   emptyIcon: { color: colors.primary, fontSize: 32 },
   emptyTitle: { color: colors.text, fontWeight: '900', marginTop: 9 },
-  emptyText: { color: colors.textMuted, fontSize: 12, marginTop: 5 },
 });
