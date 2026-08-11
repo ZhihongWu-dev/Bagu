@@ -10,12 +10,15 @@ import { useCompletionSound } from '@/hooks/use-feedback-sounds';
 import { colors } from '@/theme/colors';
 
 export default function CompleteScreen() {
-  const { id, correct } = useLocalSearchParams<{ id: string; correct?: string }>();
+  const { id, correct, correctCount, total } = useLocalSearchParams<{ id: string; correct?: string; correctCount?: string; total?: string }>();
   const { completeLesson } = useProgress();
   const playComplete = useCompletionSound();
   const playedSound = useRef(false);
   const lesson = useMemo(() => transformerLessons.find((item) => item.id === id), [id]);
-  const earnedXp = correct === 'true' ? 10 : 5;
+  const questionTotal = Math.max(1, Number(total) || 1);
+  const answeredCorrectly = correctCount === undefined ? (correct === 'true' ? 1 : 0) : Math.min(questionTotal, Number(correctCount) || 0);
+  const scorePercent = Math.round((answeredCorrectly / questionTotal) * 100);
+  const earnedXp = Math.max(5, answeredCorrectly * 5);
 
   useEffect(() => {
     if (lesson) completeLesson(lesson.id, earnedXp);
@@ -34,11 +37,11 @@ export default function CompleteScreen() {
           <View style={styles.burst}><Text style={styles.burstText}>✓</Text></View>
           <Text style={styles.kicker}>课程完成</Text>
           <Text style={styles.title}>{lesson?.shortTitle ?? 'Transformer 基础'}</Text>
-          <Text style={styles.subtitle}>你完成了一次主动回忆，下一节点已经解锁。</Text>
+          <Text style={styles.subtitle}>本关 {questionTotal} 题已完成，下一节点已经解锁。</Text>
           <View style={styles.statsCard}>
             <View style={styles.stat}><Text style={styles.statValue}>+{earnedXp}</Text><Text style={styles.statLabel}>经验值</Text></View>
             <View style={styles.divider} />
-            <View style={styles.stat}><Text style={styles.statValue}>{correct === 'true' ? '100%' : '继续练'}</Text><Text style={styles.statLabel}>本题表现</Text></View>
+            <View style={styles.stat}><Text style={styles.statValue}>{scorePercent}%</Text><Text style={styles.statLabel}>本关正确率</Text></View>
           </View>
           <View style={styles.reviewCard}>
             <Text style={styles.reviewIcon}>◷</Text>

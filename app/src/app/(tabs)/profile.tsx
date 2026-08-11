@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AlignedSwitch } from '@/components/aligned-switch';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
@@ -39,12 +40,10 @@ export default function ProfileScreen() {
           <View style={styles.soundCard}>
             <View style={styles.soundIcon}><Text style={styles.soundIconText}>♪</Text></View>
             <Text style={styles.soundTitle}>音效</Text>
-            <Switch
+            <AlignedSwitch
               accessibilityLabel="学习音效开关"
               value={soundEnabled}
               onValueChange={setSoundEnabled}
-              trackColor={{ false: colors.locked, true: '#B9E9DD' }}
-              thumbColor={soundEnabled ? colors.success : colors.surface}
             />
           </View>
 
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
   statValue: { color: colors.text, fontSize: 17, fontWeight: '900', fontVariant: ['tabular-nums'] },
   soundCard: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 11, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, paddingHorizontal: 13, marginTop: 12 },
   soundIcon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primarySoft, borderRadius: 13 },
-  soundIconText: { color: colors.primary, fontSize: 18, fontWeight: '900' },
+  soundIconText: { color: colors.primary, fontSize: 18, lineHeight: 20, fontWeight: '900', textAlign: 'center' },
   soundTitle: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '900' },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, marginBottom: 10 },
   sectionTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },

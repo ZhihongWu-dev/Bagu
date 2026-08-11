@@ -1,36 +1,48 @@
 import { StyleSheet, View } from 'react-native';
 
 import { LessonNode } from '@/components/lesson-node';
-import type { Lesson } from '@/types/course';
-import { colors } from '@/theme/colors';
+import { UnitBanner } from '@/components/unit-banner';
+import type { CourseSection, Lesson } from '@/types/course';
 
 type Props = {
-  lessons: Lesson[];
+  section: CourseSection;
   completedLessonIds: string[];
   isUnlocked: (lessonId: string) => boolean;
   onSelect: (lesson: Lesson) => void;
 };
 
-const offsets = [0, -62, 58, -25];
+const offsets = [42, -42];
 
-export function CoursePath({ lessons, completedLessonIds, isUnlocked, onSelect }: Props) {
+export function CoursePath({ section, completedLessonIds, isUnlocked, onSelect }: Props) {
   return (
-    <View style={styles.path}>
-      <View style={styles.guide} />
-      {lessons.map((lesson, index) => {
-        const completed = completedLessonIds.includes(lesson.id);
-        const unlocked = isUnlocked(lesson.id);
-        const current = unlocked && !completed;
+    <View style={styles.section}>
+      {section.units.map((unit) => {
+        const completedInUnit = unit.lessons.filter((lesson) => completedLessonIds.includes(lesson.id)).length;
         return (
-          <LessonNode
-            key={lesson.id}
-            lesson={lesson}
-            completed={completed}
-            current={current}
-            unlocked={unlocked}
-            offset={offsets[index] ?? 0}
-            onPress={() => onSelect(lesson)}
-          />
+          <View key={unit.id} style={styles.unit}>
+            <UnitBanner compact title={unit.title} subtitle={unit.description} completed={completedInUnit} total={unit.lessons.length} color={unit.color} darkColor={unit.darkColor} />
+            <View style={styles.path}>
+              <View style={[styles.guide, { backgroundColor: unit.softColor }]} />
+              {unit.lessons.map((lesson, index) => {
+                const completed = completedLessonIds.includes(lesson.id);
+                const unlocked = isUnlocked(lesson.id);
+                const current = unlocked && !completed;
+                return (
+                  <LessonNode
+                    key={lesson.id}
+                    lesson={lesson}
+                    completed={completed}
+                    current={current}
+                    unlocked={unlocked}
+                    offset={offsets[index] ?? 0}
+                    accentColor={unit.color}
+                    accentDarkColor={unit.darkColor}
+                    onPress={() => onSelect(lesson)}
+                  />
+                );
+              })}
+            </View>
+          </View>
         );
       })}
     </View>
@@ -38,13 +50,8 @@ export function CoursePath({ lessons, completedLessonIds, isUnlocked, onSelect }
 }
 
 const styles = StyleSheet.create({
-  path: { alignItems: 'center', paddingTop: 24, paddingBottom: 26, minHeight: 420 },
-  guide: {
-    position: 'absolute',
-    top: 72,
-    bottom: 78,
-    width: 6,
-    borderRadius: 8,
-    backgroundColor: colors.surfaceMuted,
-  },
+  section: { gap: 18 },
+  unit: { gap: 4 },
+  path: { alignItems: 'center', paddingTop: 20, paddingBottom: 8, minHeight: 285 },
+  guide: { position: 'absolute', top: 63, bottom: 66, width: 7, borderRadius: 8 },
 });

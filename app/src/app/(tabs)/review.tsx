@@ -39,7 +39,7 @@ export default function ReviewScreen() {
             <View><Text style={styles.summaryValue}>{items.length}</Text><Text style={styles.summaryLabel}>待复习</Text></View>
             <View style={styles.summaryStats}>
               <Text style={styles.summaryStatsValue}>{reviewQueue.filter((item) => item.source === 'knowledge').length}</Text>
-              <Text style={styles.summaryStatsLabel}>知识卡</Text>
+              <Text style={styles.summaryStatsLabel}>知识专题</Text>
             </View>
             <View style={styles.summaryStats}>
               <Text style={styles.summaryStatsValue}>{reviewQueue.filter((item) => item.source === 'project').length}</Text>

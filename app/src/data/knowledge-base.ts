@@ -1,5 +1,7 @@
 import type { KnowledgeCard, KnowledgeDomain } from '@/types/course';
 
+import { expandedKnowledgeCards } from '@/data/knowledge-expansion';
+
 export const knowledgeDomains: KnowledgeDomain[] = [
   { id: 'transformer', label: 'Transformer', shortLabel: 'Transformer', icon: 'T', color: '#6C52E5', softColor: '#EEE9FF' },
   { id: 'llm', label: '大模型与 NLP', shortLabel: 'LLM / NLP', icon: 'L', color: '#1F9D7A', softColor: '#E7FAF4' },
@@ -12,7 +14,7 @@ export const knowledgeDomains: KnowledgeDomain[] = [
 const paper = (title: string, url: string) => ({ title, url, kind: 'paper' as const });
 const docs = (title: string, url: string) => ({ title, url, kind: 'docs' as const });
 
-export const knowledgeCards: KnowledgeCard[] = [
+const baseKnowledgeCards: KnowledgeCard[] = [
   {
     id: 'attention-scale', domainId: 'transformer', title: '为什么 Attention 要除以 √dₖ？', aliases: ['scaled dot product', '缩放点积'], difficulty: '高频',
     summary: '控制点积方差，避免 Softmax 饱和和梯度变小。',
@@ -167,6 +169,8 @@ export const knowledgeCards: KnowledgeCard[] = [
     sources: [paper('Proximal Policy Optimization Algorithms', 'https://arxiv.org/abs/1707.06347')],
   },
 ];
+
+export const knowledgeCards: KnowledgeCard[] = [...baseKnowledgeCards, ...expandedKnowledgeCards];
 
 export const knowledgeById = Object.fromEntries(knowledgeCards.map((card) => [card.id, card])) as Record<string, KnowledgeCard>;
 export const domainById = Object.fromEntries(knowledgeDomains.map((domain) => [domain.id, domain])) as Record<string, KnowledgeDomain>;

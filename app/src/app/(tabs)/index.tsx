@@ -7,7 +7,7 @@ import { LearningStatusBar } from '@/components/learning-status-bar';
 import { ScreenShell } from '@/components/screen-shell';
 import { UnitBanner } from '@/components/unit-banner';
 import { useProgress } from '@/context/progress-context';
-import { transformerLessons } from '@/data/transformer-course';
+import { transformerLessons, transformerSection } from '@/data/transformer-course';
 import type { Lesson } from '@/types/course';
 
 export default function LearningScreen() {
@@ -22,9 +22,9 @@ export default function LearningScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}>
           <LearningStatusBar streak={streak} xp={xp} focus={focus} />
-          <UnitBanner title="Transformer" completed={completedLessonIds.length} total={transformerLessons.length} />
+          <UnitBanner title={transformerSection.title} subtitle={transformerSection.subtitle} completed={completedLessonIds.length} total={transformerLessons.length} />
           <CoursePath
-            lessons={transformerLessons}
+            section={transformerSection}
             completedLessonIds={completedLessonIds}
             isUnlocked={isUnlocked}
             onSelect={openLesson}

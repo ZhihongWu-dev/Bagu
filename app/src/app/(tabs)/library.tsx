@@ -15,6 +15,7 @@ export default function LibraryScreen() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const { favoriteKnowledgeIds, toggleFavorite } = useProgress();
+  const showDomainOverview = filter === 'all' && !query.trim();
 
   const visibleCards = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -47,7 +48,7 @@ export default function LibraryScreen() {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>
-            <FilterChip label="全部" active={filter === 'all'} onPress={() => setFilter('all')} />
+            <FilterChip label="领域" active={filter === 'all'} onPress={() => setFilter('all')} />
             <FilterChip label={`收藏 ${favoriteKnowledgeIds.length}`} active={filter === 'favorite'} onPress={() => setFilter('favorite')} />
             {knowledgeDomains.map((domain) => (
               <FilterChip key={domain.id} label={domain.shortLabel} active={filter === domain.id} onPress={() => setFilter(domain.id)} />
@@ -55,11 +56,24 @@ export default function LibraryScreen() {
           </ScrollView>
 
           <View style={styles.resultHeader}>
-            <Text style={styles.resultTitle}>{filter === 'favorite' ? '我的收藏' : '知识卡片'}</Text>
-            <Text style={styles.count}>{visibleCards.length} 条</Text>
+            <Text style={styles.resultTitle}>{showDomainOverview ? '六大方向' : filter === 'favorite' ? '我的收藏' : '知识专题'}</Text>
+            <Text style={styles.count}>{showDomainOverview ? knowledgeCards.length : visibleCards.length} 篇</Text>
           </View>
 
-          <View style={styles.cards}>
+          {showDomainOverview ? (
+            <View style={styles.domainGrid}>
+              {knowledgeDomains.map((domain) => {
+                const count = knowledgeCards.filter((card) => card.domainId === domain.id).length;
+                return (
+                  <Pressable key={domain.id} accessibilityRole="button" accessibilityLabel={`打开${domain.label}，${count}篇`} onPress={() => setFilter(domain.id)} style={({ pressed }) => [styles.domainCard, { backgroundColor: domain.softColor }, pressed && styles.cardPressed]}>
+                    <Text style={[styles.domainCardIcon, { color: domain.color }]}>{domain.icon}</Text>
+                    <Text numberOfLines={1} style={styles.domainCardTitle}>{domain.shortLabel}</Text>
+                    <Text style={[styles.domainCardCount, { color: domain.color }]}>{count}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : <View style={styles.cards}>
             {visibleCards.map((card) => {
               const domain = knowledgeDomains.find((item) => item.id === card.domainId)!;
               const favorite = favoriteKnowledgeIds.includes(card.id);
@@ -90,9 +104,9 @@ export default function LibraryScreen() {
                 </Pressable>
               );
             })}
-          </View>
+          </View>}
 
-          {visibleCards.length === 0 && (
+          {!showDomainOverview && visibleCards.length === 0 && (
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>⌕</Text>
               <Text style={styles.emptyTitle}>未找到</Text>
@@ -129,6 +143,11 @@ const styles = StyleSheet.create({
   resultTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },
   count: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
   cards: { gap: 10 },
+  domainGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  domainCard: { width: '48%', minHeight: 112, justifyContent: 'center', borderRadius: 19, padding: 15 },
+  domainCardIcon: { fontSize: 24, fontWeight: '900' },
+  domainCardTitle: { color: colors.text, fontSize: 14, fontWeight: '900', marginTop: 10 },
+  domainCardCount: { fontSize: 11, fontWeight: '900', marginTop: 5 },
   card: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 14 },
   cardPressed: { transform: [{ scale: 0.99 }], borderColor: colors.primary },
   domainIcon: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },

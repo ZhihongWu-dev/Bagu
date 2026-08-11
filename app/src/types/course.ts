@@ -11,18 +11,42 @@ export type Choice = {
   label: string;
 };
 
-export type Exercise = {
+type ExerciseBase = {
   id: string;
+  type: 'single-choice' | 'multiple-choice' | 'ordering' | 'self-recall';
   eyebrow: string;
   prompt: string;
   formula?: string;
-  choices: Choice[];
-  correctChoiceId: string;
   explanation: string;
   coveredPoints: string[];
   missingPoint?: string;
   keywords: string[];
 };
+
+export type SingleChoiceExercise = ExerciseBase & {
+  type: 'single-choice';
+  choices: Choice[];
+  correctChoiceId: string;
+};
+
+export type MultipleChoiceExercise = ExerciseBase & {
+  type: 'multiple-choice';
+  choices: Choice[];
+  correctChoiceIds: string[];
+};
+
+export type OrderingExercise = ExerciseBase & {
+  type: 'ordering';
+  choices: Choice[];
+  correctOrder: string[];
+};
+
+export type SelfRecallExercise = ExerciseBase & {
+  type: 'self-recall';
+  referencePoints: string[];
+};
+
+export type Exercise = SingleChoiceExercise | MultipleChoiceExercise | OrderingExercise | SelfRecallExercise;
 
 export type Lesson = {
   id: string;
@@ -32,6 +56,24 @@ export type Lesson = {
   icon: string;
   duration: number;
   exercises: Exercise[];
+};
+
+export type CourseUnit = {
+  id: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  color: string;
+  darkColor: string;
+  softColor: string;
+  lessons: Lesson[];
+};
+
+export type CourseSection = {
+  id: string;
+  title: string;
+  subtitle: string;
+  units: CourseUnit[];
 };
 
 export type KnowledgeDomainId =
@@ -70,6 +112,9 @@ export type KnowledgeCard = {
   keyPoints: string[];
   followUps: string[];
   sources: KnowledgeSource[];
+  misconceptions?: string[];
+  relatedIds?: string[];
+  comparison?: Array<{ label: string; value: string }>;
 };
 
 export type ReviewSource = 'lesson' | 'knowledge' | 'project';
