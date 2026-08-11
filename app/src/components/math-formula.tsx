@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-na
 
 import { colors } from '@/theme/colors';
 import type { MathExpression } from '@/types/course';
+import { injectCenteredMathLayout } from '@/components/math-formula-layout';
 
 export type MathFormulaProps = {
   expression: MathExpression;
@@ -15,6 +16,7 @@ export type MathFormulaProps = {
 
 export function MathFormula({ expression, color = colors.text, compact = false, fontSize = 17, style }: MathFormulaProps) {
   const [failed, setFailed] = useState(false);
+  const minHeight = compact ? 38 : 54;
   const html = useMemo(() => {
     const document = createKaTeXHTML(
       `$$${expression.latex}$$`,
@@ -22,11 +24,8 @@ export function MathFormula({ expression, color = colors.text, compact = false, 
       { color, 'font-size': `${fontSize}px`, 'line-height': compact ? '1.35' : '1.6' },
     );
 
-    return document
-      .replace('flex-wrap: wrap !important;', 'flex-wrap: nowrap !important;')
-      .replace('overflow-wrap: break-word !important;', 'overflow-wrap: normal !important;')
-      .replace('white-space: normal !important;', 'white-space: nowrap !important;');
-  }, [color, compact, expression.latex, fontSize]);
+    return injectCenteredMathLayout(document, minHeight);
+  }, [color, compact, expression.latex, fontSize, minHeight]);
 
   if (failed) {
     return (
@@ -40,9 +39,12 @@ export function MathFormula({ expression, color = colors.text, compact = false, 
     <View accessible accessibilityLabel={`公式：${expression.plainText}`} style={[styles.container, style]}>
       <KaTeXAutoHeightWebView
         source={html}
-        minHeight={compact ? 38 : 54}
+        minHeight={minHeight}
         containerStyle={{ width: '100%', backgroundColor: 'transparent' }}
+        automaticallyAdjustContentInsets={false}
         bounces={false}
+        contentInset={{ top: 0, right: 0, bottom: 0, left: 0 }}
+        contentInsetAdjustmentBehavior="never"
         javaScriptCanOpenWindowsAutomatically={false}
         onError={() => setFailed(true)}
         onHttpError={() => setFailed(true)}
@@ -54,7 +56,7 @@ export function MathFormula({ expression, color = colors.text, compact = false, 
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', overflow: 'hidden' },
+  container: { width: '100%', alignSelf: 'stretch', overflow: 'hidden' },
   fallback: { minHeight: 42, alignItems: 'center', justifyContent: 'center' },
   fallbackText: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
 });

@@ -33,11 +33,17 @@ export function MathFormula({ expression, color = colors.text, compact = false, 
   const formulaElement = createElement('div', {
     dangerouslySetInnerHTML: { __html: result.html },
     style: {
+      alignItems: 'center',
+      boxSizing: 'border-box',
       color,
+      display: 'flex',
       fontSize,
+      justifyContent: 'center',
       lineHeight: compact ? 1.35 : 1.6,
-      minWidth: 'max-content',
+      minHeight: compact ? 38 : 54,
+      minWidth: '100%',
       padding: compact ? '3px 5px' : '7px 8px',
+      width: 'max-content',
     },
   });
 
@@ -52,7 +58,7 @@ export function MathFormula({ expression, color = colors.text, compact = false, 
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', overflowX: 'auto' },
+  container: { width: '100%', alignSelf: 'stretch', overflowX: 'auto', overflowY: 'hidden' },
   compact: { minHeight: 38 },
   fallback: { minHeight: 42, alignItems: 'center', justifyContent: 'center' },
   fallbackText: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },

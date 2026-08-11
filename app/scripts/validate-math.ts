@@ -7,6 +7,7 @@ import { knowledgeCards } from '../src/data/knowledge-base';
 import { getFormulaCatalogEntries } from '../src/data/math-expression';
 import { keywords, transformerNodes } from '../src/data/transformer';
 import type { MathExpression } from '../src/types/course';
+import { centeredMathLayoutCss, injectCenteredMathLayout } from '../src/components/math-formula-layout';
 
 const failures: string[] = [];
 const catalog = getFormulaCatalogEntries();
@@ -67,6 +68,29 @@ uiFiles.forEach((path) => {
 const nativeRenderer = readFileSync(join(process.cwd(), 'src', 'components', 'math-formula.tsx'), 'utf8');
 if (/https?:\/\/|cdn\.|unpkg|jsdelivr/u.test(nativeRenderer)) failures.push('Native formula renderer must not depend on network resources.');
 if (!nativeRenderer.includes('createKaTeXHTML')) failures.push('Native renderer must use bundled KaTeX HTML.');
+if (!nativeRenderer.includes('automaticallyAdjustContentInsets={false}')) failures.push('Native renderer must disable automatic iOS content insets.');
+if (!nativeRenderer.includes('contentInsetAdjustmentBehavior="never"')) failures.push('Native renderer must disable iOS inset adjustment behavior.');
+
+const centeredLayoutRequirements = [
+  'justify-content: center !important',
+  'width: max-content !important',
+  'min-width: 100% !important',
+  'overflow-x: auto !important',
+  'white-space: nowrap !important',
+  'min-height: var(--bagu-math-min-height) !important',
+  'align-items: center !important',
+];
+centeredLayoutRequirements.forEach((requirement) => {
+  if (!centeredMathLayoutCss.includes(requirement)) failures.push(`Native centered layout is missing: ${requirement}.`);
+});
+const injectedLayout = injectCenteredMathLayout('<html><head></head><body></body></html>', 54);
+if (!injectedLayout.includes('data-bagu-math-layout')) failures.push('Native centered layout was not injected into KaTeX HTML.');
+if (!injectedLayout.includes('--bagu-math-min-height: 54px')) failures.push('Native centered layout must align to the WebView minimum height.');
+
+const webRenderer = readFileSync(join(process.cwd(), 'src', 'components', 'math-formula.web.tsx'), 'utf8');
+['minWidth: \'100%\'', "width: 'max-content'", "justifyContent: 'center'", "display: 'flex'"].forEach((requirement) => {
+  if (!webRenderer.includes(requirement)) failures.push(`Web centered layout is missing: ${requirement}.`);
+});
 
 const htmlRoot = readFileSync(join(process.cwd(), 'src', 'app', '+html.tsx'), 'utf8');
 if (!htmlRoot.includes('/katex/katex.min.css')) failures.push('Web document must load the vendored KaTeX stylesheet.');
