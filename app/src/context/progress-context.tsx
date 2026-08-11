@@ -1,6 +1,6 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-import { transformerLessons } from '@/data/transformer-course';
+import { transformerNodes } from '@/data/transformer-course';
 import { loadProgress, saveProgress } from '@/storage/progress-storage';
 import type { ProjectProfile, ResumeFileMeta, ReviewQueueItem, ReviewSource } from '@/types/course';
 
@@ -15,6 +15,7 @@ type ProgressContextValue = {
   resumeFile: ResumeFileMeta | null;
   projectProfile: ProjectProfile | null;
   soundEnabled: boolean;
+  nodeAttemptCounts: Record<string, number>;
   completeLesson: (lessonId: string, earnedXp: number) => void;
   isUnlocked: (lessonId: string) => boolean;
   toggleFavorite: (knowledgeId: string) => void;
@@ -36,6 +37,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
   const [resumeFile, setResumeFileState] = useState<ResumeFileMeta | null>(null);
   const [projectProfile, setProjectProfile] = useState<ProjectProfile | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [nodeAttemptCounts, setNodeAttemptCounts] = useState<Record<string, number>>({});
   const completedRef = useRef<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -53,6 +55,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
         setResumeFileState(stored.resumeFile ?? null);
         setProjectProfile(stored.projectProfile ?? null);
         setSoundEnabled(stored.soundEnabled ?? true);
+        setNodeAttemptCounts(stored.nodeAttemptCounts ?? {});
       })
       .finally(() => {
         if (active) setHydrated(true);
@@ -64,10 +67,11 @@ export function ProgressProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!hydrated) return;
-    void saveProgress({ completedLessonIds, xp, reviewSchedule, favoriteKnowledgeIds, reviewQueue, resumeFile, projectProfile, soundEnabled });
-  }, [completedLessonIds, favoriteKnowledgeIds, hydrated, projectProfile, resumeFile, reviewQueue, reviewSchedule, soundEnabled, xp]);
+    void saveProgress({ completedLessonIds, nodeAttemptCounts, xp, reviewSchedule, favoriteKnowledgeIds, reviewQueue, resumeFile, projectProfile, soundEnabled });
+  }, [completedLessonIds, favoriteKnowledgeIds, hydrated, nodeAttemptCounts, projectProfile, resumeFile, reviewQueue, reviewSchedule, soundEnabled, xp]);
 
   const completeLesson = useCallback((lessonId: string, earnedXp: number) => {
+    setNodeAttemptCounts((current) => ({ ...current, [lessonId]: (current[lessonId] ?? 0) + 1 }));
     if (completedRef.current.includes(lessonId)) return;
     const nextCompleted = [...completedRef.current, lessonId];
     completedRef.current = nextCompleted;
@@ -104,9 +108,9 @@ export function ProgressProvider({ children }: PropsWithChildren) {
 
   const isUnlocked = useCallback(
     (lessonId: string) => {
-      const index = transformerLessons.findIndex((lesson) => lesson.id === lessonId);
+      const index = transformerNodes.findIndex((node) => node.id === lessonId);
       if (index <= 0) return true;
-      return completedLessonIds.includes(transformerLessons[index - 1].id);
+      return completedLessonIds.includes(transformerNodes[index - 1].id);
     },
     [completedLessonIds],
   );
@@ -123,6 +127,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
       resumeFile,
       projectProfile,
       soundEnabled,
+      nodeAttemptCounts,
       completeLesson,
       isUnlocked,
       toggleFavorite,
@@ -132,7 +137,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
       saveProjectProfile: setProjectProfile,
       setSoundEnabled,
     }),
-    [addToReview, completeLesson, completedLessonIds, favoriteKnowledgeIds, isUnlocked, projectProfile, removeFromReview, resumeFile, reviewQueue, reviewSchedule, soundEnabled, toggleFavorite, xp],
+    [addToReview, completeLesson, completedLessonIds, favoriteKnowledgeIds, isUnlocked, nodeAttemptCounts, projectProfile, removeFromReview, resumeFile, reviewQueue, reviewSchedule, soundEnabled, toggleFavorite, xp],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;

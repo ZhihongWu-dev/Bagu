@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
-import { transformerLessons } from '@/data/transformer-course';
+import { transformerNodes } from '@/data/transformer-course';
 import { useCompletionSound } from '@/hooks/use-feedback-sounds';
 import { colors } from '@/theme/colors';
 
@@ -14,21 +14,24 @@ export default function CompleteScreen() {
   const { completeLesson } = useProgress();
   const playComplete = useCompletionSound();
   const playedSound = useRef(false);
-  const lesson = useMemo(() => transformerLessons.find((item) => item.id === id), [id]);
+  const recordedCompletion = useRef(false);
+  const node = useMemo(() => transformerNodes.find((item) => item.id === id), [id]);
   const questionTotal = Math.max(1, Number(total) || 1);
   const answeredCorrectly = correctCount === undefined ? (correct === 'true' ? 1 : 0) : Math.min(questionTotal, Number(correctCount) || 0);
   const scorePercent = Math.round((answeredCorrectly / questionTotal) * 100);
   const earnedXp = Math.max(5, answeredCorrectly * 5);
 
   useEffect(() => {
-    if (lesson) completeLesson(lesson.id, earnedXp);
-  }, [completeLesson, earnedXp, lesson]);
+    if (!node || recordedCompletion.current) return;
+    recordedCompletion.current = true;
+    completeLesson(node.id, earnedXp);
+  }, [completeLesson, earnedXp, node]);
 
   useEffect(() => {
-    if (!lesson || playedSound.current) return;
+    if (!node || playedSound.current) return;
     playedSound.current = true;
     playComplete();
-  }, [lesson, playComplete]);
+  }, [node, playComplete]);
 
   return (
     <ScreenShell>
@@ -36,7 +39,7 @@ export default function CompleteScreen() {
         <View style={styles.content}>
           <View style={styles.burst}><Text style={styles.burstText}>✓</Text></View>
           <Text style={styles.kicker}>课程完成</Text>
-          <Text style={styles.title}>{lesson?.shortTitle ?? 'Transformer 基础'}</Text>
+          <Text style={styles.title}>{node?.shortTitle ?? 'Transformer 基础'}</Text>
           <Text style={styles.subtitle}>本关 {questionTotal} 题已完成，下一节点已经解锁。</Text>
           <View style={styles.statsCard}>
             <View style={styles.stat}><Text style={styles.statValue}>+{earnedXp}</Text><Text style={styles.statLabel}>经验值</Text></View>

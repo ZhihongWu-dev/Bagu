@@ -1,6 +1,7 @@
 import type { KnowledgeCard, KnowledgeDomain } from '@/types/course';
 
 import { expandedKnowledgeCards } from '@/data/knowledge-expansion';
+import { transformerKnowledgeCards } from '@/data/transformer-knowledge';
 
 export const knowledgeDomains: KnowledgeDomain[] = [
   { id: 'transformer', label: 'Transformer', shortLabel: 'Transformer', icon: 'T', color: '#6C52E5', softColor: '#EEE9FF' },
@@ -170,7 +171,7 @@ const baseKnowledgeCards: KnowledgeCard[] = [
   },
 ];
 
-export const knowledgeCards: KnowledgeCard[] = [...baseKnowledgeCards, ...expandedKnowledgeCards];
+export const knowledgeCards: KnowledgeCard[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards];
 
 export const knowledgeById = Object.fromEntries(knowledgeCards.map((card) => [card.id, card])) as Record<string, KnowledgeCard>;
 export const domainById = Object.fromEntries(knowledgeDomains.map((domain) => [domain.id, domain])) as Record<string, KnowledgeDomain>;

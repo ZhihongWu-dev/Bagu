@@ -6,7 +6,7 @@ import { AlignedSwitch } from '@/components/aligned-switch';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
-import { transformerLessons } from '@/data/transformer-course';
+import { transformerNodes } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 
 export default function ProfileScreen() {
@@ -74,7 +74,7 @@ export default function ProfileScreen() {
               const domainCards = knowledgeCards.filter((card) => card.domainId === domain.id);
               const touched = domainCards.filter((card) => favoriteKnowledgeIds.includes(card.id) || reviewQueue.some((item) => item.targetId === card.id)).length;
               const transformerBonus = domain.id === 'transformer' ? completedLessonIds.length : 0;
-              const total = domainCards.length + (domain.id === 'transformer' ? transformerLessons.length : 0);
+              const total = domainCards.length + (domain.id === 'transformer' ? transformerNodes.length : 0);
               const percent = Math.min(100, Math.round(((touched + transformerBonus) / total) * 100));
 
               return (

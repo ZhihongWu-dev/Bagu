@@ -1,0 +1,71 @@
+import { buildNode, type NodeBlueprint } from './build-node';
+import type { CourseSection } from '@/types/course';
+
+const blueprints: NodeBlueprint[] = [
+  {
+    id: 'encoder-only', title: 'Encoder-only 与双向表示', shortTitle: 'Encoder-only', subtitle: '理解 BERT 类架构', icon: 'E',
+    knowledgeIds: ['encoder-only'],
+    core: 'Encoder-only 使用双向 Self-Attention 构造整段上下文化表示，常用于理解、分类与抽取任务。',
+    facts: ['每个 token 可读取左右两侧上下文', '输出通常保留每个位置的表示', '预训练可采用 MLM 等去噪目标'],
+    traps: ['Encoder-only 必须逐 token 自回归生成', '双向注意力意味着无需任何 Mask', 'Encoder 输出只能用于句子分类'],
+    sequence: ['把整段 token 与位置表示输入', '执行双向 Self-Attention', '经多层 Block 得到上下文化表示', '按任务使用序列或 pooled 输出'],
+    interview: ['说明双向可见性', '连接到 MLM 预训练与下游微调', '解释为什么不天然适合左到右开放生成'],
+    scenario: '命名实体识别为何常适合 Encoder-only？', scenarioAnswer: '每个位置都能同时利用左右上下文，并输出与 token 对齐的表示。',
+    boundary: '双向表示适合理解任务，但部署选择仍取决于生成需求、延迟和模型规模。',
+    comparison: 'Encoder-only 双向编码整段输入；Decoder-only 受因果 Mask 约束并预测后续 token。', formula: 'h₁…hₙ=Encoder(x₁…xₙ)',
+  },
+  {
+    id: 'decoder-only', title: 'Decoder-only 与因果语言模型', shortTitle: 'Decoder-only', subtitle: '理解 GPT 类架构', icon: 'D',
+    knowledgeIds: ['decoder-only', 'pretrain-objective'], keywords: ['mask'],
+    core: 'Decoder-only 用 Causal Mask 保证每个位置只看历史，并以 next-token prediction 统一训练和生成。',
+    facts: ['训练时所有位置可在因果约束下并行计算', '推理时必须依赖已生成前缀逐步解码', '同一架构可通过提示适配多种任务'],
+    traps: ['Decoder-only 训练也必须逐 token 串行', 'Causal Mask 允许读取未来标签', '开放生成不需要输出词表 Logit'],
+    sequence: ['构造右移后的输入与标签', '施加 Causal Mask 前向计算', '输出每个位置的词表 Logit', '计算 next-token 交叉熵'],
+    interview: ['区分训练并行与推理串行', '说明因果分解与下一词目标', '补充 KV Cache 如何降低重复计算'],
+    scenario: '为什么 GPT 训练能并行，而生成仍需逐 token？', scenarioAnswer: '训练已知完整真实序列，可同时计算各位置；生成时下一步输入依赖上一步采样结果。',
+    boundary: '训练目标与生成形式一致不代表没有暴露偏差或事实性问题。',
+    comparison: '训练使用真实前缀 Teacher Forcing；推理使用模型自己的历史输出。', formula: 'p(x)=∏ₜp(xₜ|x₍<t₎)',
+  },
+  {
+    id: 'encoder-decoder', title: 'Encoder-Decoder 与条件生成', shortTitle: 'Encoder-Decoder', subtitle: '理解 T5 与翻译架构', icon: '↦',
+    knowledgeIds: ['encoder-decoder'],
+    core: 'Encoder-Decoder 先双向编码源序列，再由因果 Decoder 通过 Cross-Attention 条件生成目标序列。',
+    facts: ['Encoder 处理完整源输入', 'Decoder Self-Attention 使用因果约束', 'Cross-Attention 让 Decoder 查询 Encoder 输出'],
+    traps: ['Encoder 与 Decoder 必须共享所有层参数', 'Cross-Attention 的 Q 来自 Encoder', '目标序列不需要右移'],
+    sequence: ['Encoder 编码源序列', 'Decoder 读取目标前缀', 'Cross-Attention 查询源表示', '预测下一个目标 token'],
+    interview: ['画出三种注意力：Encoder Self、Decoder Self、Cross', '说明 Q 来自 Decoder 而 K/V 来自 Encoder', '连接到翻译、摘要等条件生成任务'],
+    scenario: '翻译中 Cross-Attention 的 Key 和 Value 来自哪里？', scenarioAnswer: '来自 Encoder 对源语言序列的输出表示。',
+    boundary: 'Encoder-Decoder 适合条件生成，但现代 Decoder-only 也可通过拼接提示完成相同任务。',
+    comparison: 'Encoder-Decoder 显式分开源和目标；Decoder-only 常把条件与输出放入同一因果序列。', formula: 'CrossAttn(Q_decoder,K_encoder,V_encoder)',
+  },
+  {
+    id: 'cross-attention', title: 'Cross-Attention 的信息流', shortTitle: 'Cross-Attention', subtitle: '从来源和形状理解条件读取', icon: 'C',
+    knowledgeIds: ['cross-attention'], keywords: ['query'],
+    core: 'Cross-Attention 用当前目标表示作为 Query，用外部条件表示作为 Key/Value，实现跨序列检索与融合。',
+    facts: ['Query 长度决定输出序列长度', 'Key 与 Value 通常共享条件序列长度', '不同模态也可以通过投影后做 Cross-Attention'],
+    traps: ['Cross-Attention 要求两条序列长度完全相同', '输出长度由 Value 长度决定', '它只能用于文本翻译'],
+    sequence: ['分别投影 Query 源与条件源', '计算跨来源 QKᵀ', '沿条件位置归一化', '聚合条件 Value 到 Query 位置'],
+    interview: ['明确 Q 与 K/V 的来源', '用 Lq×Lkv 解释分数形状', '举出翻译和多模态条件生成例子'],
+    scenario: '图像描述模型中，文本 Decoder 如何读取图像特征？', scenarioAnswer: '文本状态提供 Query，视觉编码特征提供 Key 和 Value。',
+    boundary: 'Cross-Attention 能提供条件通道，但效果依赖两种表示空间的投影和对齐训练。',
+    comparison: 'Self-Attention 在同一表示集合内交互；Cross-Attention 在两个来源之间查询。', formula: 'softmax(Q_target K_sourceᵀ/√d)V_source',
+  },
+  {
+    id: 'training-objectives', title: 'MLM、CLM 与 Seq2Seq 目标', shortTitle: '训练目标', subtitle: '从可见性理解模型能力', icon: 'O',
+    knowledgeIds: ['pretrain-objective', 'teacher-forcing'], keywords: ['mask'],
+    core: 'MLM 恢复被遮挡 token，CLM 预测下一 token，Seq2Seq 目标则让 Decoder 在源条件下预测目标序列。',
+    facts: ['MLM 可利用被遮挡位置两侧上下文', 'CLM 遵循左到右因果分解', 'Seq2Seq Decoder 通常使用 Teacher Forcing'],
+    traps: ['MLM 与 Causal Mask 的可见性完全相同', 'CLM 只能用于英文文本', 'Teacher Forcing 会把当前标签直接复制到当前输出'],
+    sequence: ['按目标构造可见性和输入', '模型输出对应位置 Logit', '与真实 token 标签对齐', '计算交叉熵并反向传播'],
+    interview: ['先按可见上下文区分三种目标', '说明训练样本构造与标签对齐', '连接到理解、开放生成和条件生成能力'],
+    scenario: '为什么 BERT 的 MLM 预训练不能直接像 GPT 那样无缝左到右续写？', scenarioAnswer: 'MLM 学的是双向条件恢复，不是严格的自回归概率分解。',
+    boundary: '架构和目标共同塑造能力，不能只凭模型名字推断所有行为。',
+    comparison: 'MLM 看双向上下文恢复缺失；CLM 只看历史预测未来。', formula: 'L_CLM=−Σₜlog p(xₜ|x₍<t₎)',
+  },
+];
+
+export const architectureSection: CourseSection = {
+  id: 'model-architectures', title: 'Section 4 · Encoder、Decoder 与模型架构', shortTitle: '模型架构',
+  description: 'BERT、GPT、T5 与 Cross-Attention', color: '#2777C7', darkColor: '#195B99', softColor: '#EAF4FF',
+  nodes: blueprints.map(buildNode),
+};

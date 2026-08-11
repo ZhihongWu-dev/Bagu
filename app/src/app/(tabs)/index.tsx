@@ -7,12 +7,12 @@ import { LearningStatusBar } from '@/components/learning-status-bar';
 import { ScreenShell } from '@/components/screen-shell';
 import { UnitBanner } from '@/components/unit-banner';
 import { useProgress } from '@/context/progress-context';
-import { transformerLessons, transformerSection } from '@/data/transformer-course';
-import type { Lesson } from '@/types/course';
+import { transformerNodes, transformerUnit } from '@/data/transformer-course';
+import type { LearningNode } from '@/types/course';
 
 export default function LearningScreen() {
   const { completedLessonIds, xp, streak, focus, isUnlocked } = useProgress();
-  const openLesson = (lesson: Lesson) => router.push({ pathname: '/lesson/[id]', params: { id: lesson.id } });
+  const openLesson = (node: LearningNode) => router.push({ pathname: '/lesson/[id]', params: { id: node.id } });
 
   return (
     <ScreenShell>
@@ -22,9 +22,9 @@ export default function LearningScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}>
           <LearningStatusBar streak={streak} xp={xp} focus={focus} />
-          <UnitBanner title={transformerSection.title} subtitle={transformerSection.subtitle} completed={completedLessonIds.length} total={transformerLessons.length} />
+          <UnitBanner title={transformerUnit.title} subtitle={transformerUnit.subtitle} completed={completedLessonIds.length} total={transformerNodes.length} />
           <CoursePath
-            section={transformerSection}
+            unit={transformerUnit}
             completedLessonIds={completedLessonIds}
             isUnlocked={isUnlocked}
             onSelect={openLesson}

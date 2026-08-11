@@ -23,7 +23,7 @@ export default function LibraryScreen() {
       const matchesFilter = filter === 'all'
         || (filter === 'favorite' && favoriteKnowledgeIds.includes(card.id))
         || card.domainId === filter;
-      const haystack = [card.title, card.summary, ...card.aliases].join(' ').toLowerCase();
+      const haystack = [card.title, card.summary, card.answer, ...card.aliases, ...card.keyPoints, ...(card.relatedIds ?? [])].join(' ').toLowerCase();
       return matchesFilter && (!normalized || haystack.includes(normalized));
     });
   }, [favoriteKnowledgeIds, filter, query]);

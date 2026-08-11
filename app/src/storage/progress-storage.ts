@@ -2,6 +2,7 @@ import type { ProjectProfile, ResumeFileMeta, ReviewQueueItem } from '@/types/co
 
 export type PersistedProgress = {
   completedLessonIds: string[];
+  nodeAttemptCounts?: Record<string, number>;
   xp: number;
   reviewSchedule: Record<string, string>;
   favoriteKnowledgeIds?: string[];

@@ -1,19 +1,23 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { KeywordSheet } from '@/components/keyword-sheet';
 import { ScreenShell } from '@/components/screen-shell';
-import { keywords, transformerLessons } from '@/data/transformer-course';
+import { useProgress } from '@/context/progress-context';
+import { keywords, transformerNodes } from '@/data/transformer-course';
 import { useAnswerSounds } from '@/hooks/use-feedback-sounds';
 import { colors } from '@/theme/colors';
-import type { Choice, Exercise, KnowledgeKeyword } from '@/types/course';
+import type { Choice, KnowledgeKeyword } from '@/types/course';
 import { isExerciseAnswerCorrect, isExerciseReady } from '@/utils/exercise';
+import { appendWrongReview, buildPracticeSession, getPracticeProgress } from '@/utils/practice-session';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const lesson = useMemo(() => transformerLessons.find((item) => item.id === id), [id]);
+  const node = useMemo(() => transformerNodes.find((item) => item.id === id), [id]);
+  const { nodeAttemptCounts } = useProgress();
+  const [session, setSession] = useState(() => node ? buildPracticeSession(node, nodeAttemptCounts[node.id] ?? 0) : []);
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
@@ -21,9 +25,18 @@ export default function LessonScreen() {
   const [correctCount, setCorrectCount] = useState(0);
   const [activeKeyword, setActiveKeyword] = useState<KnowledgeKeyword | null>(null);
   const { playCorrect, playWrong } = useAnswerSounds();
-  const exercise = lesson?.exercises[exerciseIndex];
+  const currentItem = session[exerciseIndex];
+  const exercise = currentItem?.exercise;
+  const progressAnimation = useRef(new Animated.Value(0)).current;
 
-  if (!lesson || !exercise) {
+  const completedCount = exercise ? exerciseIndex + (submitted ? 1 : 0) : 0;
+  const progressRatio = getPracticeProgress(completedCount, session.length);
+
+  useEffect(() => {
+    Animated.timing(progressAnimation, { toValue: progressRatio, duration: 240, useNativeDriver: false }).start();
+  }, [progressAnimation, progressRatio]);
+
+  if (!node || !exercise || !currentItem) {
     return (
       <ScreenShell>
         <SafeAreaView style={styles.centered}>
@@ -34,11 +47,10 @@ export default function LessonScreen() {
     );
   }
 
-  const total = lesson.exercises.length;
+  const total = session.length;
   const isLast = exerciseIndex === total - 1;
   const isCorrect = isExerciseAnswerCorrect(exercise, selectedIds, orderedIds);
   const ready = isExerciseReady(exercise, selectedIds, orderedIds);
-  const progress = `${((exerciseIndex + (submitted ? 1 : 0)) / total) * 100}%` as `${number}%`;
 
   const toggleChoice = (choiceId: string) => {
     if (exercise.type === 'single-choice') setSelectedIds([choiceId]);
@@ -52,12 +64,15 @@ export default function LessonScreen() {
       if (isCorrect) {
         setCorrectCount((count) => count + 1);
         playCorrect();
-      } else playWrong();
+      } else {
+        setSession((current) => appendWrongReview(current, currentItem));
+        playWrong();
+      }
       return;
     }
 
     if (isLast) {
-      router.replace({ pathname: '/complete/[id]', params: { id: lesson.id, correctCount: String(correctCount), total: String(total) } });
+      router.replace({ pathname: '/complete/[id]', params: { id: node.id, correctCount: String(correctCount), total: String(total) } });
       return;
     }
 
@@ -72,12 +87,14 @@ export default function LessonScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={styles.header}>
           <Pressable accessibilityLabel="退出课程" onPress={() => router.back()} hitSlop={12}><Text style={styles.close}>×</Text></Pressable>
-          <View style={styles.progressTrack}><View style={[styles.progressFill, { width: progress }]} /></View>
+          <View style={styles.progressTrack}>
+            <Animated.View style={[styles.progressFill, { width: progressAnimation.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }]} />
+          </View>
           <Text style={styles.counter}>{exerciseIndex + 1}/{total}</Text>
         </View>
 
         <ScrollView contentContainerStyle={[styles.content, submitted && styles.contentWithFeedback]} showsVerticalScrollIndicator={false}>
-          <Text style={styles.eyebrow}>{exercise.eyebrow}</Text>
+          <Text style={styles.eyebrow}>{currentItem.isReview ? '错题复练 · 再答一次' : exercise.eyebrow}</Text>
           <Text style={styles.title}>{exercise.prompt}</Text>
           {exercise.formula ? <Text style={styles.formula}>{exercise.formula}</Text> : null}
 

@@ -48,7 +48,7 @@ export type SelfRecallExercise = ExerciseBase & {
 
 export type Exercise = SingleChoiceExercise | MultipleChoiceExercise | OrderingExercise | SelfRecallExercise;
 
-export type Lesson = {
+export type LearningNode = {
   id: string;
   title: string;
   shortTitle: string;
@@ -56,9 +56,10 @@ export type Lesson = {
   icon: string;
   duration: number;
   exercises: Exercise[];
+  knowledgeIds: string[];
 };
 
-export type CourseUnit = {
+export type CourseSection = {
   id: string;
   title: string;
   shortTitle: string;
@@ -66,14 +67,15 @@ export type CourseUnit = {
   color: string;
   darkColor: string;
   softColor: string;
-  lessons: Lesson[];
+  nodes: LearningNode[];
 };
 
-export type CourseSection = {
+export type CourseUnit = {
   id: string;
   title: string;
   subtitle: string;
-  units: CourseUnit[];
+  description: string;
+  sections: CourseSection[];
 };
 
 export type KnowledgeDomainId =
@@ -114,7 +116,7 @@ export type KnowledgeCard = {
   sources: KnowledgeSource[];
   misconceptions?: string[];
   relatedIds?: string[];
-  comparison?: Array<{ label: string; value: string }>;
+  comparison?: { label: string; value: string }[];
 };
 
 export type ReviewSource = 'lesson' | 'knowledge' | 'project';

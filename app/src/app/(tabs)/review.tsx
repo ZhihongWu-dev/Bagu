@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { domainById, knowledgeById } from '@/data/knowledge-base';
-import { transformerLessons } from '@/data/transformer-course';
+import { transformerNodes } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 import type { ReviewSource } from '@/types/course';
 
@@ -65,12 +65,12 @@ export default function ReviewScreen() {
           ) : (
             <View style={styles.list}>
               {items.map((item) => {
-                const lesson = item.source === 'lesson' ? transformerLessons.find((entry) => entry.id === item.targetId) : null;
+                const node = item.source === 'lesson' ? transformerNodes.find((entry) => entry.id === item.targetId) : null;
                 const card = item.source === 'knowledge' ? knowledgeById[item.targetId] : null;
                 const domain = card ? domainById[card.domainId] : null;
-                const title = lesson?.shortTitle ?? card?.title ?? projectProfile?.name ?? '项目深挖';
+                const title = node?.shortTitle ?? card?.title ?? projectProfile?.name ?? '项目深挖';
                 const sourceLabel = item.source === 'lesson' ? '课程节点' : item.source === 'knowledge' ? '通用知识' : '简历项目';
-                const icon = lesson?.icon ?? domain?.icon ?? 'P';
+                const icon = node?.icon ?? domain?.icon ?? 'P';
                 const color = domain?.color ?? (item.source === 'project' ? colors.success : colors.primary);
                 const softColor = domain?.softColor ?? (item.source === 'project' ? colors.successSoft : colors.primarySoft);
                 return (

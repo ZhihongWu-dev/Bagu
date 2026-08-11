@@ -1,0 +1,71 @@
+import { buildNode, type NodeBlueprint } from './build-node';
+import type { CourseSection } from '@/types/course';
+
+const blueprints: NodeBlueprint[] = [
+  {
+    id: 'absolute-position', title: '绝对位置与正弦编码', shortTitle: '绝对位置', subtitle: '给无序注意力注入顺序', icon: 'P',
+    knowledgeIds: ['position-encoding'],
+    core: '纯 Self-Attention 对输入排列等变，需要显式位置表示才能区分 token 的先后与距离。',
+    facts: ['位置向量可与 token embedding 相加', '正弦编码使用多频率 sin/cos', '可学习位置编码受训练长度表大小限制'],
+    traps: ['Attention 内积天然知道绝对顺序', '正弦编码需要为每个位置训练独立参数', '加入位置后模型必然能无限长度外推'],
+    sequence: ['取得 token embedding', '按索引生成或查找位置向量', '将两种表示组合', '送入 Transformer Block'],
+    interview: ['先说明排列等变问题', '比较固定正弦与可学习位置表', '补充外推能力不只取决于编码公式'],
+    scenario: '把一句话的 token 顺序整体打乱，同时不提供位置编码，Self-Attention 会怎样响应？', scenarioAnswer: '输出会随输入做对应重排，但模型缺少区分原顺序和新顺序的结构信号。',
+    boundary: '有位置编码只提供位置信号，不保证模型学会使用远距离依赖。',
+    comparison: '固定正弦无需位置参数；可学习位置表能适配数据但通常受训练长度约束。', formula: 'PE(pos,2i)=sin(pos/10000^(2i/d))',
+  },
+  {
+    id: 'rope', title: 'RoPE 旋转位置编码', shortTitle: 'RoPE', subtitle: '让 QK 内积携带相对位移', icon: 'R',
+    knowledgeIds: ['rope-context'], keywords: ['rope'],
+    core: 'RoPE 按位置旋转 Q 和 K 的二维通道，使二者内积自然依赖相对位置差。',
+    facts: ['RoPE 通常作用于 Q 和 K 而非 V', '不同维度对使用不同旋转频率', '相对位移通过旋转矩阵组合进入内积'],
+    traps: ['RoPE 把位置向量直接加到 Value', 'RoPE 完全消除上下文长度限制', '所有通道都使用同一个旋转角速度'],
+    sequence: ['由隐藏状态投影得到 Q/K', '把通道按二维对分组', '按 token 位置施加不同角度旋转', '用旋转后的 Q/K 计算内积'],
+    interview: ['说明旋转而非加法', '用 R(m)ᵀR(n)=R(n−m) 解释相对性', '讨论频率外推与上下文扩展方法'],
+    scenario: '为什么 RoPE 通常不需要对 Value 做同样旋转？', scenarioAnswer: '位置关系用于 Q/K 匹配分数，Value 负责承载被聚合内容。',
+    boundary: '原始 RoPE 超出训练长度时仍可能退化，常需频率缩放或继续训练。',
+    comparison: '绝对位置直接标记索引；RoPE 把相对位移编码进 QK 相似度。', formula: '(R(m)q)ᵀ(R(n)k)=qᵀR(n−m)k',
+  },
+  {
+    id: 'alibi', title: 'ALiBi 线性位置偏置', shortTitle: 'ALiBi', subtitle: '直接修改注意力分数', icon: 'A',
+    knowledgeIds: ['alibi'],
+    core: 'ALiBi 不生成位置 embedding，而是在注意力 Logit 上加入与距离成比例的负偏置。',
+    facts: ['不同注意力头可使用不同斜率', '距离越远通常惩罚越大', '偏置在 Softmax 前加入分数'],
+    traps: ['ALiBi 必须旋转 Q 和 K', 'ALiBi 给每个位置学习独立向量', '线性偏置使计算复杂度自动变为 O(n)'],
+    sequence: ['计算缩放 QKᵀ', '得到 Query-Key 的相对距离', '按头斜率生成线性偏置', '加到分数后执行 Softmax'],
+    interview: ['说明它修改 Logit 而非 embedding', '解释距离惩罚和每头不同尺度', '与 RoPE 的旋转机制及外推表现对比'],
+    scenario: '某个 Key 离 Query 更远，ALiBi 通常怎样影响它的 Logit？', scenarioAnswer: '加入更大的负偏置，使该位置在其他条件相同时权重更低。',
+    boundary: '距离偏置是归纳偏置，不保证远距离信息一定被忽略或近距离一定更重要。',
+    comparison: 'RoPE 旋转 Q/K；ALiBi 直接给注意力分数加入线性距离偏置。', formula: 'scoreᵢⱼ=qᵢkⱼ/√d−m_h·|i−j|',
+  },
+  {
+    id: 'context-extension', title: '上下文长度外推', shortTitle: '长度外推', subtitle: '训练长度之外为何会失效', icon: 'L',
+    knowledgeIds: ['context-extension'], keywords: ['rope'],
+    core: '扩展上下文不仅要改最大长度，还要处理位置分布外推、注意力成本和训练数据长度分布。',
+    facts: ['RoPE 缩放会改变位置频率映射', '短序列训练不足以保证长距离利用能力', '长度增加会放大显存与计算压力'],
+    traps: ['只改配置里的 max_length 就能稳定外推', '困惑度正常就证明模型会利用任意远信息', '长度外推只与 tokenizer 有关'],
+    sequence: ['确定目标长度与原训练长度', '选择位置频率缩放方案', '使用长序列数据继续训练或校准', '用长程检索和生成任务验证'],
+    interview: ['区分“能输入”与“能有效使用”', '说明位置编码与训练分布双重问题', '补充计算、KV Cache 和评测代价'],
+    scenario: '模型能接受 128K token，但 Needle-in-a-Haystack 表现很差，说明什么？', scenarioAnswer: '接口长度扩展成功，但模型未必能稳定检索和利用远距离信息。',
+    boundary: '单一长文本困惑度或合成检索指标都不足以代表全部长上下文能力。',
+    comparison: '上下文窗口是可输入上限；有效上下文是模型实际可利用的信息范围。', formula: 'position frequency: θᵢ=base^(−2i/d)',
+  },
+  {
+    id: 'long-context-cost', title: '长上下文的计算与显存', shortTitle: '长序列成本', subtitle: '理解 O(n²) 与 KV 占用', icon: '²',
+    knowledgeIds: ['attention-complexity', 'kv-cache'], keywords: ['cache'],
+    core: '全注意力训练的分数矩阵随序列长度平方增长，而自回归推理的 KV Cache 容量随历史长度线性增长。',
+    facts: ['训练全注意力要处理 n×n 交互', 'Decode 单步读取的历史 KV 随 n 增长', 'Prefill 和 Decode 的硬件瓶颈不同'],
+    traps: ['KV Cache 容量随序列长度平方增长', 'FlashAttention 从数学上删除了所有 n² 计算', '长上下文只增加磁盘占用'],
+    sequence: ['确定 batch、层数、KV 头数和头维', '估算每层每 token 的 K/V 元素', '乘序列长度和数据精度', '再评估注意力计算与临时激活'],
+    interview: ['分别分析训练、Prefill 和 Decode', '区分算术复杂度与 IO/显存占用', '给出 KV Cache 容量的参数依赖'],
+    scenario: '上下文长度翻倍，标准全注意力分数计算量大约如何变化？', scenarioAnswer: '其他维度不变时，主要 n×n 分数计算约变为四倍。',
+    boundary: '实际速度还受内核、带宽、批处理和稀疏/分块策略影响，复杂度不是完整延迟模型。',
+    comparison: '全注意力训练主要受 n² 交互影响；Decode 常受线性增长的 KV 读取带宽影响。', formula: 'Attention compute≈O(n²d), KV size≈O(L·n·Hkv·Dh)',
+  },
+];
+
+export const positionSection: CourseSection = {
+  id: 'position-and-context', title: 'Section 3 · 位置编码与长上下文', shortTitle: '位置与长上下文',
+  description: '绝对位置、RoPE、ALiBi 与长度外推', color: '#D68100', darkColor: '#A86500', softColor: '#FFF0C6',
+  nodes: blueprints.map(buildNode),
+};

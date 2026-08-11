@@ -16,7 +16,6 @@ type TopicInput = {
 };
 
 const paper = (title: string, url: string): KnowledgeSource => ({ title, url, kind: 'paper' });
-const docs = (title: string, url: string): KnowledgeSource => ({ title, url, kind: 'docs' });
 
 const topic = (input: TopicInput): KnowledgeCard => ({
   id: input.id,
