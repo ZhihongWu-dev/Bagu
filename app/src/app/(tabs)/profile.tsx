@@ -3,11 +3,13 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AlignedSwitch } from '@/components/aligned-switch';
+import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
 import { transformerNodes } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
+import type { AppIconName } from '@/types/icons';
 
 export default function ProfileScreen() {
   const {
@@ -28,17 +30,17 @@ export default function ProfileScreen() {
         <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>我的</Text>
-            <View accessibilityLabel="Bagu 用户头像" style={styles.avatar}><Text style={styles.avatarText}>B</Text></View>
+            <View accessibilityLabel="Bagu 用户头像" style={styles.avatar}><AppIcon name="user" size={23} color={colors.surface} /></View>
           </View>
 
           <View style={styles.stats}>
-            <Stat accessibilityLabel={`连续学习 ${streak} 天`} value={String(streak)} icon="🔥" />
-            <Stat accessibilityLabel={`${xp} 经验值`} value={String(xp)} icon="◆" />
-            <Stat accessibilityLabel={`${favoriteKnowledgeIds.length} 个收藏`} value={String(favoriteKnowledgeIds.length)} icon="★" />
+            <Stat accessibilityLabel={`连续学习 ${streak} 天`} value={String(streak)} icon="flame" color={colors.currentDark} />
+            <Stat accessibilityLabel={`${xp} 经验值`} value={String(xp)} icon="gem" color={colors.primary} />
+            <Stat accessibilityLabel={`${favoriteKnowledgeIds.length} 个收藏`} value={String(favoriteKnowledgeIds.length)} icon="star" color={colors.currentDark} />
           </View>
 
           <View style={styles.soundCard}>
-            <View style={styles.soundIcon}><Text style={styles.soundIconText}>♪</Text></View>
+            <View style={styles.soundIcon}><AppIcon name="volume" size={21} color={colors.primary} /></View>
             <Text style={styles.soundTitle}>音效</Text>
             <AlignedSwitch
               accessibilityLabel="学习音效开关"
@@ -58,12 +60,12 @@ export default function ProfileScreen() {
             accessibilityLabel="打开简历项目档案"
             onPress={() => router.push('/resume')}
             style={({ pressed }) => [styles.resumeCard, pressed && styles.pressed]}>
-            <View style={styles.resumeIcon}><Text style={styles.resumeIconText}>{projectProfile ? '✓' : 'P'}</Text></View>
+            <View style={styles.resumeIcon}><AppIcon name={projectProfile ? 'check' : 'resume'} size={23} color={colors.surface} /></View>
             <View style={styles.resumeCopy}>
               <Text numberOfLines={1} style={styles.resumeTitle}>{projectProfile?.name ?? resumeFile?.name ?? '建立项目档案'}</Text>
               <Text numberOfLines={1} style={styles.resumeMeta}>{projectProfile?.role ?? (resumeFile ? '简历已选择' : '可稍后添加')}</Text>
             </View>
-            <Text style={styles.chevron}>›</Text>
+            <AppIcon name="chevron-right" size={22} color={colors.successDark} />
           </Pressable>
 
           <View style={styles.sectionHeader}>
@@ -80,7 +82,7 @@ export default function ProfileScreen() {
               return (
                 <View key={domain.id} accessibilityLabel={`${domain.shortLabel} 掌握度 ${percent}%`} style={styles.masteryRow}>
                   <View style={[styles.masteryIcon, { backgroundColor: domain.softColor }]}>
-                    <Text style={[styles.masteryIconText, { color: domain.color }]}>{domain.icon}</Text>
+                    <AppIcon name={domain.icon} size={19} color={domain.color} />
                   </View>
                   <View style={styles.masteryCopy}>
                     <View style={styles.masteryLabelRow}>
@@ -101,10 +103,10 @@ export default function ProfileScreen() {
   );
 }
 
-function Stat({ accessibilityLabel, value, icon }: { accessibilityLabel: string; value: string; icon: string }) {
+function Stat({ accessibilityLabel, value, icon, color }: { accessibilityLabel: string; value: string; icon: AppIconName; color: string }) {
   return (
     <View accessible accessibilityLabel={accessibilityLabel} style={styles.stat}>
-      <Text style={styles.statIcon}>{icon}</Text>
+      <AppIcon name={icon} size={19} color={color} />
       <Text style={styles.statValue}>{value}</Text>
     </View>
   );
@@ -116,29 +118,23 @@ const styles = StyleSheet.create({
   header: { minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { color: colors.text, fontSize: 29, fontWeight: '900' },
   avatar: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, borderBottomWidth: 5, borderBottomColor: colors.primaryDark, borderRadius: 16 },
-  avatarText: { color: colors.surface, fontSize: 20, fontWeight: '900' },
   stats: { flexDirection: 'row', gap: 9, marginTop: 16 },
   stat: { minHeight: 58, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 17 },
-  statIcon: { fontSize: 17 },
   statValue: { color: colors.text, fontSize: 17, fontWeight: '900', fontVariant: ['tabular-nums'] },
   soundCard: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 11, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, paddingHorizontal: 13, marginTop: 12 },
   soundIcon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primarySoft, borderRadius: 13 },
-  soundIconText: { color: colors.primary, fontSize: 18, lineHeight: 20, fontWeight: '900', textAlign: 'center' },
   soundTitle: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '900' },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, marginBottom: 10 },
   sectionTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },
   sectionLink: { color: colors.primary, fontSize: 11, fontWeight: '900' },
   resumeCard: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.successSoft, borderBottomWidth: 5, borderBottomColor: '#B8E5D9', borderRadius: 19, padding: 14 },
   resumeIcon: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.success, borderRadius: 14 },
-  resumeIconText: { color: colors.surface, fontSize: 18, fontWeight: '900' },
   resumeCopy: { flex: 1 },
   resumeTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
   resumeMeta: { color: colors.textMuted, fontSize: 10, marginTop: 5 },
-  chevron: { color: colors.successDark, fontSize: 28 },
   masteryCard: { gap: 13, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 20, padding: 15 },
   masteryRow: { flexDirection: 'row', alignItems: 'center', gap: 11 },
   masteryIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center', borderRadius: 11 },
-  masteryIconText: { fontSize: 13, fontWeight: '900' },
   masteryCopy: { flex: 1 },
   masteryLabelRow: { flexDirection: 'row', justifyContent: 'space-between' },
   masteryLabel: { color: colors.text, fontSize: 11, fontWeight: '800' },

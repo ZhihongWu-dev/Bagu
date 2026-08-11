@@ -3,7 +3,7 @@ import type { CourseSection } from '@/types/course';
 
 const blueprints: NodeBlueprint[] = [
   {
-    id: 'prefill-decode', title: 'Prefill 与 Decode', shortTitle: 'Prefill · Decode', subtitle: '区分两种推理阶段', icon: '▶',
+    id: 'prefill-decode', title: 'Prefill 与 Decode', shortTitle: 'Prefill · Decode', subtitle: '区分两种推理阶段', icon: 'play',
     knowledgeIds: ['prefill-decode'], keywords: ['cache'],
     core: 'Prefill 并行处理整段提示并建立 KV Cache；Decode 每步处理少量新 token 并反复读取历史缓存。',
     facts: ['Prefill 通常更偏计算密集', 'Decode 常更受显存带宽限制', 'TTFT 与 TPOT 分别关注两阶段体验'],
@@ -15,7 +15,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Prefill 处理多 token 大矩阵；Decode 处理新 token 并读取越来越长的历史缓存。', formula: 'TTFT≈queue+prefill, TPOT≈decode step latency',
   },
   {
-    id: 'kv-cache', title: 'KV Cache 原理与容量', shortTitle: 'KV Cache', subtitle: '复用历史 Key 与 Value', icon: 'K',
+    id: 'kv-cache', title: 'KV Cache 原理与容量', shortTitle: 'KV Cache', subtitle: '复用历史 Key 与 Value', icon: 'database',
     knowledgeIds: ['kv-cache'], keywords: ['cache'],
     core: '自回归 Decode 缓存每层历史 token 的 K/V，新 token 只计算自己的 Q/K/V，再查询全部历史缓存。',
     facts: ['历史 Query 后续不再需要', '缓存量与层数、长度、KV 头数、头维和精度相关', '缓存减少重复计算但增加显存占用'],
@@ -27,7 +27,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '无缓存会重复投影历史 token；有缓存用显存换取 Decode 计算复用。', formula: 'bytes≈2·L·N·Hkv·Dh·bytes_per_element',
   },
   {
-    id: 'mqa-gqa', title: 'MHA、MQA 与 GQA', shortTitle: 'MHA · GQA · MQA', subtitle: '用共享 KV 降低推理带宽', icon: 'G',
+    id: 'mqa-gqa', title: 'MHA、MQA 与 GQA', shortTitle: 'MHA · GQA · MQA', subtitle: '用共享 KV 降低推理带宽', icon: 'branch',
     knowledgeIds: ['mqa-gqa'], keywords: ['head', 'cache'],
     core: 'MQA 让所有 Query 头共享一组 K/V，GQA 让若干 Query 头共享一组 K/V，在质量和缓存成本间折中。',
     facts: ['MHA 的 KV 头数通常等于 Query 头数', 'GQA 的 KV 头数介于 MHA 与 MQA 之间', '减少 KV 头可降低 Cache 和 Decode 带宽'],
@@ -39,7 +39,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'MHA 不共享 KV；GQA 分组共享；MQA 所有 Query 头共享一组 KV。', formula: 'Hq≥Hkv, group_size=Hq/Hkv',
   },
   {
-    id: 'flash-attention', title: 'FlashAttention 与 IO 优化', shortTitle: 'FlashAttention', subtitle: '精确注意力为何更快', icon: '⚡',
+    id: 'flash-attention', title: 'FlashAttention 与 IO 优化', shortTitle: 'FlashAttention', subtitle: '精确注意力为何更快', icon: 'bolt',
     knowledgeIds: ['flash-attention'], keywords: ['flash'],
     core: 'FlashAttention 通过分块和在线 Softmax 减少 HBM 读写，不显式保存完整注意力矩阵，同时保持精确结果。',
     facts: ['核心收益来自 IO-aware 计算', '分块让数据更多停留在片上 SRAM', '反向可用重计算减少激活存储'],
@@ -51,7 +51,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '标准实现物化 n×n 中间矩阵；FlashAttention 分块在线计算并减少 HBM 往返。', formula: 'exact Attention with tiled online softmax',
   },
   {
-    id: 'inference-quantization-batching', title: '量化、批处理与吞吐延迟', shortTitle: '推理系统取舍', subtitle: '从模型算法走向服务系统', icon: '∞',
+    id: 'inference-quantization-batching', title: '量化、批处理与吞吐延迟', shortTitle: '推理系统取舍', subtitle: '从模型算法走向服务系统', icon: 'gauge',
     knowledgeIds: ['inference-batching', 'quantization'],
     core: '高效推理需要联合权重/缓存精度、动态批处理和请求调度，在吞吐、延迟、显存与质量间取舍。',
     facts: ['权重量化主要减少模型存储和读取带宽', '连续批处理可在请求完成后及时插入新请求', '更大 batch 常提高吞吐但可能增加排队延迟'],

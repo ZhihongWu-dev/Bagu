@@ -1,15 +1,16 @@
 import type { KnowledgeCard, KnowledgeDomain } from '@/types/course';
 
+import { knowledgeConceptTitles } from '@/data/knowledge-concept-titles';
 import { expandedKnowledgeCards } from '@/data/knowledge-expansion';
 import { transformerKnowledgeCards } from '@/data/transformer-knowledge';
 
 export const knowledgeDomains: KnowledgeDomain[] = [
-  { id: 'transformer', label: 'Transformer', shortLabel: 'Transformer', icon: 'T', color: '#6C52E5', softColor: '#EEE9FF' },
-  { id: 'llm', label: '大模型与 NLP', shortLabel: 'LLM / NLP', icon: 'L', color: '#1F9D7A', softColor: '#E7FAF4' },
-  { id: 'finetuning', label: '微调与对齐', shortLabel: '微调', icon: 'F', color: '#D68100', softColor: '#FFF0C6' },
-  { id: 'loss', label: '损失函数', shortLabel: 'Loss', icon: '∑', color: '#D84E6B', softColor: '#FFF0F3' },
-  { id: 'deep-learning', label: '深度学习基础', shortLabel: '深度学习', icon: 'D', color: '#2777C7', softColor: '#EAF4FF' },
-  { id: 'reinforcement-learning', label: '强化学习', shortLabel: 'RL', icon: 'R', color: '#8A55B5', softColor: '#F4EAFE' },
+  { id: 'transformer', label: 'Transformer', shortLabel: 'Transformer', icon: 'network', color: '#6C52E5', softColor: '#EEE9FF' },
+  { id: 'llm', label: '大模型与 NLP', shortLabel: 'LLM / NLP', icon: 'message', color: '#1F9D7A', softColor: '#E7FAF4' },
+  { id: 'finetuning', label: '微调与对齐', shortLabel: '微调', icon: 'tune', color: '#D68100', softColor: '#FFF0C6' },
+  { id: 'loss', label: '损失函数', shortLabel: 'Loss', icon: 'chart', color: '#D84E6B', softColor: '#FFF0F3' },
+  { id: 'deep-learning', label: '深度学习基础', shortLabel: '深度学习', icon: 'layers', color: '#2777C7', softColor: '#EAF4FF' },
+  { id: 'reinforcement-learning', label: '强化学习', shortLabel: 'RL', icon: 'target', color: '#8A55B5', softColor: '#F4EAFE' },
 ];
 
 const paper = (title: string, url: string) => ({ title, url, kind: 'paper' as const });
@@ -171,7 +172,13 @@ const baseKnowledgeCards: KnowledgeCard[] = [
   },
 ];
 
-export const knowledgeCards: KnowledgeCard[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards];
+const sourceKnowledgeCards: KnowledgeCard[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards];
+
+export const knowledgeCards: KnowledgeCard[] = sourceKnowledgeCards.map((card) => ({
+  ...card,
+  interviewQuestion: card.interviewQuestion ?? card.title,
+  title: knowledgeConceptTitles[card.id] ?? card.title,
+}));
 
 export const knowledgeById = Object.fromEntries(knowledgeCards.map((card) => [card.id, card])) as Record<string, KnowledgeCard>;
 export const domainById = Object.fromEntries(knowledgeDomains.map((domain) => [domain.id, domain])) as Record<string, KnowledgeDomain>;

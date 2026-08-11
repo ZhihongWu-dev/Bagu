@@ -22,7 +22,6 @@ export function CoursePath({ unit, completedLessonIds, isUnlocked, onSelect }: P
           <View key={section.id} style={styles.unit}>
             <UnitBanner compact title={section.title} subtitle={section.description} completed={completedInSection} total={section.nodes.length} color={section.color} darkColor={section.darkColor} />
             <View style={styles.path}>
-              <View style={[styles.guide, { backgroundColor: section.softColor }]} />
               {section.nodes.map((node, index) => {
                 const completed = completedLessonIds.includes(node.id);
                 const unlocked = isUnlocked(node.id);
@@ -53,5 +52,4 @@ const styles = StyleSheet.create({
   section: { gap: 18 },
   unit: { gap: 4 },
   path: { alignItems: 'center', paddingTop: 20, paddingBottom: 8, minHeight: 610 },
-  guide: { position: 'absolute', top: 63, bottom: 67, width: 7, borderRadius: 8 },
 });

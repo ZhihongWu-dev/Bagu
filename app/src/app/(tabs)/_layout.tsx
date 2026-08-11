@@ -1,13 +1,15 @@
 import { Tabs } from 'expo-router';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
+import { AppIcon } from '@/components/app-icon';
 import { colors } from '@/theme/colors';
+import type { AppIconName } from '@/types/icons';
 
-const tabIcons: Record<string, string> = {
-  index: '●',
-  library: '▦',
-  review: '◆',
-  profile: '☺',
+const tabIcons: Record<string, AppIconName> = {
+  index: 'path',
+  library: 'book',
+  review: 'review',
+  profile: 'user',
 };
 
 export default function TabLayout() {
@@ -20,7 +22,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: '#9A92A7',
         tabBarLabelStyle: styles.label,
         tabBarStyle: styles.bar,
-        tabBarIcon: ({ color }) => <Text style={[styles.icon, { color }]}>{tabIcons[route.name] ?? '•'}</Text>,
+        tabBarIcon: ({ color }) => <AppIcon name={tabIcons[route.name] ?? 'path'} size={23} color={color} strokeWidth={2.45} />,
       })}>
       <Tabs.Screen name="index" options={{ title: '学习' }} />
       <Tabs.Screen name="library" options={{ title: '知识' }} />
@@ -40,5 +42,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   label: { fontSize: 10, fontWeight: '800' },
-  icon: { fontSize: 21, fontWeight: '900', lineHeight: 24 },
 });

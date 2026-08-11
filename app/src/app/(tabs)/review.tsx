@@ -3,12 +3,14 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { domainById, knowledgeById } from '@/data/knowledge-base';
 import { transformerNodes } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 import type { ReviewSource } from '@/types/course';
+import type { AppIconName } from '@/types/icons';
 
 type Filter = 'all' | ReviewSource;
 
@@ -56,7 +58,7 @@ export default function ReviewScreen() {
 
           {items.length === 0 ? (
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>◆</Text>
+              <AppIcon name="review" size={36} color={colors.primary} />
               <Text style={styles.emptyTitle}>{filter === 'project' && !projectProfile ? '建立项目档案' : '暂无复习'}</Text>
               <Pressable accessibilityRole="button" onPress={() => router.push(filter === 'project' ? '/resume' : '/library')} style={styles.button}>
                 <Text style={styles.buttonText}>{filter === 'project' ? '去建立' : '去知识库'}</Text>
@@ -70,12 +72,12 @@ export default function ReviewScreen() {
                 const domain = card ? domainById[card.domainId] : null;
                 const title = node?.shortTitle ?? card?.title ?? projectProfile?.name ?? '项目深挖';
                 const sourceLabel = item.source === 'lesson' ? '课程节点' : item.source === 'knowledge' ? '通用知识' : '简历项目';
-                const icon = node?.icon ?? domain?.icon ?? 'P';
+                const icon: AppIconName = node?.icon ?? domain?.icon ?? 'resume';
                 const color = domain?.color ?? (item.source === 'project' ? colors.success : colors.primary);
                 const softColor = domain?.softColor ?? (item.source === 'project' ? colors.successSoft : colors.primarySoft);
                 return (
                   <Pressable accessibilityRole="button" accessibilityLabel={`复习：${title}`} key={item.id} onPress={() => openItem(item.source, item.targetId)} style={styles.reviewCard}>
-                    <View style={[styles.itemIcon, { backgroundColor: softColor }]}><Text style={[styles.itemIconText, { color }]}>{icon}</Text></View>
+                    <View style={[styles.itemIcon, { backgroundColor: softColor }]}><AppIcon name={icon} size={22} color={color} /></View>
                     <View style={styles.itemCopy}>
                       <View style={styles.metaRow}>
                         <Text style={[styles.sourceLabel, { color }]}>{sourceLabel}</Text>
@@ -85,7 +87,7 @@ export default function ReviewScreen() {
                     </View>
                     {!item.id.startsWith('legacy-') && (
                       <Pressable hitSlop={10} onPress={(event) => { event.stopPropagation(); removeFromReview(item.id); }}>
-                        <Text style={styles.remove}>×</Text>
+                        <AppIcon name="close" size={20} color="#AAA3B6" />
                       </Pressable>
                     )}
                   </Pressable>
@@ -119,18 +121,15 @@ const styles = StyleSheet.create({
   filterText: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
   filterTextActive: { color: colors.surface },
   empty: { alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 22, padding: 27, marginTop: 2 },
-  emptyIcon: { color: colors.primary, fontSize: 35 },
   emptyTitle: { color: colors.text, fontSize: 18, fontWeight: '900', marginTop: 12 },
   button: { alignSelf: 'stretch', alignItems: 'center', backgroundColor: colors.primary, borderBottomWidth: 5, borderBottomColor: colors.primaryDark, borderRadius: 15, padding: 15, marginTop: 20 },
   buttonText: { color: colors.surface, fontWeight: '900' },
   list: { gap: 10 },
   reviewCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 13 },
   itemIcon: { width: 45, height: 45, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  itemIconText: { fontSize: 17, fontWeight: '900' },
   itemCopy: { flex: 1 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   sourceLabel: { fontSize: 9, fontWeight: '900' },
   due: { color: colors.textMuted, fontSize: 9 },
   itemTitle: { color: colors.text, fontWeight: '900', lineHeight: 19, marginTop: 4 },
-  remove: { color: '#AAA3B6', fontSize: 24, paddingHorizontal: 4 },
 });

@@ -3,7 +3,7 @@ import type { CourseSection } from '@/types/course';
 
 const blueprints: NodeBlueprint[] = [
   {
-    id: 'encoder-only', title: 'Encoder-only 与双向表示', shortTitle: 'Encoder-only', subtitle: '理解 BERT 类架构', icon: 'E',
+    id: 'encoder-only', title: 'Encoder-only 与双向表示', shortTitle: 'Encoder-only', subtitle: '理解 BERT 类架构', icon: 'encoder',
     knowledgeIds: ['encoder-only'],
     core: 'Encoder-only 使用双向 Self-Attention 构造整段上下文化表示，常用于理解、分类与抽取任务。',
     facts: ['每个 token 可读取左右两侧上下文', '输出通常保留每个位置的表示', '预训练可采用 MLM 等去噪目标'],
@@ -15,7 +15,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Encoder-only 双向编码整段输入；Decoder-only 受因果 Mask 约束并预测后续 token。', formula: 'h₁…hₙ=Encoder(x₁…xₙ)',
   },
   {
-    id: 'decoder-only', title: 'Decoder-only 与因果语言模型', shortTitle: 'Decoder-only', subtitle: '理解 GPT 类架构', icon: 'D',
+    id: 'decoder-only', title: 'Decoder-only 与因果语言模型', shortTitle: 'Decoder-only', subtitle: '理解 GPT 类架构', icon: 'decoder',
     knowledgeIds: ['decoder-only', 'pretrain-objective'], keywords: ['mask'],
     core: 'Decoder-only 用 Causal Mask 保证每个位置只看历史，并以 next-token prediction 统一训练和生成。',
     facts: ['训练时所有位置可在因果约束下并行计算', '推理时必须依赖已生成前缀逐步解码', '同一架构可通过提示适配多种任务'],
@@ -27,7 +27,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '训练使用真实前缀 Teacher Forcing；推理使用模型自己的历史输出。', formula: 'p(x)=∏ₜp(xₜ|x₍<t₎)',
   },
   {
-    id: 'encoder-decoder', title: 'Encoder-Decoder 与条件生成', shortTitle: 'Encoder-Decoder', subtitle: '理解 T5 与翻译架构', icon: '↦',
+    id: 'encoder-decoder', title: 'Encoder-Decoder 与条件生成', shortTitle: 'Encoder-Decoder', subtitle: '理解 T5 与翻译架构', icon: 'flow',
     knowledgeIds: ['encoder-decoder'],
     core: 'Encoder-Decoder 先双向编码源序列，再由因果 Decoder 通过 Cross-Attention 条件生成目标序列。',
     facts: ['Encoder 处理完整源输入', 'Decoder Self-Attention 使用因果约束', 'Cross-Attention 让 Decoder 查询 Encoder 输出'],
@@ -39,7 +39,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Encoder-Decoder 显式分开源和目标；Decoder-only 常把条件与输出放入同一因果序列。', formula: 'CrossAttn(Q_decoder,K_encoder,V_encoder)',
   },
   {
-    id: 'cross-attention', title: 'Cross-Attention 的信息流', shortTitle: 'Cross-Attention', subtitle: '从来源和形状理解条件读取', icon: 'C',
+    id: 'cross-attention', title: 'Cross-Attention 的信息流', shortTitle: 'Cross-Attention', subtitle: '从来源和形状理解条件读取', icon: 'cross',
     knowledgeIds: ['cross-attention'], keywords: ['query'],
     core: 'Cross-Attention 用当前目标表示作为 Query，用外部条件表示作为 Key/Value，实现跨序列检索与融合。',
     facts: ['Query 长度决定输出序列长度', 'Key 与 Value 通常共享条件序列长度', '不同模态也可以通过投影后做 Cross-Attention'],
@@ -51,7 +51,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Self-Attention 在同一表示集合内交互；Cross-Attention 在两个来源之间查询。', formula: 'softmax(Q_target K_sourceᵀ/√d)V_source',
   },
   {
-    id: 'training-objectives', title: 'MLM、CLM 与 Seq2Seq 目标', shortTitle: '训练目标', subtitle: '从可见性理解模型能力', icon: 'O',
+    id: 'training-objectives', title: 'MLM、CLM 与 Seq2Seq 目标', shortTitle: '训练目标', subtitle: '从可见性理解模型能力', icon: 'target',
     knowledgeIds: ['pretrain-objective', 'teacher-forcing'], keywords: ['mask'],
     core: 'MLM 恢复被遮挡 token，CLM 预测下一 token，Seq2Seq 目标则让 Decoder 在源条件下预测目标序列。',
     facts: ['MLM 可利用被遮挡位置两侧上下文', 'CLM 遵循左到右因果分解', 'Seq2Seq Decoder 通常使用 Teacher Forcing'],

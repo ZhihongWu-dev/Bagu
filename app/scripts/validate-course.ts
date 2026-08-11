@@ -17,6 +17,11 @@ const exerciseIds = new Set<string>();
 const knowledgeIds = new Set(knowledgeCards.map((card) => card.id));
 const transformerKnowledgeCount = knowledgeCards.filter((card) => card.domainId === 'transformer').length;
 check(transformerKnowledgeCount >= 25, `Expected at least 25 Transformer knowledge articles, received ${transformerKnowledgeCount}.`);
+knowledgeCards.forEach((card) => {
+  check(!/[？?]/.test(card.title), `${card.id} must use a concept title instead of a question.`);
+  check(Boolean(card.interviewQuestion?.trim()), `${card.id} must preserve an interview question.`);
+  check(card.summary.trim().length >= 12, `${card.id} summary is too short for the concept manual.`);
+});
 
 function validateExercise(exercise: Exercise, nodeId: string) {
   check(!exerciseIds.has(exercise.id), `Duplicate exercise id: ${exercise.id}.`);

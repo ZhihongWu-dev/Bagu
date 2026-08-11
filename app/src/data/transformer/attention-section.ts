@@ -3,7 +3,7 @@ import type { CourseSection } from '@/types/course';
 
 const blueprints: NodeBlueprint[] = [
   {
-    id: 'qkv-roles', title: 'Q、K、V 的职责', shortTitle: 'Q · K · V', subtitle: '从检索视角理解注意力', icon: 'Q',
+    id: 'qkv-roles', title: 'Q、K、V 的职责', shortTitle: 'Q · K · V', subtitle: '从检索视角理解注意力', icon: 'search',
     knowledgeIds: ['qkv-roles'], keywords: ['query'],
     core: 'Query 表达当前 token 想找什么，Key 用于被匹配，Value 携带最终被聚合的内容。',
     facts: ['Q、K、V 通常由不同可学习投影得到', 'QKᵀ 产生匹配分数', 'Softmax 权重最终作用于 V'],
@@ -15,7 +15,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Self-Attention 三者来自同一序列；Cross-Attention 的 Q 与 K/V 来自不同序列。', formula: 'Q=XWQ, K=XWK, V=XWV',
   },
   {
-    id: 'attention-shapes', title: 'Attention 的张量形状', shortTitle: '张量形状', subtitle: '从维度推导每一步', icon: '×',
+    id: 'attention-shapes', title: 'Attention 的张量形状', shortTitle: '张量形状', subtitle: '从维度推导每一步', icon: 'grid',
     knowledgeIds: ['attention-shapes'], keywords: ['query'],
     core: '注意力形状必须保证 Q 与 K 的头维可做内积，分数矩阵的两轴分别对应查询和键的位置。',
     facts: ['Q 形状可写为 B×H×Lq×Dh', 'K 转置后形状为 B×H×Dh×Lk', '输出形状沿用查询长度 Lq'],
@@ -27,7 +27,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Self-Attention 常有 Lq=Lk；Cross-Attention 允许 Lq≠Lk。', formula: '(B,H,Lq,Dh)·(B,H,Dh,Lk)→(B,H,Lq,Lk)',
   },
   {
-    id: 'scaled-dot-product', title: '缩放点积注意力', shortTitle: '缩放点积', subtitle: '理解为什么除以 √dₖ', icon: '√',
+    id: 'scaled-dot-product', title: '缩放点积注意力', shortTitle: '缩放点积', subtitle: '理解为什么除以 √dₖ', icon: 'scale',
     knowledgeIds: ['attention-scale'], keywords: ['logit', 'saturation'],
     core: '点积方差会随头维 dₖ 增长，除以 √dₖ 能把 Logit 尺度拉回稳定范围，缓解 Softmax 饱和。',
     facts: ['独立单位方差分量的点积方差约为 dₖ', '除以 √dₖ 后方差回到常数量级', '缩放发生在 Softmax 之前'],
@@ -39,7 +39,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '除以 √dₖ 保持方差；除以 dₖ 会让标准差随维度反而缩小。', formula: 'Attention(Q,K,V)=softmax(QKᵀ/√dₖ)V',
   },
   {
-    id: 'softmax-attention', title: 'Softmax 与注意力分布', shortTitle: 'Softmax', subtitle: '从 Logit 到可解释权重', icon: 'S',
+    id: 'softmax-attention', title: 'Softmax 与注意力分布', shortTitle: 'Softmax', subtitle: '从 Logit 到可解释权重', icon: 'chart',
     knowledgeIds: ['softmax-attention'], keywords: ['logit', 'saturation'],
     core: 'Softmax 在每个 Query 对所有 Key 的分数轴上归一化，使权重非负且和为 1。',
     facts: ['对所有 Logit 同加常数不改变结果', '温度越低分布通常越尖锐', '数值稳定实现会先减去最大 Logit'],
@@ -51,7 +51,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Softmax 产生稠密概率权重；Mask 负责在归一化前排除不允许的位置。', formula: 'softmax(zᵢ)=exp(zᵢ−max(z))/Σⱼexp(zⱼ−max(z))',
   },
   {
-    id: 'attention-masks', title: 'Padding 与 Causal Mask', shortTitle: 'Attention Mask', subtitle: '区分无效位置与未来信息', icon: 'M',
+    id: 'attention-masks', title: 'Padding 与 Causal Mask', shortTitle: 'Attention Mask', subtitle: '区分无效位置与未来信息', icon: 'mask',
     knowledgeIds: ['attention-mask'], keywords: ['mask'],
     core: 'Padding Mask 排除补齐位置，Causal Mask 阻止当前位置读取未来 token；二者都应在 Softmax 前作用于分数。',
     facts: ['被遮挡位置通常加上极小值', 'Causal Mask 的允许区域随 Query 位置变化', 'Padding 与 Causal Mask 可以组合'],

@@ -1,3 +1,5 @@
+import type { AppIconName } from '@/types/icons';
+
 export type KnowledgeKeyword = {
   id: string;
   label: string;
@@ -53,7 +55,7 @@ export type LearningNode = {
   title: string;
   shortTitle: string;
   subtitle: string;
-  icon: string;
+  icon: AppIconName;
   duration: number;
   exercises: Exercise[];
   knowledgeIds: string[];
@@ -90,7 +92,7 @@ export type KnowledgeDomain = {
   id: KnowledgeDomainId;
   label: string;
   shortLabel: string;
-  icon: string;
+  icon: AppIconName;
   color: string;
   softColor: string;
 };
@@ -105,6 +107,7 @@ export type KnowledgeCard = {
   id: string;
   domainId: KnowledgeDomainId;
   title: string;
+  interviewQuestion?: string;
   aliases: string[];
   difficulty: '基础' | '进阶' | '高频';
   summary: string;

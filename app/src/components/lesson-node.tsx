@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/app-icon';
 import { colors } from '@/theme/colors';
 import type { LearningNode } from '@/types/course';
 
@@ -35,12 +36,18 @@ export function LessonNode({ node, completed, current, unlocked, offset, accentC
           <>
             <View style={[styles.circleBase, { backgroundColor: sideColor }]} />
             <View style={[styles.circleFace, { backgroundColor: faceColor }, pressed && available && styles.facePressed]}>
-              <Text style={[styles.nodeText, !available && styles.lockedText]}>{completed ? '✓' : available ? node.icon : '🔒'}</Text>
+              <AppIcon
+                name={completed ? 'check' : available ? node.icon : 'lock'}
+                size={completed ? 31 : available ? 29 : 23}
+                color={available ? colors.surface : '#8F899A'}
+                strokeWidth={2.7}
+              />
             </View>
           </>
         )}
       </Pressable>
       {current ? <Text numberOfLines={1} style={styles.title}>{node.shortTitle}</Text> : null}
+      {current ? <View pointerEvents="none" style={styles.companion}><Image accessibilityIgnoresInvertColors source={require('../../assets/images/bagu-companion.png')} style={styles.companionImage} /></View> : null}
     </View>
   );
 }
@@ -54,7 +61,7 @@ const styles = StyleSheet.create({
   circleBase: { position: 'absolute', left: 3, top: 8, width: 72, height: 72, borderRadius: 36 },
   circleFace: { position: 'absolute', left: 3, top: 0, width: 72, height: 72, alignItems: 'center', justifyContent: 'center', borderRadius: 36, boxShadow: '0 7px 14px rgba(41, 35, 61, 0.14)' },
   facePressed: { transform: [{ translateY: 7 }] },
-  nodeText: { color: colors.surface, fontSize: 27, fontWeight: '900' },
-  lockedText: { fontSize: 19, opacity: 0.62 },
   title: { color: colors.text, fontSize: 13, fontWeight: '900', marginTop: 8 },
+  companion: { position: 'absolute', left: 87, top: 28, width: 86, height: 96 },
+  companionImage: { width: '100%', height: '100%', resizeMode: 'contain' },
 });

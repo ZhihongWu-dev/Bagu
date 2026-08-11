@@ -7,13 +7,14 @@ import type {
   SelfRecallExercise,
   SingleChoiceExercise,
 } from '@/types/course';
+import type { AppIconName } from '@/types/icons';
 
 export type NodeBlueprint = {
   id: string;
   title: string;
   shortTitle: string;
   subtitle: string;
-  icon: string;
+  icon: AppIconName;
   knowledgeIds: string[];
   core: string;
   facts: [string, string, string];

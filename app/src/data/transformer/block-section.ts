@@ -3,7 +3,7 @@ import type { CourseSection } from '@/types/course';
 
 const blueprints: NodeBlueprint[] = [
   {
-    id: 'multi-head-attention', title: '多头注意力', shortTitle: 'Multi-Head', subtitle: '并行学习多种关系', icon: 'H',
+    id: 'multi-head-attention', title: '多头注意力', shortTitle: 'Multi-Head', subtitle: '并行学习多种关系', icon: 'network',
     knowledgeIds: ['multi-head'], keywords: ['head'],
     core: '多头注意力把隐藏维拆成多个子空间，各头独立投影并建模不同关系，最后拼接融合。',
     facts: ['每个头通常有独立的 Q/K/V 投影', '各头输出拼接后还要经过 Wᴼ', '总隐藏维固定时单头维度约为 d_model/H'],
@@ -15,7 +15,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '单头在一个表示子空间聚合；多头并行使用多个较低维子空间后再融合。', formula: 'MultiHead=Concat(head₁,…,headₕ)Wᴼ',
   },
   {
-    id: 'head-splitting', title: '拆头、合头与参数量', shortTitle: '拆头与合头', subtitle: '区分头数、头维和隐藏维', icon: '↔',
+    id: 'head-splitting', title: '拆头、合头与参数量', shortTitle: '拆头与合头', subtitle: '区分头数、头维和隐藏维', icon: 'split',
     knowledgeIds: ['head-dimension'], keywords: ['head'],
     core: '标准 MHA 常保持 d_model=H×d_head，拆头只是重排视图，真正的参数来自线性投影。',
     facts: ['拆头前投影常得到 H×d_head 维', '合头需要正确转置并保持 token 顺序', '固定 d_model 时增加头数会减小 d_head'],
@@ -27,7 +27,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '线性投影学习表示；reshape/transpose 只改变张量视图与计算布局。', formula: 'B×L×D ↔ B×H×L×Dh, D=H·Dh',
   },
   {
-    id: 'residual-connections', title: '残差连接与深层优化', shortTitle: 'Residual', subtitle: '保留信息与梯度高速路', icon: '+',
+    id: 'residual-connections', title: '残差连接与深层优化', shortTitle: 'Residual', subtitle: '保留信息与梯度高速路', icon: 'merge',
     knowledgeIds: ['residual-connection'], keywords: ['residual'],
     core: '残差连接把子层输入直接加到输出，为信息和梯度提供近似恒等路径，使深层网络更易优化。',
     facts: ['残差相加要求形状兼容', '子层可学习对输入的增量修正', '恒等路径缓解但不彻底消除梯度问题'],
@@ -39,7 +39,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '残差连接做加法保留原输入；普通串联只把上一层输出交给下一层。', formula: 'y=x+F(x)',
   },
   {
-    id: 'layer-normalization', title: 'LayerNorm、Pre-LN 与 Post-LN', shortTitle: 'LayerNorm', subtitle: '理解归一化位置与稳定性', icon: 'N',
+    id: 'layer-normalization', title: 'LayerNorm、Pre-LN 与 Post-LN', shortTitle: 'LayerNorm', subtitle: '理解归一化位置与稳定性', icon: 'sliders',
     knowledgeIds: ['pre-ln-post-ln'], keywords: ['residual'],
     core: 'LayerNorm 对单个 token 的特征维归一化；Pre-LN 把归一化放在子层前，深层训练通常更稳定。',
     facts: ['LayerNorm 不依赖 batch 统计量', 'Pre-LN 的残差主路径更接近恒等映射', 'Post-LN 是原始 Transformer 采用的结构'],
@@ -51,7 +51,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'Pre-LN：x+F(LN(x))；Post-LN：LN(x+F(x))。', formula: 'LN(x)=γ⊙(x−μ)/√(σ²+ε)+β',
   },
   {
-    id: 'ffn-swiglu', title: 'FFN、GELU 与 SwiGLU', shortTitle: 'FFN · SwiGLU', subtitle: '逐 token 的非线性变换', icon: 'F',
+    id: 'ffn-swiglu', title: 'FFN、GELU 与 SwiGLU', shortTitle: 'FFN · SwiGLU', subtitle: '逐 token 的非线性变换', icon: 'layers',
     knowledgeIds: ['ffn', 'activation-functions'],
     core: 'Attention 在 token 间混合信息，FFN 则对每个 token 独立执行扩维、非线性和降维，提升表示容量。',
     facts: ['同一层 FFN 对所有位置共享参数', '标准 FFN 常先扩维再投影回 d_model', 'SwiGLU 用门控分支调制信息流'],

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppIcon } from '@/components/app-icon';
 import { KeywordSheet } from '@/components/keyword-sheet';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
@@ -86,7 +87,7 @@ export default function LessonScreen() {
     <ScreenShell>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={styles.header}>
-          <Pressable accessibilityLabel="退出课程" onPress={() => router.back()} hitSlop={12}><Text style={styles.close}>×</Text></Pressable>
+          <Pressable accessibilityLabel="退出课程" onPress={() => router.back()} hitSlop={12}><AppIcon name="close" size={24} color="#AAA3BA" /></Pressable>
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: progressAnimation.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }]} />
           </View>
@@ -138,7 +139,7 @@ export default function LessonScreen() {
 
           {exercise.type === 'self-recall' ? (
             <View style={styles.recallCard}>
-              <Text style={styles.recallIcon}>◉</Text>
+              <AppIcon name="focus" size={35} color={colors.primary} />
               <Text style={styles.recallTitle}>先完整说一遍</Text>
               <Text style={styles.recallText}>按“结论 → 原因 → 机制 → 结果”组织，准备好后查看参考要点。</Text>
             </View>
@@ -168,7 +169,7 @@ export default function LessonScreen() {
             <Text style={[styles.feedbackTitle, !isCorrect && styles.feedbackTitleWrong]}>{exercise.type === 'self-recall' ? '参考要点' : isCorrect ? '回答正确' : '需要再巩固'}</Text>
             <Text numberOfLines={3} style={styles.feedbackText}>{exercise.explanation}</Text>
             <View style={styles.points}>
-              {(exercise.type === 'self-recall' ? exercise.referencePoints : exercise.coveredPoints).slice(0, 3).map((point) => <Text key={point} style={styles.point}>✓ {point}</Text>)}
+              {(exercise.type === 'self-recall' ? exercise.referencePoints : exercise.coveredPoints).slice(0, 3).map((point) => <View key={point} style={styles.pointRow}><AppIcon name="check" size={14} color={colors.successDark} /><Text style={styles.point}>{point}</Text></View>)}
             </View>
             <Pressable onPress={submitOrContinue} style={[styles.primaryButton, styles.continueButton]}><Text style={styles.primaryButtonText}>{isLast ? '完成关卡' : '继续'}</Text></Pressable>
           </View>
@@ -185,7 +186,7 @@ function ChoiceButton({ choice, index, selected, submitted, correct, onPress }: 
     <Pressable accessibilityRole="button" accessibilityState={{ selected, disabled: submitted }} disabled={submitted} onPress={onPress} style={({ pressed }) => [styles.choice, selected && styles.choiceSelected, submitted && correct && styles.choiceCorrect, wrong && styles.choiceWrong, pressed && styles.choicePressed]}>
       <View style={[styles.choiceKey, selected && styles.choiceKeySelected]}><Text style={[styles.choiceKeyText, selected && styles.choiceTextSelected]}>{String.fromCharCode(65 + index)}</Text></View>
       <Text style={[styles.choiceText, selected && styles.choiceTextSelected]}>{choice.label}</Text>
-      {selected ? <Text style={styles.choiceCheck}>✓</Text> : null}
+      {selected ? <AppIcon name="check" size={18} color={colors.primary} strokeWidth={2.8} /> : null}
     </Pressable>
   );
 }
@@ -194,7 +195,6 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   header: { height: 64, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 14 },
-  close: { color: '#AAA3BA', fontSize: 28, fontWeight: '500' },
   progressTrack: { flex: 1, height: 9, borderRadius: 9, backgroundColor: colors.surfaceMuted, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 9, backgroundColor: colors.primary },
   counter: { minWidth: 28, color: colors.primary, fontSize: 12, fontWeight: '900' },
@@ -214,7 +214,6 @@ const styles = StyleSheet.create({
   choiceKeyText: { color: colors.textMuted, fontWeight: '900' },
   choiceText: { flex: 1, color: colors.text, fontWeight: '800', lineHeight: 20 },
   choiceTextSelected: { color: colors.primaryDark },
-  choiceCheck: { color: colors.primary, fontSize: 17, fontWeight: '900' },
   orderSection: { gap: 15, marginTop: 22 },
   orderSlots: { minHeight: 128, gap: 8, padding: 12, backgroundColor: colors.surfaceMuted, borderRadius: 18 },
   orderHint: { color: colors.textMuted, textAlign: 'center', marginTop: 43 },
@@ -225,7 +224,6 @@ const styles = StyleSheet.create({
   orderChoice: { minHeight: 48, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 2, borderColor: colors.border, backgroundColor: colors.surface, borderRadius: 14 },
   orderChoiceText: { color: colors.text, fontSize: 13, fontWeight: '800' },
   recallCard: { alignItems: 'center', backgroundColor: colors.primarySoft, borderRadius: 22, padding: 24, marginTop: 24 },
-  recallIcon: { color: colors.primary, fontSize: 34 },
   recallTitle: { color: colors.text, fontSize: 18, fontWeight: '900', marginTop: 12 },
   recallText: { color: colors.textMuted, textAlign: 'center', lineHeight: 20, marginTop: 8 },
   keywordSection: { marginTop: 22 },
@@ -244,6 +242,7 @@ const styles = StyleSheet.create({
   feedbackTitleWrong: { color: '#C43E58' },
   feedbackText: { color: colors.text, fontSize: 12, lineHeight: 18, marginTop: 7 },
   points: { marginTop: 7, gap: 2 },
-  point: { color: colors.text, fontSize: 11, fontWeight: '700' },
+  pointRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
+  point: { flex: 1, color: colors.text, fontSize: 11, fontWeight: '700' },
   continueButton: { backgroundColor: colors.success, marginTop: 13 },
 });

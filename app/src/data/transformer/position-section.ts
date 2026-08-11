@@ -3,7 +3,7 @@ import type { CourseSection } from '@/types/course';
 
 const blueprints: NodeBlueprint[] = [
   {
-    id: 'absolute-position', title: '绝对位置与正弦编码', shortTitle: '绝对位置', subtitle: '给无序注意力注入顺序', icon: 'P',
+    id: 'absolute-position', title: '绝对位置与正弦编码', shortTitle: '绝对位置', subtitle: '给无序注意力注入顺序', icon: 'position',
     knowledgeIds: ['position-encoding'],
     core: '纯 Self-Attention 对输入排列等变，需要显式位置表示才能区分 token 的先后与距离。',
     facts: ['位置向量可与 token embedding 相加', '正弦编码使用多频率 sin/cos', '可学习位置编码受训练长度表大小限制'],
@@ -15,7 +15,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '固定正弦无需位置参数；可学习位置表能适配数据但通常受训练长度约束。', formula: 'PE(pos,2i)=sin(pos/10000^(2i/d))',
   },
   {
-    id: 'rope', title: 'RoPE 旋转位置编码', shortTitle: 'RoPE', subtitle: '让 QK 内积携带相对位移', icon: 'R',
+    id: 'rope', title: 'RoPE 旋转位置编码', shortTitle: 'RoPE', subtitle: '让 QK 内积携带相对位移', icon: 'rotate',
     knowledgeIds: ['rope-context'], keywords: ['rope'],
     core: 'RoPE 按位置旋转 Q 和 K 的二维通道，使二者内积自然依赖相对位置差。',
     facts: ['RoPE 通常作用于 Q 和 K 而非 V', '不同维度对使用不同旋转频率', '相对位移通过旋转矩阵组合进入内积'],
@@ -27,7 +27,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '绝对位置直接标记索引；RoPE 把相对位移编码进 QK 相似度。', formula: '(R(m)q)ᵀ(R(n)k)=qᵀR(n−m)k',
   },
   {
-    id: 'alibi', title: 'ALiBi 线性位置偏置', shortTitle: 'ALiBi', subtitle: '直接修改注意力分数', icon: 'A',
+    id: 'alibi', title: 'ALiBi 线性位置偏置', shortTitle: 'ALiBi', subtitle: '直接修改注意力分数', icon: 'trend',
     knowledgeIds: ['alibi'],
     core: 'ALiBi 不生成位置 embedding，而是在注意力 Logit 上加入与距离成比例的负偏置。',
     facts: ['不同注意力头可使用不同斜率', '距离越远通常惩罚越大', '偏置在 Softmax 前加入分数'],
@@ -39,7 +39,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: 'RoPE 旋转 Q/K；ALiBi 直接给注意力分数加入线性距离偏置。', formula: 'scoreᵢⱼ=qᵢkⱼ/√d−m_h·|i−j|',
   },
   {
-    id: 'context-extension', title: '上下文长度外推', shortTitle: '长度外推', subtitle: '训练长度之外为何会失效', icon: 'L',
+    id: 'context-extension', title: '上下文长度外推', shortTitle: '长度外推', subtitle: '训练长度之外为何会失效', icon: 'expand',
     knowledgeIds: ['context-extension'], keywords: ['rope'],
     core: '扩展上下文不仅要改最大长度，还要处理位置分布外推、注意力成本和训练数据长度分布。',
     facts: ['RoPE 缩放会改变位置频率映射', '短序列训练不足以保证长距离利用能力', '长度增加会放大显存与计算压力'],
@@ -51,7 +51,7 @@ const blueprints: NodeBlueprint[] = [
     comparison: '上下文窗口是可输入上限；有效上下文是模型实际可利用的信息范围。', formula: 'position frequency: θᵢ=base^(−2i/d)',
   },
   {
-    id: 'long-context-cost', title: '长上下文的计算与显存', shortTitle: '长序列成本', subtitle: '理解 O(n²) 与 KV 占用', icon: '²',
+    id: 'long-context-cost', title: '长上下文的计算与显存', shortTitle: '长序列成本', subtitle: '理解 O(n²) 与 KV 占用', icon: 'gauge',
     knowledgeIds: ['attention-complexity', 'kv-cache'], keywords: ['cache'],
     core: '全注意力训练的分数矩阵随序列长度平方增长，而自回归推理的 KV Cache 容量随历史长度线性增长。',
     facts: ['训练全注意力要处理 n×n 交互', 'Decode 单步读取的历史 KV 随 n 增长', 'Prefill 和 Decode 的硬件瓶颈不同'],

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { transformerNodes } from '@/data/transformer-course';
@@ -37,7 +38,7 @@ export default function CompleteScreen() {
     <ScreenShell>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={styles.content}>
-          <View style={styles.burst}><Text style={styles.burstText}>✓</Text></View>
+          <View style={styles.burst}><AppIcon name="check" size={51} color={colors.surface} strokeWidth={2.8} /></View>
           <Text style={styles.kicker}>课程完成</Text>
           <Text style={styles.title}>{node?.shortTitle ?? 'Transformer 基础'}</Text>
           <Text style={styles.subtitle}>本关 {questionTotal} 题已完成，下一节点已经解锁。</Text>
@@ -47,7 +48,7 @@ export default function CompleteScreen() {
             <View style={styles.stat}><Text style={styles.statValue}>{scorePercent}%</Text><Text style={styles.statLabel}>本关正确率</Text></View>
           </View>
           <View style={styles.reviewCard}>
-            <Text style={styles.reviewIcon}>◷</Text>
+            <AppIcon name="clock" size={25} color={colors.currentDark} />
             <View style={styles.reviewCopy}>
               <Text style={styles.reviewTitle}>已安排间隔复习</Text>
               <Text style={styles.reviewText}>这个知识点会在明天重新出现。</Text>
@@ -68,7 +69,6 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   burst: { width: 104, height: 104, borderRadius: 52, backgroundColor: colors.success, borderBottomWidth: 9, borderBottomColor: colors.successDark, alignItems: 'center', justifyContent: 'center', ...Platform.select({ web: { boxShadow: '0 10px 24px rgba(37, 185, 149, 0.25)' }, default: { shadowColor: colors.success, shadowOpacity: 0.25, shadowRadius: 22, shadowOffset: { width: 0, height: 8 }, elevation: 8 } }) },
-  burstText: { color: colors.surface, fontSize: 48, fontWeight: '900' },
   kicker: { color: colors.successDark, fontSize: 12, fontWeight: '900', letterSpacing: 1, marginTop: 24 },
   title: { color: colors.text, fontSize: 28, fontWeight: '900', marginTop: 7 },
   subtitle: { color: colors.textMuted, textAlign: 'center', lineHeight: 21, marginTop: 9, maxWidth: 300 },
@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
   statLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700', marginTop: 5 },
   divider: { width: 1, backgroundColor: colors.border },
   reviewCard: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: 13, backgroundColor: colors.currentSoft, borderRadius: 17, padding: 15, marginTop: 14 },
-  reviewIcon: { color: colors.currentDark, fontSize: 24, fontWeight: '900' },
   reviewCopy: { flex: 1 },
   reviewTitle: { color: colors.text, fontWeight: '900' },
   reviewText: { color: colors.textMuted, fontSize: 12, marginTop: 4 },
