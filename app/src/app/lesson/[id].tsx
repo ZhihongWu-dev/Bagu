@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/app-icon';
 import { KeywordSheet } from '@/components/keyword-sheet';
+import { MathFormula } from '@/components/math-formula';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { keywords, transformerNodes } from '@/data/transformer-course';
@@ -97,7 +98,7 @@ export default function LessonScreen() {
         <ScrollView contentContainerStyle={[styles.content, submitted && styles.contentWithFeedback]} showsVerticalScrollIndicator={false}>
           <Text style={styles.eyebrow}>{currentItem.isReview ? '错题复练 · 再答一次' : exercise.eyebrow}</Text>
           <Text style={styles.title}>{exercise.prompt}</Text>
-          {exercise.formula ? <Text style={styles.formula}>{exercise.formula}</Text> : null}
+          {exercise.formula ? <View style={styles.formulaCard}><MathFormula expression={exercise.formula} /></View> : null}
 
           {exercise.type === 'single-choice' || exercise.type === 'multiple-choice' ? (
             <View style={styles.choices}>
@@ -185,7 +186,15 @@ function ChoiceButton({ choice, index, selected, submitted, correct, onPress }: 
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected, disabled: submitted }} disabled={submitted} onPress={onPress} style={({ pressed }) => [styles.choice, selected && styles.choiceSelected, submitted && correct && styles.choiceCorrect, wrong && styles.choiceWrong, pressed && styles.choicePressed]}>
       <View style={[styles.choiceKey, selected && styles.choiceKeySelected]}><Text style={[styles.choiceKeyText, selected && styles.choiceTextSelected]}>{String.fromCharCode(65 + index)}</Text></View>
-      <Text style={[styles.choiceText, selected && styles.choiceTextSelected]}>{choice.label}</Text>
+      {choice.formula ? (
+        <MathFormula
+          color={selected ? colors.primaryDark : colors.text}
+          compact
+          expression={choice.formula}
+          fontSize={15}
+          style={styles.choiceFormula}
+        />
+      ) : <Text style={[styles.choiceText, selected && styles.choiceTextSelected]}>{choice.label}</Text>}
       {selected ? <AppIcon name="check" size={18} color={colors.primary} strokeWidth={2.8} /> : null}
     </Pressable>
   );
@@ -202,7 +211,7 @@ const styles = StyleSheet.create({
   contentWithFeedback: { paddingBottom: 290 },
   eyebrow: { color: colors.primary, fontSize: 11, fontWeight: '900' },
   title: { color: colors.text, fontSize: 23, lineHeight: 31, fontWeight: '900', marginTop: 10 },
-  formula: { color: colors.text, backgroundColor: colors.primarySoft, borderRadius: 17, paddingVertical: 18, paddingHorizontal: 10, textAlign: 'center', fontSize: 18, marginTop: 18 },
+  formulaCard: { overflow: 'hidden', backgroundColor: colors.primarySoft, borderRadius: 17, paddingHorizontal: 8, marginTop: 18 },
   choices: { gap: 11, marginTop: 22 },
   choice: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 11, padding: 12, borderRadius: 16, borderWidth: 2, borderColor: colors.border, backgroundColor: colors.surface },
   choiceSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
@@ -213,6 +222,7 @@ const styles = StyleSheet.create({
   choiceKeySelected: { borderColor: colors.primary },
   choiceKeyText: { color: colors.textMuted, fontWeight: '900' },
   choiceText: { flex: 1, color: colors.text, fontWeight: '800', lineHeight: 20 },
+  choiceFormula: { flex: 1 },
   choiceTextSelected: { color: colors.primaryDark },
   orderSection: { gap: 15, marginTop: 22 },
   orderSlots: { minHeight: 128, gap: 8, padding: 12, backgroundColor: colors.surfaceMuted, borderRadius: 18 },

@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppIcon } from '@/components/app-icon';
 import { colors } from '@/theme/colors';
@@ -47,7 +47,6 @@ export function LessonNode({ node, completed, current, unlocked, offset, accentC
         )}
       </Pressable>
       {current ? <Text numberOfLines={1} style={styles.title}>{node.shortTitle}</Text> : null}
-      {current ? <View pointerEvents="none" style={styles.companion}><Image accessibilityIgnoresInvertColors source={require('../../assets/images/bagu-companion.png')} style={styles.companionImage} /></View> : null}
     </View>
   );
 }
@@ -62,6 +61,4 @@ const styles = StyleSheet.create({
   circleFace: { position: 'absolute', left: 3, top: 0, width: 72, height: 72, alignItems: 'center', justifyContent: 'center', borderRadius: 36, boxShadow: '0 7px 14px rgba(41, 35, 61, 0.14)' },
   facePressed: { transform: [{ translateY: 7 }] },
   title: { color: colors.text, fontSize: 13, fontWeight: '900', marginTop: 8 },
-  companion: { position: 'absolute', left: 87, top: 28, width: 86, height: 96 },
-  companionImage: { width: '100%', height: '100%', resizeMode: 'contain' },
 });

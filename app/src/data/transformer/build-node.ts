@@ -3,10 +3,12 @@ import type {
   Exercise,
   LearningNode,
   MultipleChoiceExercise,
+  MathExpression,
   OrderingExercise,
   SelfRecallExercise,
   SingleChoiceExercise,
 } from '@/types/course';
+import { toMathExpression } from '@/data/math-expression';
 import type { AppIconName } from '@/types/icons';
 
 export type NodeBlueprint = {
@@ -37,13 +39,15 @@ type Shared = {
   coveredPoints: string[];
   missingPoint?: string;
   keywords?: string[];
-  formula?: string;
+  formula?: MathExpression;
 };
 
 const choiceIds = ['a', 'b', 'c', 'd'];
-const makeChoices = (labels: string[]): Choice[] => labels.map((label, index) => ({ id: choiceIds[index], label }));
+const makeChoices = (labels: (string | ReturnType<typeof toMathExpression>)[]): Choice[] => labels.map((value, index) => typeof value === 'string'
+  ? { id: choiceIds[index], label: value }
+  : { id: choiceIds[index], label: value.plainText, formula: value });
 
-function single(shared: Shared, labels: string[], correctIndex: number): SingleChoiceExercise {
+function single(shared: Shared, labels: (string | ReturnType<typeof toMathExpression>)[], correctIndex: number): SingleChoiceExercise {
   return {
     ...shared,
     type: 'single-choice',
@@ -53,7 +57,7 @@ function single(shared: Shared, labels: string[], correctIndex: number): SingleC
   };
 }
 
-function multi(shared: Shared, labels: string[], correctIndexes: number[]): MultipleChoiceExercise {
+function multi(shared: Shared, labels: (string | ReturnType<typeof toMathExpression>)[], correctIndexes: number[]): MultipleChoiceExercise {
   return {
     ...shared,
     type: 'multiple-choice',
@@ -79,9 +83,10 @@ export function buildNode(blueprint: NodeBlueprint): LearningNode {
   const { facts, traps, interview, sequence } = blueprint;
   const explanation = `${blueprint.core} ${blueprint.boundary}`;
   const keywords = blueprint.keywords ?? [];
+  const formula = blueprint.formula ? toMathExpression(blueprint.formula) : undefined;
   const exercises: Exercise[] = [
     single(
-      { id: `${blueprint.id}-01`, eyebrow: '核心判断', prompt: `关于“${blueprint.shortTitle}”，哪句话最准确？`, explanation, coveredPoints: facts, keywords, formula: blueprint.formula },
+      { id: `${blueprint.id}-01`, eyebrow: '核心判断', prompt: `关于“${blueprint.shortTitle}”，哪句话最准确？`, explanation, coveredPoints: facts, keywords, formula },
       [blueprint.core, ...traps],
       0,
     ),
@@ -109,8 +114,8 @@ export function buildNode(blueprint: NodeBlueprint): LearningNode {
       [0, 1, 3],
     ),
     single(
-      { id: `${blueprint.id}-07`, eyebrow: blueprint.formula ? '公式理解' : '边界判断', prompt: blueprint.formula ? `哪一项最能对应“${blueprint.shortTitle}”的公式或计算关系？` : `“${blueprint.shortTitle}”最需要补充哪项边界条件？`, explanation, coveredPoints: [blueprint.formula ?? blueprint.boundary], keywords, formula: blueprint.formula },
-      [traps[0], traps[1], blueprint.formula ?? blueprint.boundary, traps[2]],
+      { id: `${blueprint.id}-07`, eyebrow: blueprint.formula ? '公式理解' : '边界判断', prompt: blueprint.formula ? `哪一项最能对应“${blueprint.shortTitle}”的公式或计算关系？` : `“${blueprint.shortTitle}”最需要补充哪项边界条件？`, explanation, coveredPoints: [blueprint.boundary], keywords, formula },
+      [traps[0], traps[1], formula ?? blueprint.boundary, traps[2]],
       2,
     ),
     recall(

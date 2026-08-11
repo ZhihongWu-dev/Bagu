@@ -1,7 +1,8 @@
-import type { KnowledgeCard, KnowledgeDomain } from '@/types/course';
+import type { KnowledgeCard, KnowledgeCardInput, KnowledgeDomain } from '@/types/course';
 
 import { knowledgeConceptTitles } from '@/data/knowledge-concept-titles';
 import { expandedKnowledgeCards } from '@/data/knowledge-expansion';
+import { toMathExpression } from '@/data/math-expression';
 import { transformerKnowledgeCards } from '@/data/transformer-knowledge';
 
 export const knowledgeDomains: KnowledgeDomain[] = [
@@ -16,7 +17,7 @@ export const knowledgeDomains: KnowledgeDomain[] = [
 const paper = (title: string, url: string) => ({ title, url, kind: 'paper' as const });
 const docs = (title: string, url: string) => ({ title, url, kind: 'docs' as const });
 
-const baseKnowledgeCards: KnowledgeCard[] = [
+const baseKnowledgeCards: KnowledgeCardInput[] = [
   {
     id: 'attention-scale', domainId: 'transformer', title: '为什么 Attention 要除以 √dₖ？', aliases: ['scaled dot product', '缩放点积'], difficulty: '高频',
     summary: '控制点积方差，避免 Softmax 饱和和梯度变小。',
@@ -172,12 +173,13 @@ const baseKnowledgeCards: KnowledgeCard[] = [
   },
 ];
 
-const sourceKnowledgeCards: KnowledgeCard[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards];
+const sourceKnowledgeCards: KnowledgeCardInput[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards];
 
 export const knowledgeCards: KnowledgeCard[] = sourceKnowledgeCards.map((card) => ({
   ...card,
   interviewQuestion: card.interviewQuestion ?? card.title,
   title: knowledgeConceptTitles[card.id] ?? card.title,
+  formula: card.formula ? toMathExpression(card.formula) : undefined,
 }));
 
 export const knowledgeById = Object.fromEntries(knowledgeCards.map((card) => [card.id, card])) as Record<string, KnowledgeCard>;

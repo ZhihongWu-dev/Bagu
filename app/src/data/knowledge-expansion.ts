@@ -1,4 +1,4 @@
-import type { KnowledgeCard, KnowledgeDomainId, KnowledgeSource } from '@/types/course';
+import type { KnowledgeCard, KnowledgeCardInput, KnowledgeDomainId, KnowledgeSource } from '@/types/course';
 
 type TopicInput = {
   id: string;
@@ -17,7 +17,7 @@ type TopicInput = {
 
 const paper = (title: string, url: string): KnowledgeSource => ({ title, url, kind: 'paper' });
 
-const topic = (input: TopicInput): KnowledgeCard => ({
+const topic = (input: TopicInput): KnowledgeCardInput => ({
   id: input.id,
   domainId: input.domainId,
   title: input.title,
@@ -34,7 +34,7 @@ const topic = (input: TopicInput): KnowledgeCard => ({
   sources: [input.source],
 });
 
-export const expandedKnowledgeCards: KnowledgeCard[] = [
+export const expandedKnowledgeCards: KnowledgeCardInput[] = [
   topic({ id: 'attention-complexity', domainId: 'transformer', title: 'Attention 的时间和空间复杂度', summary: '标准全注意力随序列长度呈平方增长。', answer: '长度为 n、隐藏维度为 d 时，QKᵀ 和权重乘 V 的主要计算量约为 O(n²d)，注意力矩阵占 O(n²) 空间。短序列时线性层 O(nd²) 也可能占主导，因此不能只凭大 O 判断真实瓶颈。', intuition: '每个 token 都要和其他 token 两两比较，人数翻倍时配对数接近四倍。', formula: 'O(n²d + nd²)', keyPoints: ['序列维度导致平方项', '线性投影包含 nd²', '训练显存还要保存中间激活'], misconceptions: ['Attention 的全部计算都严格是 O(n²)', '降低头数就能消除序列平方项'], relatedIds: ['flash-attention', 'kv-cache'], source: paper('Attention Is All You Need', 'https://arxiv.org/abs/1706.03762') }),
   topic({ id: 'causal-mask', domainId: 'transformer', title: 'Causal Mask 如何防止信息泄漏？', summary: 'Softmax 前屏蔽未来位置，保证自回归分解成立。', answer: '第 i 个位置只能关注 j≤i 的 token。实现时在注意力 Logit 的上三角加入极小值，Softmax 后对应概率接近零；Padding Mask 则屏蔽无效补齐位置，两者用途不同但可以叠加。', intuition: '做第 i 道完形填空时，把后面的标准答案全部盖住。', keyPoints: ['作用在 Softmax 前', '上三角屏蔽未来', '可与 Padding Mask 合并'], misconceptions: ['把未来分数改为 0 就一定没有概率', '训练时使用 Mask 会导致无法并行'], relatedIds: ['pretrain-objective', 'attention-scale'], source: paper('Attention Is All You Need', 'https://arxiv.org/abs/1706.03762') }),
   topic({ id: 'ffn', domainId: 'transformer', title: 'Transformer 中 FFN 为什么重要？', summary: 'Attention 混合 token，FFN 对每个 token 做非线性特征变换。', answer: 'FFN 对所有位置共享参数，通常先把 d_model 扩大到约 4 倍，再经激活函数投影回来。大量参数和计算往往集中在 FFN；SwiGLU 等门控结构通过额外分支增强表达能力。', intuition: 'Attention 负责交换消息，FFN 负责每个人独立消化和加工收到的信息。', formula: 'FFN(x)=W₂σ(W₁x+b₁)+b₂', keyPoints: ['逐位置独立', '参数跨位置共享', '先扩维再压回'], misconceptions: ['FFN 在 token 之间计算注意力', 'FFN 可以删除且完全不影响模型容量'], relatedIds: ['multi-head', 'activation-functions'], source: paper('Attention Is All You Need', 'https://arxiv.org/abs/1706.03762') }),

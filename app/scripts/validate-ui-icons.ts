@@ -22,10 +22,16 @@ for (const path of walk(sourceRoot)) {
 const coursePath = readFileSync(join(sourceRoot, 'components', 'course-path.tsx'), 'utf8');
 if (/styles\.guide|style=\{\[styles\.guide/u.test(coursePath)) failures.push('course-path.tsx: center guide line must stay removed.');
 
+const home = readFileSync(join(sourceRoot, 'app', '(tabs)', 'index.tsx'), 'utf8');
+if (/<UnitBanner/u.test(home)) failures.push('Home screen must open directly on the Section learning path without a Unit banner.');
+
+const lessonNode = readFileSync(join(sourceRoot, 'components', 'lesson-node.tsx'), 'utf8');
+if (/companion|bagu-companion/u.test(lessonNode)) failures.push('Learning-path companion must remain hidden until a replacement is approved.');
+
 if (failures.length) {
   console.error(`UI icon validation failed with ${failures.length} issue(s):`);
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 
-console.log('UI icon validation passed: no Emoji/character icons and no learning-path guide line.');
+console.log('UI validation passed: no Emoji/character icons, Unit banner, companion, or learning-path guide line.');

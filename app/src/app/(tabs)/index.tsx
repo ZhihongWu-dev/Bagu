@@ -5,9 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CoursePath } from '@/components/course-path';
 import { LearningStatusBar } from '@/components/learning-status-bar';
 import { ScreenShell } from '@/components/screen-shell';
-import { UnitBanner } from '@/components/unit-banner';
 import { useProgress } from '@/context/progress-context';
-import { transformerNodes, transformerUnit } from '@/data/transformer-course';
+import { transformerUnit } from '@/data/transformer-course';
 import type { LearningNode } from '@/types/course';
 
 export default function LearningScreen() {
@@ -22,7 +21,6 @@ export default function LearningScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}>
           <LearningStatusBar streak={streak} xp={xp} focus={focus} />
-          <UnitBanner title={transformerUnit.title} subtitle={transformerUnit.subtitle} completed={completedLessonIds.length} total={transformerNodes.length} />
           <CoursePath
             unit={transformerUnit}
             completedLessonIds={completedLessonIds}

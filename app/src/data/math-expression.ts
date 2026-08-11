@@ -1,0 +1,76 @@
+import type { MathExpression } from '@/types/course';
+
+const latexByPlainText: Record<string, string> = {
+  'Attention(Q,K,V)=softmax(QKᵀ/√dₖ)V': String.raw`\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V`,
+  'MultiHead(Q,K,V)=Concat(head₁,…,headₕ)Wᴼ': String.raw`\operatorname{MultiHead}(Q,K,V)=\operatorname{Concat}(\operatorname{head}_1,\ldots,\operatorname{head}_h)W^O`,
+  'L = -Σₜ log p(xₜ | x₍<t₎)': String.raw`\mathcal{L}=-\sum_t\log p(x_t\mid x_{<t})`,
+  'W′ = W + (α/r)BA': String.raw`W'=W+\frac{\alpha}{r}BA`,
+  'H(p,q) = -Σᵢ pᵢ log qᵢ': String.raw`H(p,q)=-\sum_i p_i\log q_i`,
+  'Dₖₗ(P‖Q)=ΣₓP(x)log(P(x)/Q(x))': String.raw`D_{\mathrm{KL}}(P\Vert Q)=\sum_x P(x)\log\frac{P(x)}{Q(x)}`,
+  'FL(pₜ)=-αₜ(1-pₜ)^γlog(pₜ)': String.raw`\operatorname{FL}(p_t)=-\alpha_t(1-p_t)^\gamma\log p_t`,
+  'Gₜ=Σₖ₌₀∞γᵏrₜ₊ₖ₊₁': String.raw`G_t=\sum_{k=0}^{\infty}\gamma^k r_{t+k+1}`,
+  'Lclip=E[min(rₜAₜ, clip(rₜ,1-ε,1+ε)Aₜ)]': String.raw`\mathcal{L}^{\mathrm{clip}}=\mathbb{E}_t\!\left[\min\!\left(r_tA_t,\operatorname{clip}(r_t,1-\varepsilon,1+\varepsilon)A_t\right)\right]`,
+  'O(n²d + nd²)': String.raw`\mathcal{O}\!\left(n^2d+nd^2\right)`,
+  'FFN(x)=W₂σ(W₁x+b₁)+b₂': String.raw`\operatorname{FFN}(x)=W_2\sigma(W_1x+b_1)+b_2`,
+  'Pre-LN: x + F(LN(x))': String.raw`x_{\ell+1}=x_\ell+F\!\left(\operatorname{LN}(x_\ell)\right)`,
+  'RMSNorm(x)=x/RMS(x)·g': String.raw`\operatorname{RMSNorm}(x)=\frac{x}{\operatorname{RMS}(x)}\odot g`,
+  'qₘᵀkₙ=qᵀR(n−m)k': String.raw`q_m^{\mathsf T}k_n=q^{\mathsf T}R(n-m)k`,
+  'score(i,j)=qᵢkⱼᵀ−m|i−j|': String.raw`s_{ij}=q_i k_j^{\mathsf T}-m\lvert i-j\rvert`,
+  'logits = hEᵀ': String.raw`\operatorname{logits}=hE^{\mathsf T}`,
+  'pᵢ∝exp(zᵢ/T)': String.raw`p_i\propto\exp\!\left(\frac{z_i}{T}\right)`,
+  'L=-log σ(r_chosen-r_rejected)': String.raw`\mathcal{L}=-\log\sigma\!\left(r_{\mathrm{chosen}}-r_{\mathrm{rejected}}\right)`,
+  'y′=(1−ε)y+ε/K': String.raw`y'=(1-\varepsilon)y+\frac{\varepsilon}{K}`,
+  'L=-log exp(sim(q,k+)/τ)/Σ exp(sim(q,k)/τ)': String.raw`\mathcal{L}=-\log\frac{\exp(\operatorname{sim}(q,k^+)/\tau)}{\sum_k\exp(\operatorname{sim}(q,k)/\tau)}`,
+  'max(0,d(a,p)−d(a,n)+m)': String.raw`\max\!\left(0,d(a,p)-d(a,n)+m\right)`,
+  'Dice=2|P∩G|/(|P|+|G|)': String.raw`\operatorname{Dice}(P,G)=\frac{2\lvert P\cap G\rvert}{\lvert P\rvert+\lvert G\rvert}`,
+  'θ←(1−ηλ)θ−η·AdamGrad': String.raw`\theta\leftarrow(1-\eta\lambda)\theta-\eta\,g_{\mathrm{Adam}}`,
+  'y=m⊙x/(1−p)': String.raw`y=\frac{m\odot x}{1-p}`,
+  'Var(W)_He≈2/fan_in': String.raw`\operatorname{Var}(W)_{\mathrm{He}}\approx\frac{2}{\operatorname{fan\_in}}`,
+  'Q←Q+α[r+γmaxₐQ(s′,a)−Q]': String.raw`Q(s,a)\leftarrow Q(s,a)+\alpha\!\left[r+\gamma\max_{a'}Q(s',a')-Q(s,a)\right]`,
+  '∇J=E[Gₜ∇logπ(aₜ|sₜ)]': String.raw`\nabla J(\theta)=\mathbb{E}\!\left[G_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)\right]`,
+  'Âₜ=Σₗ(γλ)ˡδₜ₊ₗ': String.raw`\hat{A}_t=\sum_{l=0}^{\infty}(\gamma\lambda)^l\delta_{t+l}`,
+  'Q=XWQ, K=XWK, V=XWV': String.raw`Q=XW_Q,\qquad K=XW_K,\qquad V=XW_V`,
+  '(B,H,Lq,Dh)·(B,H,Dh,Lk)=(B,H,Lq,Lk)': String.raw`(B,H,L_q,D_h)\,(B,H,D_h,L_k)=(B,H,L_q,L_k)`,
+  'softmax(zᵢ)=exp(zᵢ−max(z))/Σⱼexp(zⱼ−max(z))': String.raw`\operatorname{softmax}(z)_i=\frac{\exp(z_i-\max_j z_j)}{\sum_j\exp(z_j-\max_k z_k)}`,
+  'softmax(S+M), Mᵢⱼ≈−∞ for forbidden j': String.raw`\operatorname{softmax}(S+M),\qquad M_{ij}\to-\infty\ \text{for forbidden }j`,
+  'd_model=H·d_head': String.raw`d_{\mathrm{model}}=H\,d_{\mathrm{head}}`,
+  'y=x+F(x)': String.raw`y=x+F(x)`,
+  'Pre: x+F(LN(x)); Post: LN(x+F(x))': String.raw`\text{Pre-LN: }x+F(\operatorname{LN}(x)),\qquad \text{Post-LN: }\operatorname{LN}(x+F(x))`,
+  '(R(m)q)ᵀ(R(n)k)=qᵀR(n−m)k': String.raw`\bigl(R(m)q\bigr)^{\mathsf T}\bigl(R(n)k\bigr)=q^{\mathsf T}R(n-m)k`,
+  'p(x)=∏ₜp(xₜ|x₍<t₎)': String.raw`p(x)=\prod_t p(x_t\mid x_{<t})`,
+  'q=clip(round(x/s)+z), x≈s(q−z)': String.raw`q=\operatorname{clip}\!\left(\operatorname{round}\!\left(\frac{x}{s}\right)+z\right),\qquad x\approx s(q-z)`,
+  '(B,H,Lq,Dh)·(B,H,Dh,Lk)→(B,H,Lq,Lk)': String.raw`(B,H,L_q,D_h)\,(B,H,D_h,L_k)\longrightarrow(B,H,L_q,L_k)`,
+  'softmax(S+M), Mᵢⱼ≈−∞ when position j is forbidden': String.raw`\operatorname{softmax}(S+M),\qquad M_{ij}\to-\infty\ \text{when position }j\text{ is forbidden}`,
+  'MultiHead=Concat(head₁,…,headₕ)Wᴼ': String.raw`\operatorname{MultiHead}=\operatorname{Concat}(\operatorname{head}_1,\ldots,\operatorname{head}_h)W^O`,
+  'B×L×D ↔ B×H×L×Dh, D=H·Dh': String.raw`B\times L\times D\ \longleftrightarrow\ B\times H\times L\times D_h,\qquad D=H D_h`,
+  'LN(x)=γ⊙(x−μ)/√(σ²+ε)+β': String.raw`\operatorname{LN}(x)=\gamma\odot\frac{x-\mu}{\sqrt{\sigma^2+\varepsilon}}+\beta`,
+  'FFN(x)=W₂·φ(W₁x+b₁)+b₂': String.raw`\operatorname{FFN}(x)=W_2\,\phi(W_1x+b_1)+b_2`,
+  'PE(pos,2i)=sin(pos/10000^(2i/d))': String.raw`\operatorname{PE}(\mathrm{pos},2i)=\sin\!\left(\frac{\mathrm{pos}}{10000^{2i/d}}\right)`,
+  'scoreᵢⱼ=qᵢkⱼ/√d−m_h·|i−j|': String.raw`s_{ij}=\frac{q_i k_j^{\mathsf T}}{\sqrt{d}}-m_h\lvert i-j\rvert`,
+  'position frequency: θᵢ=base^(−2i/d)': String.raw`\theta_i=\operatorname{base}^{-2i/d}`,
+  'Attention compute≈O(n²d), KV size≈O(L·n·Hkv·Dh)': String.raw`C_{\mathrm{attn}}\in\mathcal{O}(n^2d),\qquad M_{\mathrm{KV}}\in\mathcal{O}(L\,n\,H_{\mathrm{kv}}D_h)`,
+  'h₁…hₙ=Encoder(x₁…xₙ)': String.raw`(h_1,\ldots,h_n)=\operatorname{Encoder}(x_1,\ldots,x_n)`,
+  'CrossAttn(Q_decoder,K_encoder,V_encoder)': String.raw`\operatorname{CrossAttn}(Q_{\mathrm{decoder}},K_{\mathrm{encoder}},V_{\mathrm{encoder}})`,
+  'softmax(Q_target K_sourceᵀ/√d)V_source': String.raw`\operatorname{softmax}\!\left(\frac{Q_{\mathrm{target}}K_{\mathrm{source}}^{\mathsf T}}{\sqrt{d}}\right)V_{\mathrm{source}}`,
+  'L_CLM=−Σₜlog p(xₜ|x₍<t₎)': String.raw`\mathcal{L}_{\mathrm{CLM}}=-\sum_t\log p(x_t\mid x_{<t})`,
+  'TTFT≈queue+prefill, TPOT≈decode step latency': String.raw`\mathrm{TTFT}\approx t_{\mathrm{queue}}+t_{\mathrm{prefill}},\qquad \mathrm{TPOT}\approx t_{\mathrm{decode\ step}}`,
+  'bytes≈2·L·N·Hkv·Dh·bytes_per_element': String.raw`M_{\mathrm{KV}}\approx2LNH_{\mathrm{kv}}D_h\,b_{\mathrm{element}}`,
+  'Hq≥Hkv, group_size=Hq/Hkv': String.raw`H_q\ge H_{\mathrm{kv}},\qquad g=\frac{H_q}{H_{\mathrm{kv}}}`,
+  'exact Attention with tiled online softmax': String.raw`\operatorname{FlashAttention}(Q,K,V)\equiv\operatorname{Attention}(Q,K,V)`,
+  'throughput=tokens/time, latency=request completion time': String.raw`\mathrm{throughput}=\frac{\mathrm{tokens}}{\mathrm{time}},\qquad \mathrm{latency}=t_{\mathrm{complete}}-t_{\mathrm{arrival}}`,
+  'pᵢ=exp(zᵢ)/Σⱼexp(zⱼ)': String.raw`p_i=\frac{\exp(z_i)}{\sum_j\exp(z_j)}`,
+  '∂softmax/∂z→0': String.raw`\frac{\partial\,\operatorname{softmax}}{\partial z}\longrightarrow0`,
+  'Q=XWQ': String.raw`Q=XW_Q`,
+  'headᵢ=Attention(QWᵢQ,KWᵢK,VWᵢV)': String.raw`\operatorname{head}_i=\operatorname{Attention}(QW_i^Q,KW_i^K,VW_i^V)`,
+  'softmax(S+M)': String.raw`\operatorname{softmax}(S+M)`,
+};
+
+export function toMathExpression(plainText: string): MathExpression {
+  const latex = latexByPlainText[plainText];
+  if (!latex) throw new Error(`Missing LaTeX mapping for formula: ${plainText}`);
+  return { latex, plainText };
+}
+
+export function getFormulaCatalogEntries() {
+  return Object.entries(latexByPlainText).map(([plainText, latex]) => ({ plainText, latex }));
+}

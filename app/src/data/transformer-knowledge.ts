@@ -1,23 +1,23 @@
-import type { KnowledgeCard, KnowledgeSource } from '@/types/course';
+import type { KnowledgeCard, KnowledgeCardInput, KnowledgeSource } from '@/types/course';
 
 const paper = (title: string, url: string): KnowledgeSource => ({ title, url, kind: 'paper' });
 const docs = (title: string, url: string): KnowledgeSource => ({ title, url, kind: 'docs' });
 
-type Entry = Omit<KnowledgeCard, 'domainId' | 'difficulty' | 'aliases' | 'followUps' | 'sources'> & {
+type Entry = Omit<KnowledgeCardInput, 'domainId' | 'difficulty' | 'aliases' | 'followUps' | 'sources'> & {
   aliases?: string[];
   difficulty?: KnowledgeCard['difficulty'];
   followUps: string[];
   sources: KnowledgeSource[];
 };
 
-const entry = (value: Entry): KnowledgeCard => ({
+const entry = (value: Entry): KnowledgeCardInput => ({
   domainId: 'transformer',
   difficulty: value.difficulty ?? '高频',
   aliases: value.aliases ?? [],
   ...value,
 });
 
-export const transformerKnowledgeCards: KnowledgeCard[] = [
+export const transformerKnowledgeCards: KnowledgeCardInput[] = [
   entry({
     id: 'qkv-roles', title: 'Q、K、V 到底分别做什么？', aliases: ['Query Key Value', 'QKV'],
     summary: 'Q 发起匹配、K 提供索引、V 携带被聚合的内容。',

@@ -5,12 +5,18 @@ export type KnowledgeKeyword = {
   label: string;
   definition: string;
   intuition: string;
-  formula?: string;
+  formula?: MathExpression;
+};
+
+export type MathExpression = {
+  latex: string;
+  plainText: string;
 };
 
 export type Choice = {
   id: string;
   label: string;
+  formula?: MathExpression;
 };
 
 type ExerciseBase = {
@@ -18,7 +24,7 @@ type ExerciseBase = {
   type: 'single-choice' | 'multiple-choice' | 'ordering' | 'self-recall';
   eyebrow: string;
   prompt: string;
-  formula?: string;
+  formula?: MathExpression;
   explanation: string;
   coveredPoints: string[];
   missingPoint?: string;
@@ -113,13 +119,17 @@ export type KnowledgeCard = {
   summary: string;
   answer: string;
   intuition: string;
-  formula?: string;
+  formula?: MathExpression;
   keyPoints: string[];
   followUps: string[];
   sources: KnowledgeSource[];
   misconceptions?: string[];
   relatedIds?: string[];
   comparison?: { label: string; value: string }[];
+};
+
+export type KnowledgeCardInput = Omit<KnowledgeCard, 'formula'> & {
+  formula?: string;
 };
 
 export type ReviewSource = 'lesson' | 'knowledge' | 'project';

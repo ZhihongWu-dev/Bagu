@@ -2,6 +2,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/theme/colors';
 import type { KnowledgeKeyword } from '@/types/course';
+import { MathFormula } from '@/components/math-formula';
 
 type Props = {
   keyword: KnowledgeKeyword | null;
@@ -23,7 +24,7 @@ export function KeywordSheet({ keyword, onClose }: Props) {
               <Text style={styles.intuitionLabel}>直觉理解</Text>
               <Text style={styles.intuition}>{keyword.intuition}</Text>
             </View>
-            {keyword.formula && <Text style={styles.formula}>{keyword.formula}</Text>}
+            {keyword.formula ? <View style={styles.formula}><MathFormula expression={keyword.formula} compact /></View> : null}
             <Pressable onPress={onClose} style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}>
               <Text style={styles.buttonText}>知道了，回到题目</Text>
             </Pressable>
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   intuitionCard: { backgroundColor: colors.successSoft, borderRadius: 15, padding: 14, marginTop: 16 },
   intuitionLabel: { color: colors.successDark, fontSize: 11, fontWeight: '900' },
   intuition: { color: colors.text, lineHeight: 21, marginTop: 5 },
-  formula: { color: colors.text, backgroundColor: colors.surfaceMuted, borderRadius: 14, padding: 15, textAlign: 'center', fontSize: 17, marginTop: 13 },
+  formula: { overflow: 'hidden', backgroundColor: colors.surfaceMuted, borderRadius: 14, paddingHorizontal: 8, marginTop: 13 },
   button: { backgroundColor: colors.primary, borderBottomWidth: 5, borderBottomColor: colors.primaryDark, borderRadius: 16, padding: 16, alignItems: 'center', marginTop: 18 },
   buttonPressed: { transform: [{ translateY: 3 }], borderBottomWidth: 2 },
   buttonText: { color: colors.surface, fontWeight: '900' },

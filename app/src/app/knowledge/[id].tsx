@@ -4,6 +4,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/app-icon';
+import { MathFormula } from '@/components/math-formula';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { domainById, knowledgeById } from '@/data/knowledge-base';
@@ -44,7 +45,7 @@ export default function KnowledgeDetailScreen() {
 
           <CollapsibleSection title="核心概念" defaultOpen><Text style={styles.body}>{card.intuition}</Text></CollapsibleSection>
           <CollapsibleSection title="工作机制" defaultOpen><Text style={styles.body}>{card.answer}</Text></CollapsibleSection>
-          {card.formula ? <View style={styles.formulaCard}><Text style={styles.formulaLabel}>公式与流程</Text><Text style={styles.formula}>{card.formula}</Text></View> : null}
+          {card.formula ? <View style={styles.formulaCard}><Text style={styles.formulaLabel}>公式与流程</Text><MathFormula expression={card.formula} style={styles.formula} /></View> : null}
           <CollapsibleSection title="关键结论">
             {card.keyPoints.map((point) => <IconBullet key={point} icon="check" color={colors.successDark} text={point} />)}
           </CollapsibleSection>
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   body: { color: colors.text, lineHeight: 23 },
   formulaCard: { backgroundColor: colors.primarySoft, borderRadius: 17, padding: 16, marginTop: 12 },
   formulaLabel: { color: colors.primary, fontSize: 10, fontWeight: '900' },
-  formula: { color: colors.text, textAlign: 'center', fontSize: 16, marginTop: 9 },
+  formula: { marginTop: 6 },
   bulletRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 6 },
   bulletText: { flex: 1, lineHeight: 22, fontWeight: '700' },
   answerGuide: { color: colors.textMuted, lineHeight: 20, marginBottom: 8 },
