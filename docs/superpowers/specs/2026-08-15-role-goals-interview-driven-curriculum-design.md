@@ -170,7 +170,26 @@ Each new article includes:
 
 ## Research and Source Policy
 
-Public interview reports from platforms such as Nowcoder are discovery evidence only. They may identify repeated topics, phrasing patterns, and project follow-up categories, but their answers and claimed frequency counts are not treated as authoritative.
+### Interview evidence
+
+The primary discovery pool is recent public interview experience from GitHub and Nowcoder:
+
+- Prefer 2024-2026 mainland-China interview reports for LLM algorithm and application roles.
+- Record the target role, company or team direction when public, interview round, core question, and follow-up category.
+- Use `km1994/LLMs_interview_notes` as an Apache-2.0 topic index, while still rewriting all Bagu material independently.
+- Use `wdndev/llm_interview_note` only for topic discovery because it does not declare a reusable content license.
+- Use CC BY-SA repositories such as `MisterBooo/llm-interview-questions` only to discover topics and review verification methodology; do not copy their text, diagrams, or content structure into Bagu.
+
+Nowcoder posts and other public interview reports are discovery evidence only. They may identify repeated topics, question depth, and project follow-up patterns, but their text, answers, and claimed frequency counts are not copied or treated as authoritative.
+
+A topic enters the high-frequency core path only when at least one condition is met:
+
+1. It appears in at least three independent public interview sources.
+2. A recent role-specific interview report contains a substantial multi-step follow-up on it and primary technical sources confirm its relevance.
+
+Do not publish precise occurrence counts unless every counted source is recorded and independently auditable. Each accepted topic keeps internal evidence metadata: source URL, retrieval date, role, interview stage when available, and normalized topic tags.
+
+### Technical verification
 
 Technical claims must be checked against primary sources such as:
 
@@ -179,6 +198,16 @@ Technical claims must be checked against primary sources such as:
 - Official repositories and documentation for vLLM, DeepSpeed, Megatron-LM, PyTorch, Hugging Face, and MCP
 
 External text, diagrams, and code are not copied. Repositories with restrictive or share-alike licenses may inform topic discovery but are not used as content templates. Every Bagu answer is independently written and source-linked.
+
+### Content review
+
+For each specialist node, the implementation must separate three inputs:
+
+- Interview evidence determines what is asked and how deeply interviewers follow up.
+- Primary technical sources determine the factual answer and implementation boundaries.
+- Bagu's editorial pass produces the original Chinese explanation, distractors, project scenario, and oral-answer rubric.
+
+No node passes content validation without both interview evidence and at least one primary technical source.
 
 ## Storage and Privacy
 
@@ -210,6 +239,7 @@ Automated tests cover:
 - Deep-link onboarding and lesson guards
 - Review queue and favorites across role switches
 - Exact node, exercise, and knowledge-source counts
+- Interview-evidence metadata and primary-source presence for every specialist node
 
 The implementation must also pass TypeScript, lint, content validation, formula validation, UI icon validation, Expo Doctor, and iOS/Android/Web export smoke tests. A mobile-sized interactive smoke test verifies onboarding, both paths, switching, locked nodes, and retained progress.
 
@@ -223,3 +253,4 @@ The implementation must also pass TypeScript, lint, content validation, formula 
 6. No exercise requires writing code.
 7. Every specialist node has a sourced knowledge article and project-oriented practice.
 8. Role selection remains local and absent from analytics payloads.
+9. Every specialist node meets the interview-evidence threshold and records at least one primary technical source.
