@@ -148,6 +148,7 @@ HTML 只存在于进程内存。DOM 环境关闭脚本执行和外部资源加�
 
 - `processed`；
 - `blocked_by_robots`；
+- `robots_unavailable`；
 - `login_required`；
 - `captcha_detected`；
 - `unsupported_page`；
