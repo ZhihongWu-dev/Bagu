@@ -1,0 +1,11 @@
+{
+  "name": "bagu-resume-analysis-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "mammoth": "^1.10.0",
+    "pdf-parse": "^1.1.1"
+  }
+}

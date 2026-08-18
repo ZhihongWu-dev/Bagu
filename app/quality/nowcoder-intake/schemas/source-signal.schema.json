@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bagu.local/schemas/source-signal.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "sourceId", "sourceUrl", "pageType", "collectedAt", "contentHash", "role", "recruitingStage", "topicIds", "followUpTypes", "misconceptionTypes", "confidence", "reviewStatus"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "sourceId": { "type": "string" },
+    "sourceUrl": { "type": "string", "format": "uri" },
+    "pageType": { "enum": ["interview", "multiple-choice"] },
+    "collectedAt": { "type": "string", "format": "date-time" },
+    "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "role": { "enum": ["llm_algorithm", "llm_application", "shared", "unknown"] },
+    "recruitingStage": { "enum": ["campus-autumn", "campus-other", "unknown"] },
+    "year": { "type": "integer", "minimum": 2020, "maximum": 2100 },
+    "topicIds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "followUpTypes": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "misconceptionTypes": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "choiceSignals": { "type": "object" },
+    "confidence": { "enum": ["low", "medium", "high"] },
+    "reviewStatus": { "const": "pending" }
+  }
+}

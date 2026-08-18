@@ -7,6 +7,7 @@ export type AppIconName =
   | 'close'
   | 'star'
   | 'flame'
+  | 'heart'
   | 'gem'
   | 'bolt'
   | 'volume'

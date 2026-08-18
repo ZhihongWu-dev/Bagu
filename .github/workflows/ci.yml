@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install CloudBase dependencies
+        run: |
+          npm ci --prefix ../cloudbase/analytics-api
+          npm ci --prefix ../cloudbase/resume-analysis-api
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Validate course content
+        run: npm run validate:content
+
+      - name: Validate question bank
+        run: npm run validate:questions
+
+      - name: Validate question reviews
+        run: npm run validate:question-reviews
+
+      - name: Validate math and icons
+        run: |
+          npm run validate:math
+          npm run validate:ui
+
+      - name: Test learning and curricula
+        run: |
+          npm run test:learning
+          npm run test:roles
+          npm run test:application
+
+      - name: Test analytics and resume boundary
+        run: |
+          npm run test:analytics
+          npm test --prefix ../cloudbase/analytics-api
+          npm run test:resume
+
+      - name: Test question quality and annotations
+        run: |
+          npm run test:question-quality
+          npm run test:annotations
+          npm run test:annotation-tool
+
+      - name: Test public-signal intake
+        run: npm run test:intake

@@ -4,6 +4,8 @@ import { knowledgeConceptTitles } from '@/data/knowledge-concept-titles';
 import { expandedKnowledgeCards } from '@/data/knowledge-expansion';
 import { toMathExpression } from '@/data/math-expression';
 import { transformerKnowledgeCards } from '@/data/transformer-knowledge';
+import { applicationKnowledgeCards } from '@/data/application/curriculum';
+import { algorithmKnowledgeCards } from '@/data/specialist-curriculum';
 
 export const knowledgeDomains: KnowledgeDomain[] = [
   { id: 'transformer', label: 'Transformer', shortLabel: 'Transformer', icon: 'network', color: '#6C52E5', softColor: '#EEE9FF' },
@@ -173,7 +175,7 @@ const baseKnowledgeCards: KnowledgeCardInput[] = [
   },
 ];
 
-const sourceKnowledgeCards: KnowledgeCardInput[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards];
+const sourceKnowledgeCards: KnowledgeCardInput[] = [...baseKnowledgeCards, ...expandedKnowledgeCards, ...transformerKnowledgeCards, ...algorithmKnowledgeCards, ...applicationKnowledgeCards];
 
 export const knowledgeCards: KnowledgeCard[] = sourceKnowledgeCards.map((card) => ({
   ...card,

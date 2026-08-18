@@ -1,4 +1,7 @@
 import type { AppIconName } from '@/types/icons';
+import type { QuestionCognitiveLevel } from '@/types/question-quality';
+
+export type TargetRole = 'llm_algorithm' | 'llm_application';
 
 export type KnowledgeKeyword = {
   id: string;
@@ -21,6 +24,9 @@ export type Choice = {
 
 type ExerciseBase = {
   id: string;
+  questionVersion?: number;
+  cognitiveLevel?: QuestionCognitiveLevel;
+  learningObjectiveId?: string;
   type: 'single-choice' | 'multiple-choice' | 'ordering' | 'self-recall';
   eyebrow: string;
   prompt: string;
@@ -29,6 +35,7 @@ type ExerciseBase = {
   coveredPoints: string[];
   missingPoint?: string;
   keywords: string[];
+  practiceKind?: 'concept' | 'mechanism' | 'selection' | 'troubleshooting' | 'metrics' | 'oral' | 'boundary' | 'scenario';
 };
 
 export type SingleChoiceExercise = ExerciseBase & {
@@ -126,6 +133,7 @@ export type KnowledgeCard = {
   misconceptions?: string[];
   relatedIds?: string[];
   comparison?: { label: string; value: string }[];
+  roles?: TargetRole[];
 };
 
 export type KnowledgeCardInput = Omit<KnowledgeCard, 'formula'> & {
@@ -153,4 +161,18 @@ export type ProjectProfile = {
   summary: string;
   stack: string[];
   challenge: string;
+};
+
+export type ResumeAnalysisProfile = {
+  sourceName: string;
+  experienceType: string;
+  technologies: string[];
+  responsibilities: string[];
+  scale?: string;
+  metrics: string[];
+  topicIds: string[];
+  followUps: string[];
+  confidence: number;
+  analyzedAt: string;
+  confirmed: boolean;
 };

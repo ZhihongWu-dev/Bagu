@@ -3,11 +3,12 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAnalytics } from '@/analytics/analytics-context';
 import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { domainById, knowledgeById } from '@/data/knowledge-base';
-import { transformerNodes } from '@/data/transformer-course';
+import { findLearningNode } from '@/data/course-catalog';
 import { colors } from '@/theme/colors';
 import type { ReviewSource } from '@/types/course';
 import type { AppIconName } from '@/types/icons';
@@ -15,6 +16,7 @@ import type { AppIconName } from '@/types/icons';
 type Filter = 'all' | ReviewSource;
 
 export default function ReviewScreen() {
+  const { track } = useAnalytics();
   const { reviewQueue, reviewSchedule, projectProfile, removeFromReview } = useProgress();
   const [filter, setFilter] = useState<Filter>('all');
 
@@ -67,7 +69,7 @@ export default function ReviewScreen() {
           ) : (
             <View style={styles.list}>
               {items.map((item) => {
-                const node = item.source === 'lesson' ? transformerNodes.find((entry) => entry.id === item.targetId) : null;
+                const node = item.source === 'lesson' ? findLearningNode(item.targetId) : null;
                 const card = item.source === 'knowledge' ? knowledgeById[item.targetId] : null;
                 const domain = card ? domainById[card.domainId] : null;
                 const title = node?.shortTitle ?? card?.title ?? projectProfile?.name ?? '项目深挖';
@@ -86,7 +88,7 @@ export default function ReviewScreen() {
                       <Text numberOfLines={2} style={styles.itemTitle}>{title}</Text>
                     </View>
                     {!item.id.startsWith('legacy-') && (
-                      <Pressable hitSlop={10} onPress={(event) => { event.stopPropagation(); removeFromReview(item.id); }}>
+                      <Pressable hitSlop={10} onPress={(event) => { event.stopPropagation(); removeFromReview(item.id); track('review_completed', { target_id: item.targetId, review_source: item.source }); }}>
                         <AppIcon name="close" size={20} color="#AAA3B6" />
                       </Pressable>
                     )}

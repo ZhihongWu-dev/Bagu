@@ -1,0 +1,95 @@
+import { buildExplicitQuestionNode, multipleQuestion, orderingQuestion, recallQuestion, singleQuestion } from '../../question-builders';
+
+export const softmaxAttentionNode = buildExplicitQuestionNode({
+  id: 'softmax-attention', title: 'Softmax 与注意力分布', shortTitle: 'Softmax', subtitle: '从 Logit 到可解释权重',
+  icon: 'chart', knowledgeIds: ['softmax-attention'],
+  exercises: [
+    singleQuestion({
+      id: 'softmax-attention-01', cognitiveLevel: 'foundation', learningObjectiveId: 'softmax-normalization-axis',
+      eyebrow: '轴判断', prompt: '对分数张量 [B,H,Lq,Lk]，标准注意力的 Softmax 应沿哪一轴计算？',
+      choices: ['Lk：每个 Query 在可见 Key 上归一化', 'Lq：每个 Key 在发起查询的位置上归一化', 'H：同一位置在所有头上归一化', 'Lq 与 Lk：对整个分数矩阵联合归一化'], correctChoiceId: 'a',
+      explanation: '每个 Query 需要在可见 Key 位置上形成一组和为 1 的权重，因此沿最后的 Lk 轴归一化。',
+      coveredPoints: ['注意力 Softmax 的归一化轴'], keywords: ['logit'], practiceKind: 'mechanism',
+    }),
+    multipleQuestion({
+      id: 'softmax-attention-02', cognitiveLevel: 'foundation', learningObjectiveId: 'softmax-properties',
+      eyebrow: '多选 · 性质', prompt: '对一行有限 Logit 做 Softmax 后，哪些性质成立？',
+      choices: ['每个权重为正', '所有权重之和为 1', '保持各 Logit 的排序关系', '保持任意两项的绝对差值'], correctChoiceIds: ['a', 'b', 'c'],
+      explanation: '对有限 Logit，指数函数单调且严格为正，归一化后总和为 1；显式 −∞ Mask 可产生精确零权重。输出是非线性概率，绝对差值不会保留。',
+      coveredPoints: ['Softmax 的正性、归一性与序关系'], keywords: ['logit'], practiceKind: 'concept',
+    }),
+    singleQuestion({
+      id: 'softmax-attention-03', cognitiveLevel: 'foundation', learningObjectiveId: 'softmax-shift-invariance',
+      eyebrow: '性质判断', prompt: '同一个 Query 的所有 Logit 都加上 100，精确数学下注意力权重如何变化？',
+      choices: ['不变', '与原权重相比更尖锐', '与原权重相比更平坦', '仅最大 Logit 对应的权重不变'], correctChoiceId: 'a',
+      explanation: 'Softmax(z+c)=Softmax(z)，公因子 exp(c) 会在分子分母中抵消。这也是减去最大值可保持结果的依据。',
+      coveredPoints: ['Softmax 的整体平移不变性'], keywords: ['logit'], practiceKind: 'concept',
+    }),
+    orderingQuestion({
+      id: 'softmax-attention-04', cognitiveLevel: 'application', learningObjectiveId: 'softmax-stable-computation',
+      eyebrow: '排序 · 数值稳定', prompt: '对一行 Logit 稳定计算 Softmax，按顺序排列。',
+      choices: [
+        { id: 'a', label: '除以所有指数项之和' }, { id: 'b', label: '找到该行最大 Logit' },
+        { id: 'c', label: '对平移后的数值取指数' }, { id: 'd', label: '每项减去该行最大值' },
+      ], correctOrder: ['b', 'd', 'c', 'a'],
+      explanation: '先减最大值可让最大指数为 1，降低上溢风险；平移不变性保证归一化结果不变。',
+      coveredPoints: ['稳定 Softmax 的计算流程'], keywords: ['logit'], practiceKind: 'mechanism',
+    }),
+    singleQuestion({
+      id: 'softmax-attention-05', cognitiveLevel: 'application', learningObjectiveId: 'softmax-temperature',
+      eyebrow: '场景题', prompt: '固定 Logit 差异，把 Softmax 温度 T 从 1 降到 0.5，分布通常如何变化？',
+      choices: ['更尖锐，最大项相对占比上升', '更平坦，非最大项相对占比上升', '排序不变且各项权重也保持不变', '尖锐度不变，只改变数值稳定性'], correctChoiceId: 'a',
+      explanation: '除以更小温度会放大 Logit 差异，使最大项获得更多概率；Softmax 后权重和仍为 1。',
+      coveredPoints: ['温度对注意力熵与尖锐度的影响'], keywords: ['logit', 'saturation'], practiceKind: 'mechanism',
+    }),
+    singleQuestion({
+      id: 'softmax-attention-06', cognitiveLevel: 'application', learningObjectiveId: 'softmax-debug-wrong-axis',
+      eyebrow: '排障题', prompt: '已确认 Softmax 前分数形状为 [B,H,Lq,Lk]、未转置，检查求和代码也无误。结果却是每个 Key 跨 Query 的权重和为 1。最可能的错误是？',
+      choices: ['Softmax 沿 Lq 轴而不是 Lk 轴', 'Softmax 沿 Lk 轴，但减最大值时沿 Lq 轴', 'Key Padding Mask 在 Lq 轴广播，但 Softmax 仍沿 Lk 轴', '缩放因子使用 Dmodel 而不是 dₖ'], correctChoiceId: 'a',
+      explanation: '题干排除了转置和检查错误；只有沿 Lq 归一化会直接保证每个 Key 跨 Query 求和为 1。减最大值轴、Mask 或缩放错误会改变数值，但不会建立该归一化恒等式。',
+      coveredPoints: ['从权重和定位 Softmax 轴错误'], keywords: ['logit'], practiceKind: 'troubleshooting',
+    }),
+    multipleQuestion({
+      id: 'softmax-attention-07', cognitiveLevel: 'application', learningObjectiveId: 'softmax-logit-difference',
+      eyebrow: '多选 · 比例', prompt: '对同一行两个未遮挡位置 i、j，哪些说法正确？',
+      choices: ['权重比 aᵢ/aⱼ=exp(zᵢ−zⱼ)', '只要 zᵢ>zⱼ，就有 aᵢ>aⱼ', '给所有 Logit 同加常数会改变权重比', '加入其他位置会通过共同分母改变 aᵢ/aⱼ 的比值'], correctChoiceIds: ['a', 'b'],
+      explanation: '共同归一化分母在比值中抵消，因此两项比值仅由 Logit 差决定。其他位置会改变二者绝对权重，但不会改变 aᵢ/aⱼ。',
+      coveredPoints: ['由 Logit 差理解权重比'], keywords: ['logit'], practiceKind: 'mechanism',
+    }),
+    singleQuestion({
+      id: 'softmax-attention-08', cognitiveLevel: 'application', learningObjectiveId: 'softmax-output-convexity',
+      eyebrow: '结果判断', prompt: '若一行注意力权重都非负且和为 1，该 Query 的单头输出相对对应 Value 向量有什么性质？',
+      choices: ['是这些 Value 的凸组合', '只有权重非零的位置超过一个时才是仿射组合而非凸组合', '若 Value 含负分量就不再是凸组合', '是 Key 的凸组合，再由 Value 进行缩放'], correctChoiceId: 'a',
+      explanation: '非负且和为 1 的加权和是凸组合；除非权重退化为 one-hot，否则通常不等于某一个 Value。',
+      coveredPoints: ['注意力输出作为 Value 的凸组合'], keywords: ['logit'], practiceKind: 'concept',
+    }),
+    singleQuestion({
+      id: 'softmax-attention-09', cognitiveLevel: 'application', learningObjectiveId: 'softmax-mixed-precision',
+      eyebrow: '工程题', prompt: '混合精度下直接计算 exp(很大的正 Logit) 出现 inf。最直接的稳定化处理是？',
+      choices: ['每行先减去最大 Logit 再取指数', '先把正 Logit 截断为 0，再直接取指数', '把 Logit 整体除以其最大绝对值', '在 Softmax 后用总和再次归一化'], correctChoiceId: 'a',
+      explanation: '减最大值后所有指数输入不大于 0，可显著减少上溢；它利用平移不变性，不改变精确 Softmax。',
+      coveredPoints: ['Softmax 上溢与减最大值技巧'], keywords: ['logit'], practiceKind: 'troubleshooting',
+    }),
+    multipleQuestion({
+      id: 'softmax-attention-10', cognitiveLevel: 'deep', learningObjectiveId: 'softmax-interpretation-boundaries',
+      eyebrow: '多选 · 解释边界', prompt: '把注意力权重直接解释为“该 token 对最终预测的因果贡献”时，哪些警惕是合理的？',
+      choices: ['权重只描述当前层、当前头的 Value 混合', '残差、后续层和输出投影还会改变信息流', '若权重在多个输入上稳定，就足以把它当作全模型因果贡献', '相同权重配合不同 Value 可产生不同输出'], correctChoiceIds: ['a', 'b', 'd'],
+      explanation: '注意力权重是局部计算量，不自动等于全模型因果归因；输出还依赖 Value 内容和后续网络。',
+      coveredPoints: ['注意力权重的可解释性边界'], keywords: ['logit'], practiceKind: 'boundary',
+    }),
+    singleQuestion({
+      id: 'softmax-attention-11', cognitiveLevel: 'deep', learningObjectiveId: 'softmax-gradient-saturation',
+      eyebrow: '梯度推理', prompt: '某行 Softmax 已极接近 one-hot。继续成比例放大 Logit 差异，最可能出现什么训练现象？',
+      choices: ['多数位置的局部梯度进一步接近 0', '最大位置梯度保持不变，非最大位置梯度增大', '雅可比只受权重排序影响，与概率接近 0/1 无关', '对角雅可比项趋近 1，非对角项趋近 0'], correctChoiceId: 'a',
+      explanation: 'Softmax 雅可比包含 aᵢ(1−aᵢ) 和 −aᵢaⱼ；概率接近 0 或 1 时这些项变小，形成饱和。',
+      coveredPoints: ['Softmax 饱和与梯度变小的关系'], keywords: ['logit', 'saturation'], practiceKind: 'mechanism',
+    }),
+    recallQuestion({
+      id: 'softmax-attention-12', cognitiveLevel: 'deep', learningObjectiveId: 'softmax-interview-explanation',
+      eyebrow: '口述 · 追问', prompt: '解释注意力中 Softmax 的归一化轴、减最大值技巧、温度效应，以及为什么权重不能直接等同于因果解释。',
+      referencePoints: ['最低充分答案：沿 Key 轴归一化，并用平移不变性解释减最大值不改变结果', '满分补充：温度降低使分布更尖，并指出权重只描述局部 Value 混合而非全模型因果贡献', '部分得分：知道和为 1、减最大值或温度效应中的部分内容，但轴语义不完整', '关键误区：沿 Query 轴归一化、认为减最大值会改变精确结果、或把注意力权重直接等同因果贡献'],
+      explanation: '评分建议：轴语义与数值稳定是最低充分答案的必答项；温度和解释边界用于区分完整答案。任何关键误区未纠正时不得判为合格。',
+      coveredPoints: ['Softmax 机制、稳定性与解释边界'], keywords: ['logit', 'saturation'], practiceKind: 'oral',
+    }),
+  ],
+});

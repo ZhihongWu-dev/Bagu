@@ -1,16 +1,6 @@
-import type { ProjectProfile, ResumeFileMeta, ReviewQueueItem } from '@/types/course';
+import { normalizePersistedProgress, type PersistedProgress } from '@/storage/progress-data';
 
-export type PersistedProgress = {
-  completedLessonIds: string[];
-  nodeAttemptCounts?: Record<string, number>;
-  xp: number;
-  reviewSchedule: Record<string, string>;
-  favoriteKnowledgeIds?: string[];
-  reviewQueue?: ReviewQueueItem[];
-  resumeFile?: ResumeFileMeta | null;
-  projectProfile?: ProjectProfile | null;
-  soundEnabled?: boolean;
-};
+export type { PersistedProgress } from '@/storage/progress-data';
 
 const key = 'bagu-progress-v1';
 
@@ -19,7 +9,7 @@ export async function loadProgress(): Promise<PersistedProgress | null> {
   const raw = localStorage.getItem(key);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as PersistedProgress;
+    return normalizePersistedProgress(JSON.parse(raw));
   } catch {
     return null;
   }

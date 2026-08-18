@@ -20,3 +20,9 @@
 - Keep the main learning flow immediate, visual, and low in text. Prefer progressive disclosure for explanations.
 - Make reasonable, reversible assumptions and continue without interrupting the user unless a decision is destructive, externally consequential, or materially changes product scope.
 - Verify non-trivial changes with TypeScript, lint, Expo Doctor, relevant exports, and an interactive mobile-sized smoke test when available.
+
+## GitHub publication workflow
+
+- Treat the repository owner's standalone request `push` as a request to inspect the current task's diff, run relevant checks, commit only the reviewed scope, push an `agent/<description>` branch, and create or update a Draft PR targeting `main`.
+- Before staging, inspect tracked, untracked, and ignored files for secrets, personal data, generated output, and unrelated user changes. Never interpret `push` as permission to run an unreviewed `git add .` or `git add -A` in a mixed worktree.
+- Never force-push, merge into `main`, bypass failing checks, or publish ambiguous files solely because the user said `push`. Report the blocker or leave the change in a Draft PR.

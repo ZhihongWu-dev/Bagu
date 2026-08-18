@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAnalytics } from '@/analytics/analytics-context';
 import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
@@ -10,24 +11,33 @@ import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
 import { colors } from '@/theme/colors';
 import type { KnowledgeDomainId } from '@/types/course';
 
-type Filter = 'all' | 'favorite' | KnowledgeDomainId;
+type Filter = 'role' | 'all' | 'favorite' | KnowledgeDomainId;
 
 export default function LibraryScreen() {
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<Filter>('all');
-  const { favoriteKnowledgeIds, toggleFavorite } = useProgress();
+  const [filter, setFilter] = useState<Filter>('role');
+  const { track } = useAnalytics();
+  const { favoriteKnowledgeIds, resumeAnalysis, targetRole, toggleFavorite } = useProgress();
   const showDomainOverview = filter === 'all' && !query.trim();
 
   const visibleCards = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return knowledgeCards.filter((card) => {
       const matchesFilter = filter === 'all'
+        || (filter === 'role' && (!card.roles?.length || card.roles.includes(targetRole!)))
         || (filter === 'favorite' && favoriteKnowledgeIds.includes(card.id))
         || card.domainId === filter;
       const haystack = [card.title, card.summary, card.answer, ...card.aliases, ...card.keyPoints, ...(card.relatedIds ?? [])].join(' ').toLowerCase();
       return matchesFilter && (!normalized || haystack.includes(normalized));
+    }).sort((left, right) => {
+      const recommendedIds = resumeAnalysis?.confirmed ? new Set(resumeAnalysis.topicIds.map((id) => `kb-${id}`)) : null;
+      const recommendationDifference = Number(Boolean(recommendedIds?.has(right.id))) - Number(Boolean(recommendedIds?.has(left.id)));
+      if (recommendationDifference) return recommendationDifference;
+      const leftPriority = left.roles?.includes(targetRole!) ? 0 : left.roles?.length ? 2 : 1;
+      const rightPriority = right.roles?.includes(targetRole!) ? 0 : right.roles?.length ? 2 : 1;
+      return leftPriority - rightPriority;
     });
-  }, [favoriteKnowledgeIds, filter, query]);
+  }, [favoriteKnowledgeIds, filter, query, resumeAnalysis, targetRole]);
 
   return (
     <ScreenShell>
@@ -49,7 +59,8 @@ export default function LibraryScreen() {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>
-            <FilterChip label="领域" active={filter === 'all'} onPress={() => setFilter('all')} />
+            <FilterChip label="当前方向" active={filter === 'role'} onPress={() => setFilter('role')} />
+            <FilterChip label="全部领域" active={filter === 'all'} onPress={() => setFilter('all')} />
             <FilterChip label={`收藏 ${favoriteKnowledgeIds.length}`} active={filter === 'favorite'} onPress={() => setFilter('favorite')} />
             {knowledgeDomains.map((domain) => (
               <FilterChip key={domain.id} label={domain.shortLabel} active={filter === domain.id} onPress={() => setFilter(domain.id)} />
@@ -57,7 +68,7 @@ export default function LibraryScreen() {
           </ScrollView>
 
           <View style={styles.resultHeader}>
-            <Text style={styles.resultTitle}>{showDomainOverview ? '六大方向' : filter === 'favorite' ? '我的收藏' : '知识专题'}</Text>
+            <Text style={styles.resultTitle}>{showDomainOverview ? '六大方向' : filter === 'role' ? '当前方向' : filter === 'favorite' ? '我的收藏' : '知识专题'}</Text>
             <Text style={styles.count}>{showDomainOverview ? knowledgeCards.length : visibleCards.length} 篇</Text>
           </View>
 
@@ -100,7 +111,7 @@ export default function LibraryScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={favorite ? `取消收藏：${card.title}` : `收藏：${card.title}`}
                     hitSlop={10}
-                    onPress={(event) => { event.stopPropagation(); toggleFavorite(card.id); }}>
+                    onPress={(event) => { event.stopPropagation(); toggleFavorite(card.id); track('knowledge_favorited', { knowledge_id: card.id, favorited: !favorite }); }}>
                     <AppIcon name="star" size={23} color={favorite ? colors.current : '#B8B0C4'} strokeWidth={favorite ? 2.7 : 2.2} />
                   </Pressable>
                 </Pressable>

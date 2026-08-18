@@ -1,17 +1,26 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { Href } from 'expo-router';
+import { useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAnalytics } from '@/analytics/analytics-context';
 import { AlignedSwitch } from '@/components/aligned-switch';
+import { AnalyticsDataDetails } from '@/components/analytics-consent';
 import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
 import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
+import { questionReviewEnabled } from '@/question-review/config';
+import { roleById, roleCatalog } from '@/data/role-catalog';
 import { transformerNodes } from '@/data/transformer-course';
 import { colors } from '@/theme/colors';
 import type { AppIconName } from '@/types/icons';
 
 export default function ProfileScreen() {
+  const { consent, ready: analyticsReady, grant, deny, track } = useAnalytics();
+  const [showAnalyticsDetails, setShowAnalyticsDetails] = useState(false);
+  const [showRoleMenu, setShowRoleMenu] = useState(false);
   const {
     completedLessonIds,
     xp,
@@ -22,6 +31,8 @@ export default function ProfileScreen() {
     projectProfile,
     soundEnabled,
     setSoundEnabled,
+    targetRole,
+    setTargetRole,
   } = useProgress();
 
   return (
@@ -34,10 +45,27 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.stats}>
-            <Stat accessibilityLabel={`连续学习 ${streak} 天`} value={String(streak)} icon="flame" color={colors.currentDark} />
-            <Stat accessibilityLabel={`${xp} 经验值`} value={String(xp)} icon="gem" color={colors.primary} />
+            <Stat accessibilityLabel={`连续学习 ${streak} 天`} value={String(streak)} icon="flame" color={colors.flame} />
+            <Stat accessibilityLabel={`${xp} 经验值`} value={String(xp)} badge="XP" color={colors.primary} />
             <Stat accessibilityLabel={`${favoriteKnowledgeIds.length} 个收藏`} value={String(favoriteKnowledgeIds.length)} icon="star" color={colors.currentDark} />
           </View>
+
+          {targetRole ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`当前目标岗位：${roleById[targetRole].title}，点击切换`}
+              onPress={() => setShowRoleMenu(true)}
+              style={({ pressed }) => [styles.roleCard, { backgroundColor: roleById[targetRole].softColor }, pressed && styles.pressed]}>
+              <View style={[styles.roleIcon, { backgroundColor: roleById[targetRole].color }]}>
+                <AppIcon name={roleById[targetRole].icon} size={21} color={colors.surface} />
+              </View>
+              <View style={styles.roleCopy}>
+                <Text style={styles.roleLabel}>当前目标岗位</Text>
+                <Text style={styles.roleTitle}>{roleById[targetRole].title}</Text>
+              </View>
+              <AppIcon name="chevron-right" size={22} color={roleById[targetRole].darkColor} />
+            </Pressable>
+          ) : null}
 
           <View style={styles.soundCard}>
             <View style={styles.soundIcon}><AppIcon name="volume" size={21} color={colors.primary} /></View>
@@ -45,9 +73,34 @@ export default function ProfileScreen() {
             <AlignedSwitch
               accessibilityLabel="学习音效开关"
               value={soundEnabled}
-              onValueChange={setSoundEnabled}
+              onValueChange={(enabled) => { setSoundEnabled(enabled); track('sound_toggled', { enabled }); }}
             />
           </View>
+
+          <View style={styles.analyticsCard}>
+            <View style={styles.analyticsIcon}><AppIcon name="shield" size={21} color={colors.successDark} /></View>
+            <Pressable accessibilityRole="button" onPress={() => setShowAnalyticsDetails(true)} style={styles.analyticsCopy}>
+              <Text style={styles.analyticsTitle}>匿名体验分析</Text>
+              <Text style={styles.analyticsMeta}>{consent === 'granted' ? '已开启 · 查看数据说明' : '已关闭 · 仅离线使用'}</Text>
+            </Pressable>
+            <AlignedSwitch
+              accessibilityLabel="匿名体验分析开关"
+              disabled={!analyticsReady}
+              value={consent === 'granted'}
+              onValueChange={(enabled) => void (enabled ? grant() : deny())}
+            />
+          </View>
+
+          {questionReviewEnabled ? (
+            <Pressable accessibilityRole="button" onPress={() => router.push('/question-review' as Href)} style={({ pressed }) => [styles.reviewTool, pressed && styles.pressed]}>
+              <View style={styles.reviewToolIcon}><AppIcon name="check" size={21} color={colors.surface} /></View>
+              <View style={styles.reviewToolCopy}>
+                <Text style={styles.reviewToolTitle}>题库人工标注</Text>
+                <Text style={styles.reviewToolMeta}>仅开发环境 · 本地保存</Text>
+              </View>
+              <AppIcon name="chevron-right" size={22} color={colors.primary} />
+            </Pressable>
+          ) : null}
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>项目</Text>
@@ -75,7 +128,7 @@ export default function ProfileScreen() {
             {knowledgeDomains.map((domain) => {
               const domainCards = knowledgeCards.filter((card) => card.domainId === domain.id);
               const touched = domainCards.filter((card) => favoriteKnowledgeIds.includes(card.id) || reviewQueue.some((item) => item.targetId === card.id)).length;
-              const transformerBonus = domain.id === 'transformer' ? completedLessonIds.length : 0;
+              const transformerBonus = domain.id === 'transformer' ? transformerNodes.filter((node) => completedLessonIds.includes(node.id)).length : 0;
               const total = domainCards.length + (domain.id === 'transformer' ? transformerNodes.length : 0);
               const percent = Math.min(100, Math.round(((touched + transformerBonus) / total) * 100));
 
@@ -98,15 +151,40 @@ export default function ProfileScreen() {
             })}
           </View>
         </ScrollView>
+        <AnalyticsDataDetails visible={showAnalyticsDetails} onClose={() => setShowAnalyticsDetails(false)} />
+        <Modal animationType="fade" transparent visible={showRoleMenu} onRequestClose={() => setShowRoleMenu(false)}>
+          <Pressable style={styles.roleOverlay} onPress={() => setShowRoleMenu(false)}>
+            <View style={styles.roleMenu} accessibilityViewIsModal>
+              <Text style={styles.roleMenuTitle}>切换目标岗位</Text>
+              {roleCatalog.map((role) => {
+                const selected = role.id === targetRole;
+                return (
+                  <Pressable
+                    key={role.id}
+                    accessibilityRole="button"
+                    onPress={() => { setTargetRole(role.id); setShowRoleMenu(false); }}
+                    style={[styles.roleOption, selected && { backgroundColor: role.softColor, borderColor: role.color }]}>
+                    <AppIcon name={role.icon} size={22} color={role.color} />
+                    <View style={styles.roleOptionCopy}>
+                      <Text style={styles.roleOptionTitle}>{role.title}</Text>
+                      <Text style={styles.roleOptionMeta}>{role.description}</Text>
+                    </View>
+                    {selected ? <AppIcon name="check" size={21} color={role.color} /> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Pressable>
+        </Modal>
       </SafeAreaView>
     </ScreenShell>
   );
 }
 
-function Stat({ accessibilityLabel, value, icon, color }: { accessibilityLabel: string; value: string; icon: AppIconName; color: string }) {
+function Stat({ accessibilityLabel, value, icon, badge, color }: { accessibilityLabel: string; value: string; icon?: AppIconName; badge?: string; color: string }) {
   return (
     <View accessible accessibilityLabel={accessibilityLabel} style={styles.stat}>
-      <AppIcon name={icon} size={19} color={color} />
+      {icon ? <AppIcon name={icon} size={19} color={color} /> : <Text style={[styles.statBadge, { color }]}>{badge}</Text>}
       <Text style={styles.statValue}>{value}</Text>
     </View>
   );
@@ -119,11 +197,27 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontSize: 29, fontWeight: '900' },
   avatar: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, borderBottomWidth: 5, borderBottomColor: colors.primaryDark, borderRadius: 16 },
   stats: { flexDirection: 'row', gap: 9, marginTop: 16 },
+  roleCard: { minHeight: 68, flexDirection: 'row', alignItems: 'center', gap: 11, borderRadius: 8, paddingHorizontal: 13, marginTop: 12 },
+  roleIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
+  roleCopy: { flex: 1 },
+  roleLabel: { color: colors.textMuted, fontSize: 10, fontWeight: '800' },
+  roleTitle: { color: colors.text, fontSize: 14, fontWeight: '900', marginTop: 4 },
   stat: { minHeight: 58, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 17 },
   statValue: { color: colors.text, fontSize: 17, fontWeight: '900', fontVariant: ['tabular-nums'] },
+  statBadge: { fontSize: 11, fontWeight: '900' },
   soundCard: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 11, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, paddingHorizontal: 13, marginTop: 12 },
   soundIcon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primarySoft, borderRadius: 13 },
   soundTitle: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '900' },
+  analyticsCard: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 11, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 8, paddingHorizontal: 13, marginTop: 12 },
+  analyticsIcon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.successSoft, borderRadius: 8 },
+  analyticsCopy: { flex: 1, paddingVertical: 10 },
+  analyticsTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
+  analyticsMeta: { color: colors.textMuted, fontSize: 10, marginTop: 4 },
+  reviewTool: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 11, borderWidth: 1.5, borderColor: colors.primary, borderRadius: 8, paddingHorizontal: 13, marginTop: 12, backgroundColor: colors.primarySoft },
+  reviewToolIcon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 8, backgroundColor: colors.primary },
+  reviewToolCopy: { flex: 1 },
+  reviewToolTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
+  reviewToolMeta: { color: colors.textMuted, fontSize: 10, marginTop: 4 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, marginBottom: 10 },
   sectionTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },
   sectionLink: { color: colors.primary, fontSize: 11, fontWeight: '900' },
@@ -142,4 +236,11 @@ const styles = StyleSheet.create({
   track: { height: 7, overflow: 'hidden', backgroundColor: colors.surfaceMuted, borderRadius: 7, marginTop: 6, pointerEvents: 'none' },
   fill: { height: '100%', borderRadius: 7 },
   pressed: { opacity: 0.78, transform: [{ scale: 0.99 }] },
+  roleOverlay: { flex: 1, justifyContent: 'center', padding: 22, backgroundColor: 'rgba(32, 27, 50, 0.48)' },
+  roleMenu: { width: '100%', maxWidth: 390, alignSelf: 'center', gap: 10, backgroundColor: colors.surface, borderRadius: 8, padding: 18 },
+  roleMenuTitle: { color: colors.text, fontSize: 19, fontWeight: '900', marginBottom: 4 },
+  roleOption: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1.5, borderColor: colors.border, borderRadius: 8, padding: 13 },
+  roleOptionCopy: { flex: 1 },
+  roleOptionTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
+  roleOptionMeta: { color: colors.textMuted, fontSize: 10, lineHeight: 16, marginTop: 4 },
 });

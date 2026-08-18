@@ -1,38 +1,67 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAnalytics } from '@/analytics/analytics-context';
 import { AppIcon } from '@/components/app-icon';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
-import { transformerNodes } from '@/data/transformer-course';
+import { findLearningNode } from '@/data/course-catalog';
 import { useCompletionSound } from '@/hooks/use-feedback-sounds';
 import { colors } from '@/theme/colors';
 
 export default function CompleteScreen() {
-  const { id, correct, correctCount, total } = useLocalSearchParams<{ id: string; correct?: string; correctCount?: string; total?: string }>();
-  const { completeLesson } = useProgress();
+  const { id, correct, correctCount, total, questionCount, incorrectIds, baseIds, lessonDurationMs } = useLocalSearchParams<{
+    id: string;
+    correct?: string;
+    correctCount?: string;
+    total?: string;
+    questionCount?: string;
+    incorrectIds?: string;
+    baseIds?: string;
+    lessonDurationMs?: string;
+  }>();
+  const { track } = useAnalytics();
+  const { completeLesson, completedLessonIds, hydrated, isUnlocked } = useProgress();
+  const [completionStreak, setCompletionStreak] = useState<{ streak: number; advanced: boolean } | null>(null);
   const playComplete = useCompletionSound();
   const playedSound = useRef(false);
   const recordedCompletion = useRef(false);
-  const node = useMemo(() => transformerNodes.find((item) => item.id === id), [id]);
-  const questionTotal = Math.max(1, Number(total) || 1);
-  const answeredCorrectly = correctCount === undefined ? (correct === 'true' ? 1 : 0) : Math.min(questionTotal, Number(correctCount) || 0);
-  const scorePercent = Math.round((answeredCorrectly / questionTotal) * 100);
+  const node = useMemo(() => findLearningNode(id), [id]);
+  const scoredTotal = Math.max(0, Number(total) || 0);
+  const baseQuestionTotal = Math.max(1, Number(questionCount) || scoredTotal || 1);
+  const answeredCorrectly = correctCount === undefined ? (correct === 'true' ? 1 : 0) : Math.min(scoredTotal, Number(correctCount) || 0);
+  const scorePercent = scoredTotal > 0 ? Math.round((answeredCorrectly / scoredTotal) * 100) : 100;
   const earnedXp = Math.max(5, answeredCorrectly * 5);
+  const completedAt = useRef(new Date().toISOString()).current;
+  const accessible = Boolean(node && (completedLessonIds.includes(node.id) || isUnlocked(node.id)));
 
   useEffect(() => {
-    if (!node || recordedCompletion.current) return;
+    if (hydrated && !accessible) router.replace('/');
+  }, [accessible, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated || !accessible || !node || recordedCompletion.current) return;
     recordedCompletion.current = true;
-    completeLesson(node.id, earnedXp);
-  }, [completeLesson, earnedXp, node]);
+    const result = completeLesson(node.id, earnedXp, {
+      completedAt,
+      correct: answeredCorrectly,
+      total: scoredTotal,
+      incorrectExerciseIds: parseIds(incorrectIds),
+      baseExerciseIds: parseIds(baseIds),
+    });
+    setCompletionStreak({ streak: result.streak, advanced: result.streakAdvanced });
+    track('lesson_completed', { lesson_id: node.id, duration_ms: Math.min(3_600_000, Math.max(0, Number(lessonDurationMs) || 0)) });
+  }, [accessible, answeredCorrectly, baseIds, completeLesson, completedAt, earnedXp, hydrated, incorrectIds, lessonDurationMs, node, scoredTotal, track]);
 
   useEffect(() => {
-    if (!node || playedSound.current) return;
+    if (!hydrated || !accessible || !node || playedSound.current) return;
     playedSound.current = true;
     playComplete();
-  }, [node, playComplete]);
+  }, [accessible, hydrated, node, playComplete]);
+
+  if (!hydrated || !accessible || !node) return null;
 
   return (
     <ScreenShell>
@@ -41,12 +70,18 @@ export default function CompleteScreen() {
           <View style={styles.burst}><AppIcon name="check" size={51} color={colors.surface} strokeWidth={2.8} /></View>
           <Text style={styles.kicker}>课程完成</Text>
           <Text style={styles.title}>{node?.shortTitle ?? 'Transformer 基础'}</Text>
-          <Text style={styles.subtitle}>本关 {questionTotal} 题已完成，下一节点已经解锁。</Text>
+          <Text style={styles.subtitle}>本关 {baseQuestionTotal} 题已完成，下一节点已经解锁。</Text>
           <View style={styles.statsCard}>
             <View style={styles.stat}><Text style={styles.statValue}>+{earnedXp}</Text><Text style={styles.statLabel}>经验值</Text></View>
             <View style={styles.divider} />
             <View style={styles.stat}><Text style={styles.statValue}>{scorePercent}%</Text><Text style={styles.statLabel}>本关正确率</Text></View>
           </View>
+          {completionStreak ? (
+            <View style={styles.streakRow} accessibilityLabel={`连续学习 ${completionStreak.streak} 天`}>
+              <AppIcon name="flame" size={27} color={colors.flame} />
+              <Text style={styles.streakText}>{completionStreak.advanced ? `连续学习 ${completionStreak.streak} 天` : `今日学习已记录 · ${completionStreak.streak} 天`}</Text>
+            </View>
+          ) : null}
           <View style={styles.reviewCard}>
             <AppIcon name="clock" size={25} color={colors.currentDark} />
             <View style={styles.reviewCopy}>
@@ -77,6 +112,8 @@ const styles = StyleSheet.create({
   statValue: { color: colors.primary, fontSize: 21, fontWeight: '900' },
   statLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700', marginTop: 5 },
   divider: { width: 1, backgroundColor: colors.border },
+  streakRow: { alignSelf: 'stretch', minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 14 },
+  streakText: { color: colors.flame, fontSize: 14, fontWeight: '900' },
   reviewCard: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: 13, backgroundColor: colors.currentSoft, borderRadius: 17, padding: 15, marginTop: 14 },
   reviewCopy: { flex: 1 },
   reviewTitle: { color: colors.text, fontWeight: '900' },
@@ -86,3 +123,7 @@ const styles = StyleSheet.create({
   buttonPressed: { transform: [{ translateY: 3 }], borderBottomWidth: 2 },
   buttonText: { color: colors.surface, fontWeight: '900' },
 });
+
+function parseIds(value?: string) {
+  return value ? value.split(',').filter(Boolean) : [];
+}

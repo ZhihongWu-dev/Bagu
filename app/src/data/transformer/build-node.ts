@@ -29,6 +29,7 @@ export type NodeBlueprint = {
   comparison: string;
   formula?: string;
   keywords?: string[];
+  specialist?: boolean;
 };
 
 type Shared = {
@@ -118,10 +119,16 @@ export function buildNode(blueprint: NodeBlueprint): LearningNode {
       [traps[0], traps[1], formula ?? blueprint.boundary, traps[2]],
       2,
     ),
-    recall(
-      { id: `${blueprint.id}-08`, eyebrow: '口述 · 对比', prompt: `解释这项对比，并说明它为何重要：${blueprint.comparison}`, explanation, coveredPoints: [blueprint.comparison, ...facts.slice(0, 2)], keywords },
-      [blueprint.comparison, facts[0], facts[1]],
-    ),
+    blueprint.specialist
+      ? single(
+        { id: `${blueprint.id}-08`, eyebrow: '对比 · 取舍', prompt: `关于这项工程对比，哪项表述最完整：${blueprint.comparison}`, explanation, coveredPoints: [blueprint.comparison, ...facts.slice(0, 2)], keywords },
+        [traps[0], traps[1], blueprint.comparison, traps[2]],
+        2,
+      )
+      : recall(
+        { id: `${blueprint.id}-08`, eyebrow: '口述 · 对比', prompt: `解释这项对比，并说明它为何重要：${blueprint.comparison}`, explanation, coveredPoints: [blueprint.comparison, ...facts.slice(0, 2)], keywords },
+        [blueprint.comparison, facts[0], facts[1]],
+      ),
     single(
       { id: `${blueprint.id}-09`, eyebrow: '纠错题', prompt: `下面哪句话是关于“${blueprint.shortTitle}”的常见误区？`, explanation: `误区是：${traps[0]}。${blueprint.core}`, coveredPoints: [traps[0], blueprint.core], keywords },
       [facts[0], facts[1], traps[0], blueprint.boundary],
@@ -143,6 +150,11 @@ export function buildNode(blueprint: NodeBlueprint): LearningNode {
     ),
   ];
 
+  const specialistKinds = ['concept', 'concept', 'concept', 'oral', 'scenario', 'scenario', 'boundary', 'boundary', 'concept', 'boundary', 'scenario', 'oral'] as const;
+  const categorizedExercises: Exercise[] = blueprint.specialist
+    ? exercises.map((exercise, index) => ({ ...exercise, practiceKind: specialistKinds[index] }))
+    : exercises;
+
   return {
     id: blueprint.id,
     title: blueprint.title,
@@ -150,7 +162,7 @@ export function buildNode(blueprint: NodeBlueprint): LearningNode {
     subtitle: blueprint.subtitle,
     icon: blueprint.icon,
     duration: 10,
-    exercises,
+    exercises: categorizedExercises,
     knowledgeIds: blueprint.knowledgeIds,
   };
 }

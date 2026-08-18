@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bagu 面试信号标注</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Bagu 研究工具</p>
+      <h1>面试信号标注</h1>
+    </div>
+    <div class="metrics" aria-label="标注进度">
+      <span><strong id="metric-completed">0</strong> 已完成</span>
+      <span><strong id="metric-pending">0</strong> 待处理</span>
+      <span><strong id="metric-skipped">0</strong> 已跳过</span>
+      <span><strong id="metric-total">0</strong> 总计</span>
+    </div>
+    <button id="export-button" class="secondary-button" type="button">导出结果</button>
+  </header>
+
+  <main class="workspace">
+    <aside class="source-panel" aria-label="候选来源">
+      <label class="filter-label" for="status-filter">显示范围</label>
+      <select id="status-filter">
+        <option value="all">全部来源</option>
+        <option value="pending">待处理</option>
+        <option value="completed">已完成</option>
+        <option value="skipped">已跳过</option>
+      </select>
+      <div id="source-list" class="source-list"></div>
+    </aside>
+
+    <section class="annotation-panel" aria-live="polite">
+      <div class="source-header">
+        <div>
+          <p id="source-meta" class="source-meta"></p>
+          <h2 id="source-query">正在载入</h2>
+          <p id="source-note" class="source-note" hidden></p>
+        </div>
+        <a id="open-source" class="primary-link" target="_blank" rel="noopener noreferrer">打开来源</a>
+      </div>
+
+      <form id="annotation-form">
+        <fieldset>
+          <legend>相关性</legend>
+          <div id="relevance-options" class="segmented-options"></div>
+        </fieldset>
+
+        <div id="signal-fields">
+          <div class="two-column">
+            <label>目标岗位<select id="role-select" required><option value="">请选择</option></select></label>
+            <label>招聘阶段<select id="stage-select" required><option value="">请选择</option></select></label>
+          </div>
+          <fieldset><legend>知识考点</legend><div id="topic-options" class="option-grid"></div></fieldset>
+          <fieldset><legend>追问方式</legend><div id="followup-options" class="option-grid compact"></div></fieldset>
+          <fieldset><legend>常见误区</legend><div id="misconception-options" class="option-grid compact"></div></fieldset>
+          <div id="choice-fields" hidden>
+            <fieldset><legend>选择题认知层级</legend><div id="cognitive-options" class="segmented-options"></div></fieldset>
+            <fieldset><legend>干扰项问题</legend><div id="distractor-options" class="option-grid compact"></div></fieldset>
+            <fieldset><legend>答案线索</legend><div id="cue-options" class="option-grid compact"></div></fieldset>
+          </div>
+        </div>
+
+        <label class="summary-field" for="summary-input">自己的一句话概括 <span id="summary-count">0/100</span></label>
+        <textarea id="summary-input" maxlength="100" rows="2" placeholder="只写自己的概括，不复制题干、选项、答案或个人信息"></textarea>
+
+        <div class="form-actions">
+          <button id="save-button" class="primary-button" type="submit">保存并下一条</button>
+          <div class="skip-controls">
+            <select id="skip-reason"><option value="">选择跳过原因</option></select>
+            <input id="skip-note" type="text" maxlength="100" placeholder="可选备注">
+            <button id="skip-button" class="danger-button" type="button">跳过此来源</button>
+          </div>
+        </div>
+      </form>
+      <p id="status-message" class="status-message" role="status"></p>
+    </section>
+  </main>
+
+  <script src="/state.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

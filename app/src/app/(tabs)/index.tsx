@@ -6,11 +6,11 @@ import { CoursePath } from '@/components/course-path';
 import { LearningStatusBar } from '@/components/learning-status-bar';
 import { ScreenShell } from '@/components/screen-shell';
 import { useProgress } from '@/context/progress-context';
-import { transformerUnit } from '@/data/transformer-course';
+import { getLearningUnits } from '@/data/course-catalog';
 import type { LearningNode } from '@/types/course';
 
 export default function LearningScreen() {
-  const { completedLessonIds, xp, streak, focus, isUnlocked } = useProgress();
+  const { completedLessonIds, streak, isUnlocked, targetRole } = useProgress();
   const openLesson = (node: LearningNode) => router.push({ pathname: '/lesson/[id]', params: { id: node.id } });
 
   return (
@@ -20,13 +20,16 @@ export default function LearningScreen() {
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}>
-          <LearningStatusBar streak={streak} xp={xp} focus={focus} />
-          <CoursePath
-            unit={transformerUnit}
-            completedLessonIds={completedLessonIds}
-            isUnlocked={isUnlocked}
-            onSelect={openLesson}
-          />
+          <LearningStatusBar streak={streak} />
+          {targetRole ? getLearningUnits(targetRole).map((unit) => (
+            <CoursePath
+              key={unit.id}
+              unit={unit}
+              completedLessonIds={completedLessonIds}
+              isUnlocked={isUnlocked}
+              onSelect={openLesson}
+            />
+          )) : null}
         </ScrollView>
       </SafeAreaView>
     </ScreenShell>

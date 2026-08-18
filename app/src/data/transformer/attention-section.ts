@@ -1,71 +1,18 @@
-import { buildNode, type NodeBlueprint } from './build-node';
 import type { CourseSection } from '@/types/course';
 
-const blueprints: NodeBlueprint[] = [
-  {
-    id: 'qkv-roles', title: 'Q、K、V 的职责', shortTitle: 'Q · K · V', subtitle: '从检索视角理解注意力', icon: 'search',
-    knowledgeIds: ['qkv-roles'], keywords: ['query'],
-    core: 'Query 表达当前 token 想找什么，Key 用于被匹配，Value 携带最终被聚合的内容。',
-    facts: ['Q、K、V 通常由不同可学习投影得到', 'QKᵀ 产生匹配分数', 'Softmax 权重最终作用于 V'],
-    traps: ['Q、K、V 必须共享同一投影矩阵', 'Value 决定哪些位置会被 Mask', 'Query 是最终输出概率'],
-    sequence: ['由输入投影得到 Q、K、V', '计算 Q 与 K 的相似度', '归一化得到注意力权重', '用权重聚合 V'],
-    interview: ['先说明三者分别承担查询、索引和内容职责', '再写出 QKᵀ 与对 V 加权的两阶段计算', '最后说明不同投影让角色可以学习不同子空间'],
-    scenario: '做 Cross-Attention 时，Decoder 的当前状态应该提供哪一部分？', scenarioAnswer: 'Decoder 当前状态提供 Query，Encoder 输出提供 Key 和 Value。',
-    boundary: 'Self-Attention 的 Q、K、V 可来自同一序列，但这不等于三者参数共享。',
-    comparison: 'Self-Attention 三者来自同一序列；Cross-Attention 的 Q 与 K/V 来自不同序列。', formula: 'Q=XWQ, K=XWK, V=XWV',
-  },
-  {
-    id: 'attention-shapes', title: 'Attention 的张量形状', shortTitle: '张量形状', subtitle: '从维度推导每一步', icon: 'grid',
-    knowledgeIds: ['attention-shapes'], keywords: ['query'],
-    core: '注意力形状必须保证 Q 与 K 的头维可做内积，分数矩阵的两轴分别对应查询和键的位置。',
-    facts: ['Q 形状可写为 B×H×Lq×Dh', 'K 转置后形状为 B×H×Dh×Lk', '输出形状沿用查询长度 Lq'],
-    traps: ['分数矩阵最后一维一定是词表大小', 'K 与 V 的序列长度必须等于 Query 长度', '多头后输出一定增加 H 倍隐藏维度'],
-    sequence: ['把隐藏维拆成头数与头维', '转置 K 的最后两个维度', '相乘得到 Lq×Lk 分数', '与 V 相乘回到 Lq×Dh'],
-    interview: ['先约定 B、H、L、Dh 的含义', '逐步写出 QKᵀ 和 Attention·V 的形状', '指出 Cross-Attention 中 Lq 与 Lk 可以不同'],
-    scenario: 'Decoder 长度为 32，Encoder 长度为 128，Cross-Attention 分数矩阵的两个序列轴是什么？', scenarioAnswer: '分数矩阵是 32×128：每个 Decoder Query 对 128 个 Encoder Key 打分。',
-    boundary: '广播和布局可能因框架不同而变化，但查询轴、键轴和头维的语义不变。',
-    comparison: 'Self-Attention 常有 Lq=Lk；Cross-Attention 允许 Lq≠Lk。', formula: '(B,H,Lq,Dh)·(B,H,Dh,Lk)→(B,H,Lq,Lk)',
-  },
-  {
-    id: 'scaled-dot-product', title: '缩放点积注意力', shortTitle: '缩放点积', subtitle: '理解为什么除以 √dₖ', icon: 'scale',
-    knowledgeIds: ['attention-scale'], keywords: ['logit', 'saturation'],
-    core: '点积方差会随头维 dₖ 增长，除以 √dₖ 能把 Logit 尺度拉回稳定范围，缓解 Softmax 饱和。',
-    facts: ['独立单位方差分量的点积方差约为 dₖ', '除以 √dₖ 后方差回到常数量级', '缩放发生在 Softmax 之前'],
-    traps: ['缩放的目的是减少模型参数量', '应该除以 dₖ 才能保持方差', '缩放可以把二次复杂度变成线性'],
-    sequence: ['计算 QKᵀ', '除以 √dₖ', '加入可选 Mask', '执行 Softmax 并聚合 V'],
-    interview: ['从点积的均值和方差开始推导', '连接到 Softmax 过尖和梯度变小', '说明 √dₖ 来自标准差而不是经验常数'],
-    scenario: '把单头维度从 64 增加到 256，若不缩放最直接的风险是什么？', scenarioAnswer: '点积分布变宽，Softmax 更容易过尖并进入低梯度区域。',
-    boundary: '缩放稳定的是数值尺度，并不保证注意力分布一定均匀或训练一定收敛。',
-    comparison: '除以 √dₖ 保持方差；除以 dₖ 会让标准差随维度反而缩小。', formula: 'Attention(Q,K,V)=softmax(QKᵀ/√dₖ)V',
-  },
-  {
-    id: 'softmax-attention', title: 'Softmax 与注意力分布', shortTitle: 'Softmax', subtitle: '从 Logit 到可解释权重', icon: 'chart',
-    knowledgeIds: ['softmax-attention'], keywords: ['logit', 'saturation'],
-    core: 'Softmax 在每个 Query 对所有 Key 的分数轴上归一化，使权重非负且和为 1。',
-    facts: ['对所有 Logit 同加常数不改变结果', '温度越低分布通常越尖锐', '数值稳定实现会先减去最大 Logit'],
-    traps: ['Softmax 会保留 Logit 的绝对尺度', 'Softmax 输出可以为负数', '归一化应沿 Query 轴进行'],
-    sequence: ['确定 Key 所在的归一化轴', '每行减去最大 Logit', '计算指数并求和', '用指数除以该行总和'],
-    interview: ['说明归一化轴对应“一个 Query 看所有 Key”', '解释平移不变性和减最大值技巧', '补充过尖分布会带来的梯度与泛化问题'],
-    scenario: '一个 Query 的所有 Logit 都增加 100，注意力权重会怎样？', scenarioAnswer: '权重不变，因为 Softmax 对整体平移不敏感。',
-    boundary: '权重和为 1 不代表注意力天然等于因果解释或特征重要性。',
-    comparison: 'Softmax 产生稠密概率权重；Mask 负责在归一化前排除不允许的位置。', formula: 'softmax(zᵢ)=exp(zᵢ−max(z))/Σⱼexp(zⱼ−max(z))',
-  },
-  {
-    id: 'attention-masks', title: 'Padding 与 Causal Mask', shortTitle: 'Attention Mask', subtitle: '区分无效位置与未来信息', icon: 'mask',
-    knowledgeIds: ['attention-mask'], keywords: ['mask'],
-    core: 'Padding Mask 排除补齐位置，Causal Mask 阻止当前位置读取未来 token；二者都应在 Softmax 前作用于分数。',
-    facts: ['被遮挡位置通常加上极小值', 'Causal Mask 的允许区域随 Query 位置变化', 'Padding 与 Causal Mask 可以组合'],
-    traps: ['Mask 应在 Softmax 后把概率乘零且无需重归一化', 'Causal Mask 用来删除词表中的特殊 token', 'Padding Mask 会改变真实 token 的顺序'],
-    sequence: ['构造有效位置或因果布尔矩阵', '把 Mask 广播到 batch 与 head', '在分数上填充极小值', '执行 Softmax 得到近零权重'],
-    interview: ['先区分 Padding 和 Causal 的目的', '说明为何必须在 Softmax 前加入', '补充不同框架中布尔语义和形状可能相反'],
-    scenario: '如果在 Softmax 后直接把未来位置乘 0，却不重新归一化，会发生什么？', scenarioAnswer: '剩余权重之和小于 1，输出尺度被意外改变。',
-    boundary: '浮点实现常用有限最小值代替负无穷，需避免全行被遮挡造成 NaN。',
-    comparison: 'Padding Mask 由样本有效长度决定；Causal Mask 由自回归可见性决定。', formula: 'softmax(S+M), Mᵢⱼ≈−∞ when position j is forbidden',
-  },
-];
+import { attentionMasksNode } from './questions/attention/attention-masks';
+import { attentionShapesNode } from './questions/attention/attention-shapes';
+import { qkvRolesNode } from './questions/attention/qkv-roles';
+import { scaledDotProductNode } from './questions/attention/scaled-dot-product';
+import { softmaxAttentionNode } from './questions/attention/softmax-attention';
 
 export const attentionSection: CourseSection = {
-  id: 'attention-foundations', title: 'Section 1 · QKV 与注意力计算', shortTitle: 'QKV 与 Attention',
-  description: '从角色、形状到缩放、Softmax 和 Mask', color: '#6C52E5', darkColor: '#5138BD', softColor: '#EEE9FF',
-  nodes: blueprints.map(buildNode),
+  id: 'attention-foundations',
+  title: 'Section 1 · QKV 与注意力计算',
+  shortTitle: 'QKV 与 Attention',
+  description: '从角色、形状到缩放、Softmax 和 Mask',
+  color: '#6C52E5',
+  darkColor: '#5138BD',
+  softColor: '#EEE9FF',
+  nodes: [qkvRolesNode, attentionShapesNode, scaledDotProductNode, softmaxAttentionNode, attentionMasksNode],
 };

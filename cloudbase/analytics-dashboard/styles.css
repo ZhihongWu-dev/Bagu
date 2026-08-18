@@ -1,0 +1,60 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: #f5f6f8;
+  color: #252833;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+.topbar { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px clamp(18px, 4vw, 48px); background: #fff; border-bottom: 1px solid #dfe2e8; }
+h1, h2, p { margin: 0; }
+h1 { font-size: 23px; letter-spacing: 0; }
+h2 { font-size: 17px; letter-spacing: 0; }
+.eyebrow { color: #6c52e5; font-size: 10px; font-weight: 800; margin-bottom: 5px; }
+.privacy-state { color: #16856b; font-size: 12px; font-weight: 800; }
+main { width: min(1240px, 100%); margin: 0 auto; padding: 24px clamp(14px, 3vw, 32px) 48px; }
+.controls { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(190px, 1.4fr) repeat(4, minmax(120px, 1fr)) auto; gap: 10px; align-items: end; padding: 16px; background: #fff; border: 1px solid #dfe2e8; border-radius: 8px; }
+label { min-width: 0; color: #666b78; font-size: 10px; font-weight: 800; }
+input, select { width: 100%; height: 40px; margin-top: 6px; padding: 0 10px; color: #252833; background: #fff; border: 1px solid #cfd3dc; border-radius: 6px; font: inherit; font-size: 12px; }
+button { height: 40px; padding: 0 16px; border: 0; border-radius: 6px; background: #6c52e5; color: #fff; font-weight: 800; cursor: pointer; }
+button:disabled { opacity: .55; cursor: wait; }
+.status { min-height: 36px; padding: 11px 2px 0; color: #727784; font-size: 12px; }
+.status.error { color: #c43e58; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #dfe2e8; border-radius: 8px; overflow: hidden; background: #fff; }
+.metrics div { min-height: 90px; display: flex; flex-direction: column; justify-content: center; padding: 16px 20px; border-right: 1px solid #e4e6eb; }
+.metrics div:last-child { border-right: 0; }
+.metrics span { color: #717684; font-size: 11px; font-weight: 700; }
+.metrics strong { margin-top: 7px; font-size: 25px; font-variant-numeric: tabular-nums; }
+.band, .panel { margin-top: 18px; padding: 18px; background: #fff; border: 1px solid #dfe2e8; border-radius: 8px; }
+.section-heading { min-height: 32px; display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 13px; }
+.funnel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.funnel div { min-height: 74px; padding: 14px; border-left: 4px solid #6c52e5; background: #f4f1ff; }
+.funnel div:nth-child(2) { border-color: #25b995; background: #edfaf6; }
+.funnel div:nth-child(3) { border-color: #ffb526; background: #fff8e8; }
+.funnel div:nth-child(4) { border-color: #ef5d76; background: #fff1f4; }
+.funnel span, .row span { color: #6f7481; font-size: 11px; }
+.funnel strong { display: block; margin-top: 7px; font-size: 21px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.rows { display: grid; gap: 1px; background: #e7e9ee; }
+.row { min-height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; background: #fff; }
+.row strong { font-size: 13px; font-variant-numeric: tabular-nums; }
+.table-wrap { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { color: #666b78; background: #f5f6f8; text-align: left; }
+th, td { padding: 11px 12px; border-bottom: 1px solid #e7e9ee; white-space: nowrap; }
+td { font-variant-numeric: tabular-nums; }
+tbody tr:last-child td { border-bottom: 0; }
+.empty-cell { color: #8a8f9b; text-align: center; }
+@media (max-width: 980px) {
+  .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .controls button { width: 100%; }
+}
+@media (max-width: 620px) {
+  .topbar { align-items: flex-start; }
+  .privacy-state { max-width: 110px; text-align: right; }
+  .controls { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .metrics div:nth-child(2) { border-right: 0; }
+  .metrics div:nth-child(-n+2) { border-bottom: 1px solid #e4e6eb; }
+  .funnel, .split { grid-template-columns: 1fr; }
+}

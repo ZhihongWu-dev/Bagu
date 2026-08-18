@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "calibrationStatus": "uncalibrated",
+  "requiredCaseCount": 60,
+  "targetComposition": {
+    "valid": 30,
+    "seededDefect": 30
+  },
+  "requiredDefectCoverage": [
+    "factual-error",
+    "multiple-valid-answers",
+    "hidden-condition",
+    "answer-leakage",
+    "implausible-distractor",
+    "explanation-conflict",
+    "surface-duplicate"
+  ],
+  "cases": [],
+  "humanConfirmation": null,
+  "notes": "这是金标准结构占位，不是已完成的校准集。涉及 Transformer 技术事实的标签必须由熟悉该领域的人员确认。"
+}

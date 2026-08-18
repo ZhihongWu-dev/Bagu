@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "questionId": "qkv-roles-11",
+  "questionVersion": 2,
+  "calibrationStatus": "uncalibrated",
+  "evidenceReview": {
+    "reviewerRole": "evidence",
+    "verdict": "uncalibrated",
+    "findings": [
+      {
+        "code": "verified-uniform-weight-causes",
+        "reason": "The revised two-answer set is complete: near-equal logits and near-identical keys can cause uniformity; small Query norm alone is not sufficient without a bound on Key scale, and Value cannot determine the weights.",
+        "evidence": "Weights are softmax of Q-K logits. Near-equal logits directly imply near-equal weights, but an arbitrarily large Key difference can offset a small nonzero Query; V is consumed only after weights are formed.",
+        "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention",
+        "sourceLocator": "Reference implementation, score/softmax before value multiplication"
+      }
+    ]
+  },
+  "itemQualityReview": {
+    "reviewerRole": "item-quality",
+    "verdict": "uncalibrated",
+    "findings": []
+  },
+  "hardGates": {
+    "factuallyCorrect": true,
+    "conditionsComplete": true,
+    "sourcesVerifiable": true,
+    "uniqueAnswer": true,
+    "noAnswerLeakage": true,
+    "explanationAligned": true
+  },
+  "anchoredScores": {
+    "reasoningDepth": {
+      "score": 4,
+      "reason": "需要机制推理或边界判断，符合深层认知目标。"
+    },
+    "distractorQuality": {
+      "score": 3,
+      "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+    },
+    "explanationAlignment": {
+      "score": 4,
+      "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+    },
+    "clarity": {
+      "score": 4,
+      "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+    }
+  },
+  "verdict": "uncalibrated"
+}

@@ -1,4 +1,7 @@
 import { knowledgeCards } from '../src/data/knowledge-base';
+import { allLearningNodes } from '../src/data/course-catalog';
+import { applicationInterviewEvidence, applicationKnowledgeCards, applicationNodes, applicationUnit } from '../src/data/application/curriculum';
+import { algorithmNodes, algorithmUnit, interviewEvidence } from '../src/data/specialist-curriculum';
 import { keywords, transformerNodes, transformerUnit } from '../src/data/transformer';
 import type { Exercise } from '../src/types/course';
 import { appendWrongReview, buildPracticeSession, getPracticeProgress } from '../src/utils/practice-session';
@@ -11,6 +14,10 @@ const check = (condition: unknown, message: string) => {
 check(transformerUnit.id === 'transformer', 'Transformer must be the course Unit.');
 check(transformerUnit.sections.length === 5, `Expected 5 Sections, received ${transformerUnit.sections.length}.`);
 check(transformerNodes.length === 25, `Expected 25 learning nodes, received ${transformerNodes.length}.`);
+check(algorithmNodes.length === 25, `Expected 25 algorithm nodes, received ${algorithmNodes.length}.`);
+check(applicationNodes.length === 64, `Expected 64 application nodes, received ${applicationNodes.length}.`);
+check(allLearningNodes.length === 114, `Expected 114 total nodes, received ${allLearningNodes.length}.`);
+check(applicationKnowledgeCards.length >= 112, `Expected at least 112 application articles, received ${applicationKnowledgeCards.length}.`);
 
 const nodeIds = new Set<string>();
 const exerciseIds = new Set<string>();
@@ -76,7 +83,49 @@ transformerUnit.sections.forEach((section) => {
   });
 });
 
-check(exerciseIds.size === 300, `Expected exactly 300 unique exercises, received ${exerciseIds.size}.`);
+[algorithmUnit].forEach((unit) => {
+  check(unit.sections.length === 5, `${unit.id} must contain 5 sections.`);
+  unit.sections.forEach((section) => {
+    check(section.nodes.length === 5, `${section.id} must contain 5 nodes.`);
+    section.nodes.forEach((node) => {
+      check(!nodeIds.has(node.id), `Duplicate node id: ${node.id}.`);
+      nodeIds.add(node.id);
+      check(node.exercises.length === 12, `${node.id} must contain exactly 12 source exercises.`);
+      check(node.exercises.filter((exercise) => exercise.type === 'self-recall').length === 2, `${node.id} must contain exactly two oral exercises.`);
+      check(node.exercises.filter((exercise) => exercise.practiceKind === 'concept').length === 4, `${node.id} must contain four concept exercises.`);
+      check(node.exercises.filter((exercise) => exercise.practiceKind === 'boundary').length === 3, `${node.id} must contain three boundary exercises.`);
+      check(node.exercises.filter((exercise) => exercise.practiceKind === 'scenario').length === 3, `${node.id} must contain three scenario exercises.`);
+      check(node.exercises.filter((exercise) => exercise.practiceKind === 'oral').length === 2, `${node.id} must contain two oral exercises.`);
+      node.knowledgeIds.forEach((id) => check(knowledgeIds.has(id), `${node.id} references missing knowledge article ${id}.`));
+      node.exercises.forEach((exercise) => validateExercise(exercise, node.id));
+      const evidence = interviewEvidence.find((item) => item.nodeId === node.id);
+      check(Boolean(evidence), `${node.id} is missing interview evidence.`);
+      check((evidence?.sources.length ?? 0) >= 3, `${node.id} must include at least three interview evidence sources.`);
+      node.knowledgeIds.forEach((id) => {
+        const article = knowledgeCards.find((card) => card.id === id);
+        check((article?.sources.length ?? 0) >= 1, `${node.id} must include a primary technical source.`);
+      });
+    });
+  });
+});
+
+check(applicationUnit.sections.length === 8, 'Application unit must contain eight sections.');
+applicationUnit.sections.forEach((section) => {
+  check(section.nodes.length === 8, `${section.id} must contain eight nodes.`);
+  section.nodes.forEach((node) => {
+    check(!nodeIds.has(node.id), `Duplicate node id: ${node.id}.`);
+    nodeIds.add(node.id);
+    check(node.exercises.length === 24, `${node.id} must contain exactly 24 source exercises.`);
+    const expectedKinds = { concept: 6, mechanism: 4, selection: 4, troubleshooting: 4, metrics: 3, oral: 3 };
+    Object.entries(expectedKinds).forEach(([kind, count]) => check(node.exercises.filter((exercise) => exercise.practiceKind === kind).length === count, `${node.id} must contain ${count} ${kind} exercises.`));
+    node.knowledgeIds.forEach((id) => check(knowledgeIds.has(id), `${node.id} references missing knowledge article ${id}.`));
+    node.exercises.forEach((exercise) => validateExercise(exercise, node.id));
+    const evidence = applicationInterviewEvidence.find((item) => item.nodeId === node.id);
+    check((evidence?.sources.length ?? 0) >= 3, `${node.id} must include three interview sources.`);
+  });
+});
+
+check(exerciseIds.size === 2136, `Expected exactly 2136 unique exercises, received ${exerciseIds.size}.`);
 check(new Set(knowledgeCards.map((card) => card.id)).size === knowledgeCards.length, 'Knowledge article ids must be unique.');
 
 if (failures.length) {
@@ -85,4 +134,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Course validation passed: ${transformerUnit.sections.length} Sections, ${transformerNodes.length} nodes, ${exerciseIds.size} exercises, ${transformerKnowledgeCount} Transformer knowledge articles.`);
+console.log(`Course validation passed: 114 nodes, ${exerciseIds.size} exercises, ${knowledgeCards.length} knowledge articles.`);

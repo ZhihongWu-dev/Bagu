@@ -22,7 +22,8 @@ export function AppIcon({ name, size = 24, color = '#6C52E5', strokeWidth = 2.35
     case 'search': artwork = <><Circle cx="10.5" cy="10.5" r="5.5" {...shared} /><Line x1="15" y1="15" x2="20" y2="20" {...shared} /></>; break;
     case 'close': artwork = <><Line x1="6" y1="6" x2="18" y2="18" {...shared} /><Line x1="18" y1="6" x2="6" y2="18" {...shared} /></>; break;
     case 'star': artwork = <Polygon points="12,3.8 14.5,9 20.2,9.8 16.1,13.8 17.1,19.6 12,16.8 6.9,19.6 7.9,13.8 3.8,9.8 9.5,9" {...shared} />; break;
-    case 'flame': artwork = <Path d="M13.6 3.5c.7 3-1.2 4.2-2.3 5.7-1-1-1.4-2.1-1.2-3.4C7.2 8.1 5.5 10.6 5.5 14a6.5 6.5 0 0 0 13 0c0-4.2-2.2-7.6-4.9-10.5zM12 19c-1.8 0-3-1.3-3-3 0-1.4.8-2.5 2-3.5.1 1.1.6 1.8 1.3 2.4.8-.8 1.3-1.6 1.4-2.7.9 1 1.3 2.2 1.3 3.5 0 1.9-1.2 3.3-3 3.3z" {...shared} />; break;
+    case 'flame': artwork = <><Path d="M13.6 2.2c.8 3.7-1.5 5.2-3 7.2-1.1-1.3-1.6-2.7-1.2-4.3C5.6 7.9 3.5 11.4 3.5 15.5 3.5 20.6 7.1 23 12 23s8.5-3.6 8.5-8.6c0-5-2.8-9.5-6.9-12.2Z" fill={color} /><Path d="M12.3 11.3c.3 1.9-.8 2.8-1.7 3.8-.6-.6-.9-1.4-.7-2.3-1.8 1.4-2.8 3.3-2.8 5.4 0 2.9 2.1 4.8 4.9 4.8s4.9-2 4.9-4.9c0-2.8-1.8-5.4-4.6-6.8Z" fill="#FFC83D" /></>; break;
+    case 'heart': artwork = <Path d="M12 21s-8.5-4.8-8.5-11.2A5.3 5.3 0 0 1 12 5.6a5.3 5.3 0 0 1 8.5 4.2C20.5 16.2 12 21 12 21Z" fill={color} />; break;
     case 'gem': artwork = <><Polygon points="7,4 17,4 21,9 12,20 3,9" {...shared} /><Polyline points="3,9 21,9 17,4 12,9 7,4" {...shared} /></>; break;
     case 'bolt': artwork = <Polygon points="13.5,2.8 5.5,13 11.2,13 10.5,21.2 18.5,10.8 12.8,10.8" {...shared} />; break;
     case 'volume': artwork = <><Path d="M4 10v4h4l5 4V6l-5 4z" {...shared} /><Path d="M16 9a4 4 0 0 1 0 6M18.5 6.8a7.2 7.2 0 0 1 0 10.4" {...shared} /></>; break;

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "legacyExerciseCount": 300,
+  "policy": {
+    "unchangedCapability": "仅内容修订且能力目标不变时可保留旧 ID，并增加 questionVersion。",
+    "changedCapability": "能力目标变化时使用 <nodeId>-v2-<01..12>，旧 ID 标记 retired。",
+    "progress": "节点 ID 保持不变，因此课程解锁与节点完成进度不迁移。"
+  },
+  "suffixes": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+  "nodes": [
+    { "nodeId": "qkv-roles", "legacyPrefix": "qkv-roles-", "replacementPrefix": "qkv-roles-v2-", "status": "candidate-v2" },
+    { "nodeId": "attention-shapes", "legacyPrefix": "attention-shapes-", "replacementPrefix": "attention-shapes-v2-", "status": "candidate-v2" },
+    { "nodeId": "scaled-dot-product", "legacyPrefix": "scaled-dot-product-", "replacementPrefix": "scaled-dot-product-v2-", "status": "candidate-v2" },
+    { "nodeId": "softmax-attention", "legacyPrefix": "softmax-attention-", "replacementPrefix": "softmax-attention-v2-", "status": "candidate-v2" },
+    { "nodeId": "attention-masks", "legacyPrefix": "attention-masks-", "replacementPrefix": "attention-masks-v2-", "status": "candidate-v2" },
+    { "nodeId": "multi-head-attention", "legacyPrefix": "multi-head-attention-", "replacementPrefix": "multi-head-attention-v2-", "status": "planned" },
+    { "nodeId": "head-splitting", "legacyPrefix": "head-splitting-", "replacementPrefix": "head-splitting-v2-", "status": "planned" },
+    { "nodeId": "residual-connections", "legacyPrefix": "residual-connections-", "replacementPrefix": "residual-connections-v2-", "status": "planned" },
+    { "nodeId": "layer-normalization", "legacyPrefix": "layer-normalization-", "replacementPrefix": "layer-normalization-v2-", "status": "planned" },
+    { "nodeId": "ffn-swiglu", "legacyPrefix": "ffn-swiglu-", "replacementPrefix": "ffn-swiglu-v2-", "status": "planned" },
+    { "nodeId": "absolute-position", "legacyPrefix": "absolute-position-", "replacementPrefix": "absolute-position-v2-", "status": "planned" },
+    { "nodeId": "rope", "legacyPrefix": "rope-", "replacementPrefix": "rope-v2-", "status": "planned" },
+    { "nodeId": "alibi", "legacyPrefix": "alibi-", "replacementPrefix": "alibi-v2-", "status": "planned" },
+    { "nodeId": "context-extension", "legacyPrefix": "context-extension-", "replacementPrefix": "context-extension-v2-", "status": "planned" },
+    { "nodeId": "long-context-cost", "legacyPrefix": "long-context-cost-", "replacementPrefix": "long-context-cost-v2-", "status": "planned" },
+    { "nodeId": "encoder-only", "legacyPrefix": "encoder-only-", "replacementPrefix": "encoder-only-v2-", "status": "planned" },
+    { "nodeId": "decoder-only", "legacyPrefix": "decoder-only-", "replacementPrefix": "decoder-only-v2-", "status": "planned" },
+    { "nodeId": "encoder-decoder", "legacyPrefix": "encoder-decoder-", "replacementPrefix": "encoder-decoder-v2-", "status": "planned" },
+    { "nodeId": "cross-attention", "legacyPrefix": "cross-attention-", "replacementPrefix": "cross-attention-v2-", "status": "planned" },
+    { "nodeId": "training-objectives", "legacyPrefix": "training-objectives-", "replacementPrefix": "training-objectives-v2-", "status": "planned" },
+    { "nodeId": "prefill-decode", "legacyPrefix": "prefill-decode-", "replacementPrefix": "prefill-decode-v2-", "status": "planned" },
+    { "nodeId": "kv-cache", "legacyPrefix": "kv-cache-", "replacementPrefix": "kv-cache-v2-", "status": "planned" },
+    { "nodeId": "mqa-gqa", "legacyPrefix": "mqa-gqa-", "replacementPrefix": "mqa-gqa-v2-", "status": "planned" },
+    { "nodeId": "flash-attention", "legacyPrefix": "flash-attention-", "replacementPrefix": "flash-attention-v2-", "status": "planned" },
+    { "nodeId": "inference-quantization-batching", "legacyPrefix": "inference-quantization-batching-", "replacementPrefix": "inference-quantization-batching-v2-", "status": "planned" }
+  ]
+}

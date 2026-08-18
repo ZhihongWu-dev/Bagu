@@ -11,10 +11,11 @@ export const colors = {
   current: '#FFB526',
   currentDark: '#D98B00',
   currentSoft: '#FFF0C6',
+  flame: '#F58220',
+  flameInner: '#FFC83D',
   danger: '#EF5D76',
   text: '#29233D',
   textMuted: '#756D84',
   border: '#E0DAEA',
   locked: '#D8D3E3',
 } as const;
-

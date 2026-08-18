@@ -1,0 +1,1748 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "item-quality",
+  "reviewerState": "uncalibrated",
+  "reviewedAt": "2026-08-16T15:51:28.8266180+02:00",
+  "questions": [
+    {
+      "questionId": "qkv-roles-01",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-02",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-03",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-04",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-05",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-06",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-v2-07",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-08",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-09",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-10",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-11",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "qkv-roles-12",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+        },
+        "distractorQuality": {
+          "score": 4,
+          "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-01",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-02",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-03",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-04",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-05",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-06",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-07",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-08",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-09",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-10",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-11",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "scaled-dot-product-12",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+        },
+        "distractorQuality": {
+          "score": 4,
+          "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-01",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-02",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-03",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-04",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-05",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-06",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-07",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-08",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-09",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-10",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-11",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "softmax-attention-12",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+        },
+        "distractorQuality": {
+          "score": 4,
+          "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-01",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-02",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-03",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-04",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-05",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-06",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-07",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-08",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-09",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-10",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-11",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-masks-12",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+        },
+        "distractorQuality": {
+          "score": 4,
+          "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-01",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-02",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-03",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 2,
+          "reason": "主要测基础概念或标准流程，深度与 foundation 定位一致。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-04",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-05",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-06",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-07",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-08",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-09",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 3,
+          "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-10",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-11",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "需要机制推理或边界判断，符合深层认知目标。"
+        },
+        "distractorQuality": {
+          "score": 3,
+          "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    },
+    {
+      "questionId": "attention-shapes-12",
+      "questionVersion": 2,
+      "verdict": "pass",
+      "gates": {
+        "uniqueAnswer": true,
+        "noAnswerLeakage": true,
+        "explanationAligned": true
+      },
+      "anchoredScores": {
+        "reasoningDepth": {
+          "score": 4,
+          "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+        },
+        "distractorQuality": {
+          "score": 4,
+          "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+        },
+        "explanationAlignment": {
+          "score": 4,
+          "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+        },
+        "clarity": {
+          "score": 4,
+          "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+        }
+      },
+      "findings": []
+    }
+  ]
+}

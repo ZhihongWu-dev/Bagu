@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "evidence",
+  "reviewerState": "uncalibrated",
+  "reviewedAt": "2026-08-16T15:50:53.5106862+02:00",
+  "questions": [
+    {
+      "questionId": "qkv-roles-01", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-value-role", "reason": "The keyed answer and explanation match the standard attention equation.", "evidence": "Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V directly weights and sums V; Q and K form the weights.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1)" }]
+    },
+    {
+      "questionId": "qkv-roles-02", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-self-attention-projections", "reason": "The revised two-answer set is complete: same-sequence provenance and distinct learned projections are true, while numerical identity and separate K/V aggregation are false.", "evidence": "Original multi-head attention defines separate W_i^Q, W_i^K and W_i^V projections from the self-attention input and applies each head's normalized weights to V only.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Sections 3.2.1-3.2.2, equation (1) and multi-head attention equations" }]
+    },
+    {
+      "questionId": "qkv-roles-03", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-attention-dependency-order", "reason": "The proposed order follows the mathematical data dependencies.", "evidence": "Q/K/V must exist before QK^T; softmax follows scaled scores; the resulting weights then multiply V.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation pseudocode" }]
+    },
+    {
+      "questionId": "qkv-roles-04", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-cross-attention-sources", "reason": "The selected source assignment is the Transformer encoder-decoder attention assignment.", "evidence": "Queries come from the previous decoder layer, while keys and values come from the encoder output.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.3, encoder-decoder attention" }]
+    },
+    {
+      "questionId": "qkv-roles-05", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-zero-one-value-diagnosis", "reason": "The zero/one construction and stated row-sum condition eliminate the previous null-space counterexample and isolate the aggregation output before downstream projection.", "evidence": "For C=A@V with every row of A summing to one, A@V0 is all zero when V0 is all zero, while A@V1 is all one when V1 is all one. Identical observed contexts therefore contradict correct use of the supplied V in this operation.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, final attn_weight @ value operation; direct matrix-product consequence" }]
+    },
+    {
+      "questionId": "qkv-roles-06", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-wq-causal-path", "reason": "The prompt now fixes X, W_K and W_V, making the selected dependency claims complete.", "evidence": "Replacing W_Q changes Q, and may therefore change QK^T and softmax weights; V=XW_V is unchanged on that forward path.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.2, per-head projection equations" }]
+    },
+    {
+      "questionId": "qkv-roles-v2-07", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-attention-value-product", "reason": "The revised distractor writes the reversed product explicitly as V@A with incompatible stated dimensions, so only the keyed multiplication yields the requested context shape and semantics.", "evidence": "[Lq,Lk] attention weights multiply V [Lk,Dv] to produce [Lq,Dv]. The written reverse product [Lk,Dv]@[Lq,Lk] is not generally defined because Dv and Lq need not match.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, attn_weight @ value; parameters and output shape legend" }]
+    },
+    {
+      "questionId": "qkv-roles-08", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-key-value-distinction", "reason": "The answer correctly separates compatibility representation from retrieved content.", "evidence": "K enters QK^T while V enters only the subsequent weighted aggregation in the standard formula.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1)" }]
+    },
+    {
+      "questionId": "qkv-roles-09", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-self-attention-boundary", "reason": "The selected statements accurately separate input provenance, parameters and projected values.", "evidence": "The original construction uses Q, K and V projections from the same sequence in self-attention but distinct projection matrices; variants can impose other sharing constraints.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Sections 3.2.2-3.2.3" }]
+    },
+    {
+      "questionId": "qkv-roles-10", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-joint-permutation-boundary", "reason": "The revised prompt scopes scores to QK^T and explicitly excludes masks, score biases, and other position-varying operations, so the invariance claim is complete and unique.", "evidence": "For a permutation matrix P, softmax(Q(PK)^T)=softmax(QK^T P^T)=softmax(QK^T)P^T; multiplying by PV cancels the permutation and preserves the output. The stated exclusions remove fixed position terms that would prevent this cancellation.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1), direct permutation consequence" }]
+    },
+    {
+      "questionId": "qkv-roles-11", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-uniform-weight-causes", "reason": "The revised two-answer set is complete: near-equal logits and near-identical keys can cause uniformity; small Query norm alone is not sufficient without a bound on Key scale, and Value cannot determine the weights.", "evidence": "Weights are softmax of Q-K logits. Near-equal logits directly imply near-equal weights, but an arbitrarily large Key difference can offset a small nonzero Query; V is consumed only after weights are formed.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, score/softmax before value multiplication" }]
+    },
+    {
+      "questionId": "qkv-roles-12", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-qkv-recall-rubric", "reason": "The minimum, full-credit and misconception boundaries all align with standard self- and cross-attention.", "evidence": "The rubric requires correct input sources, QK^T normalization, V aggregation, and distinction between same source and shared parameters.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Sections 3.2.1-3.2.3" }]
+    },
+
+    {
+      "questionId": "attention-shapes-01", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-score-shape", "reason": "The selected matrix shape follows ordinary contraction.", "evidence": "[Lq,Dh] @ [Dh,Lk] produces [Lq,Lk].", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Query/key shapes and reference query @ key.transpose(-2,-1)" }]
+    },
+    {
+      "questionId": "attention-shapes-02", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-output-shape", "reason": "The selected output shape follows contraction over key positions.", "evidence": "[Lq,Lk] @ [Lk,Dv] produces [Lq,Dv].", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Value and returned-output shape legend" }]
+    },
+    {
+      "questionId": "attention-shapes-03", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-score-axis-semantics", "reason": "The revised two-answer set is complete: B and Lq are correctly described, while H is a head axis rather than a source-count axis and Lk need not equal Lq with a KV cache.", "evidence": "Official SDPA uses N for batch, Hq/H for attention heads, L for target/query length and S for source/key length; L and S may differ.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Parameters and shape legend" }]
+    },
+    {
+      "questionId": "attention-shapes-04", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-cross-score-shape", "reason": "The answer correctly preserves query and source lengths and contracts head dimension.", "evidence": "Thirty-two queries scored against 128 keys produce a 32x128 matrix per head.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1)" }]
+    },
+    {
+      "questionId": "attention-shapes-05", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-multihead-reshape-flow", "reason": "The ordered steps are the conventional implementation of original multi-head attention.", "evidence": "Learned projections precede per-head attention; head outputs are concatenated before the output projection. For the stated standard equal split, Dmodel=H*Dh.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.2" }]
+    },
+    {
+      "questionId": "attention-shapes-06", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-key-transpose", "reason": "The selected transpose is required for the dot-product contraction.", "evidence": "Q [B,H,L,Dh] multiplies K^T [B,H,Dh,L], yielding scores [B,H,L,L].", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, key.transpose(-2,-1)" }]
+    },
+    {
+      "questionId": "attention-shapes-07", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-attention-dimension-constraints", "reason": "The selected constraints are necessary and the rejected Q/V feature equality is not.", "evidence": "Q and K share dot-product dimension E; K and V share source length S; returned output uses query length L and value feature dimension Ev.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Parameters, return shape and shape legend" }]
+    },
+    {
+      "questionId": "attention-shapes-08", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-equal-head-width", "reason": "The prompt states an equal-width split, making the arithmetic condition explicit.", "evidence": "Dh=Dmodel/H=768/12=64 in the standard equal-width multi-head configuration.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.2 and Table 3 head dimensions" }]
+    },
+    {
+      "questionId": "attention-shapes-09", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-quadratic-score-storage", "reason": "The explicit-materialization condition is stated and the fourfold result is exact for element count.", "evidence": "A self-attention score tensor has B*H*L*L elements; replacing L with 2L multiplies this count by four.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Table 1, self-attention complexity; Section 3.2.1 score matrix" }]
+    },
+    {
+      "questionId": "attention-shapes-10", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-mask-broadcast-shapes", "reason": "The revised two-answer set is complete under arbitrary unequal dimensions: only the padding mask and shared query-by-key mask align correctly.", "evidence": "[B,1,1,Lk] and [1,1,Lq,Lk] broadcast to [B,H,Lq,Lk]. [B,H,Lk,Lq] reverses the two semantic axes and is not generally broadcastable, while [B,Lq] trailing-aligns Lq against Lk.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "attn_mask parameter: broadcastable to (N,...,Hq,L,S)" }]
+    },
+    {
+      "questionId": "attention-shapes-11", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-standard-gqa-constraints", "reason": "The revised item explicitly adds the missing standard equal-group divisibility and dot-product compatibility conditions.", "evidence": "Official SDPA requires number_of_heads_query % number_of_heads_key_value == 0 and equal key/value head counts; Q and K also share the per-head dot-product dimension.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Grouped Query Attention constraints and query/key shape legend" }]
+    },
+    {
+      "questionId": "attention-shapes-12", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-cross-attention-shape-rubric", "reason": "The rubric correctly distinguishes Dh from Dv and only equates concatenated width with Dmodel for the common configuration.", "evidence": "Scores are [B,H,Lq,Lk], per-head output is [B,H,Lq,Dv], and concatenation yields [B,Lq,H*Dv].", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Sections 3.2.1-3.2.2" }]
+    },
+
+    {
+      "questionId": "scaled-dot-product-01", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-scale-factor", "reason": "The answer identifies the standard divisor and its dimension correctly.", "evidence": "Scaled dot-product attention divides QK^T by sqrt(d_k).", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1)" }]
+    },
+    {
+      "questionId": "scaled-dot-product-02", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-scaled-attention-order", "reason": "The sequence matches standard pre-softmax scaling/masking and post-softmax V aggregation.", "evidence": "The reference SDPA implementation computes scores, applies scale and bias/mask, performs softmax, then multiplies by V.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation pseudocode" }]
+    },
+    {
+      "questionId": "scaled-dot-product-03", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-scaling-purpose", "reason": "The revised two-answer set is complete: standard-deviation compensation and reduced saturation are supported, while neither entropy nor per-sample distributions are fixed exactly.", "evidence": "Under independent unit-variance components, dot products have variance d_k; division by sqrt(d_k) controls the approximate scale and mitigates small softmax gradients, but does not determine realized logits or entropy.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, scaling rationale and footnote 4" }]
+    },
+    {
+      "questionId": "scaled-dot-product-04", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-dot-product-standard-deviation", "reason": "The assumptions in the prompt suffice for the stated square-root result.", "evidence": "Summing d_k independent variance-one terms gives variance d_k and standard deviation sqrt(d_k).", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, footnote 4" }]
+    },
+    {
+      "questionId": "scaled-dot-product-05", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-head-dimension-scaling", "reason": "The answer correctly applies square-root standard-deviation growth.", "evidence": "sqrt(256)/sqrt(64)=16/8=2; variance would increase fourfold.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, scaling rationale" }]
+    },
+    {
+      "questionId": "scaled-dot-product-06", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-missing-scale-diagnosis", "reason": "The dimension-dependent symptom specifically supports the keyed diagnosis.", "evidence": "Without 1/sqrt(d_k), logit standard deviation grows with sqrt(d_k), driving softmax toward sharper, lower-gradient regimes as head width increases.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, scaling rationale" }]
+    },
+    {
+      "questionId": "scaled-dot-product-07", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-scale-mask-boundary", "reason": "The revised item correctly distinguishes mathematical -infinity from finite low-precision sentinels.", "evidence": "Scale and mask bias affect logits before softmax; default scale uses Q/K feature dimension E. A finite sentinel scaled in a different order is dtype-dependent and must remain sufficiently excluding.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation and scale/attn_mask parameters" }]
+    },
+    {
+      "questionId": "scaled-dot-product-08", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-wrong-divisor-effect", "reason": "The selected inverse-square-root behavior follows directly from the stated approximation.", "evidence": "An unscaled standard deviation proportional to sqrt(d_k), divided by d_k, is proportional to 1/sqrt(d_k).", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, scaling rationale; algebraic consequence" }]
+    },
+    {
+      "questionId": "scaled-dot-product-09", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-temperature-equivalence", "reason": "The algebraic temperature analogy is exact for fixed logits.", "evidence": "softmax(QK^T/sqrt(d_k)) has the form softmax(z/T) with T=sqrt(d_k).", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1)" }]
+    },
+    {
+      "questionId": "scaled-dot-product-10", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-statistical-boundaries", "reason": "The selected qualifications correctly reject a universal variance guarantee and a LayerNorm independence claim.", "evidence": "The original derivation explicitly assumes independent zero-mean unit-variance q and k components; trained projected components need not meet those assumptions.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, footnote 4" }]
+    },
+    {
+      "questionId": "scaled-dot-product-11", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-cosine-distinction", "reason": "The keyed difference between per-vector normalization and global dimension scaling is correct.", "evidence": "Unit-norm dot products remove norm information and are bounded by [-1,1]; multiplying an unnormalized dot product by 1/sqrt(d_k) preserves norm dependence and imposes no such bound.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.cosine_similarity", "sourceLocator": "Definition with division by the product of vector norms" }]
+    },
+    {
+      "questionId": "scaled-dot-product-12", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-scaling-recall-rubric", "reason": "The rubric accurately separates variance, standard deviation, softmax behavior and approximation boundaries.", "evidence": "The original argument gives variance d_k, standard deviation sqrt(d_k), and warns that large dot products push softmax into regions with very small gradients.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1 and footnote 4" }]
+    },
+
+    {
+      "questionId": "softmax-attention-01", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-softmax-axis", "reason": "The answer selects the key/source axis for per-query normalization.", "evidence": "Official SDPA computes attn_weight with shape (...,L,S) and applies torch.softmax(..., dim=-1), the S/key axis.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation and shape legend" }]
+    },
+    {
+      "questionId": "softmax-attention-02", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-finite-softmax-properties", "reason": "The prompt's finite-logit condition makes strict positivity correct; the explanation properly separates -infinity masks.", "evidence": "For finite z, exp(z)>0, normalization yields unit sum, and exponential monotonicity preserves weak ordering; nonlinear normalization does not preserve absolute differences.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition" }]
+    },
+    {
+      "questionId": "softmax-attention-03", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-shift-invariance", "reason": "The answer and explanation state the exact mathematical invariance.", "evidence": "Multiplying every exp(z_i) by the common factor exp(c) cancels between numerator and denominator.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition; direct algebraic consequence" }]
+    },
+    {
+      "questionId": "softmax-attention-04", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-stable-softmax-order", "reason": "The ordered max-shift computation is a standard exact stabilization for finite rows.", "evidence": "Subtracting the row maximum makes the largest exponential input zero without changing the normalized result, then exponentials are summed and divided.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition combined with shift invariance" }]
+    },
+    {
+      "questionId": "softmax-attention-05", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-temperature-effect", "reason": "The qualified 'usually' handles tied logits and the selected effect is correct for a non-degenerate row.", "evidence": "Changing T from 1 to 0.5 doubles all logit differences in z/T, increasing the largest item's ratio to smaller items while preserving normalization.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1 softmax equation; algebraic temperature consequence" }]
+    },
+    {
+      "questionId": "softmax-attention-06", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-wrong-softmax-axis-diagnosis", "reason": "The revised prompt explicitly fixes the score layout and excludes transposition and checking errors. Of the offered mechanisms, only normalization along Lq establishes the stated per-key cross-query unit-sum identity.", "evidence": "Softmax normalizes along its selected dimension. On a confirmed [B,H,Lq,Lk] tensor, choosing Lq makes each fixed key column sum to one across queries; scaling, masking, or subtracting a maximum on another axis does not itself impose that column normalization.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "dim parameter and normalization definition" }]
+    },
+    {
+      "questionId": "softmax-attention-07", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-softmax-ratio", "reason": "The revised two-answer set is complete: the exponential ratio identity and ordering are true, while common shifts and additional positions do not change the pairwise ratio.", "evidence": "a_i/a_j=exp(z_i)/exp(z_j)=exp(z_i-z_j); the common normalization denominator, including contributions from other positions, cancels from this ratio.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition" }]
+    },
+    {
+      "questionId": "softmax-attention-08", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-convex-combination", "reason": "The stated nonnegative unit-sum conditions are exactly those required for a convex combination.", "evidence": "The attention output is a weighted sum of V; nonnegative coefficients summing to one define a convex combination regardless of the signs of vector coordinates.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.1, equation (1)" }]
+    },
+    {
+      "questionId": "softmax-attention-09", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-mixed-precision-stabilization", "reason": "The selected max-shift is the direct result-preserving response to exponential overflow.", "evidence": "After subtracting the maximum, all exponent inputs are <=0, preventing positive exponential overflow while exact softmax remains unchanged.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition and shift-invariance consequence" }]
+    },
+    {
+      "questionId": "softmax-attention-10", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-interpretability-boundary", "reason": "The selected cautions match both the local attention computation and peer-reviewed evidence against treating weights as direct causal explanations.", "evidence": "Different attention distributions can yield equivalent predictions; local weights also interact with V and downstream residual/projection/layer computations.", "sourceUrl": "https://aclanthology.org/N19-1357/", "sourceLocator": "Abstract and Sections 1-4" }]
+    },
+    {
+      "questionId": "softmax-attention-11", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-softmax-saturation-gradient", "reason": "The keyed gradient behavior and Jacobian explanation are mathematically correct.", "evidence": "The Jacobian entries are a_i(1-a_i) on the diagonal and -a_i*a_j off diagonal; these approach zero as probabilities approach zero or one.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition; standard derivative obtained directly from it" }]
+    },
+    {
+      "questionId": "softmax-attention-12", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-softmax-recall-rubric", "reason": "The rubric's minimum and full-credit facts are technically aligned and its failure conditions identify genuine misconceptions.", "evidence": "Attention normalizes over keys, max shift preserves exact softmax, lower temperature sharpens non-degenerate rows, and weights alone do not establish full-model causal attribution.", "sourceUrl": "https://aclanthology.org/N19-1357/", "sourceLocator": "Attention explanation boundary in abstract; softmax mechanics cross-checked against PyTorch softmax/SDPA docs" }]
+    },
+
+    {
+      "questionId": "attention-masks-01", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-mask-purpose-distinction", "reason": "The keyed distinction is correct for standard padded autoregressive batches.", "evidence": "Key padding masks identify padded source positions, while causal masks enforce temporal visibility; PyTorch exposes them as distinct mask concepts.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention", "sourceLocator": "key_padding_mask, attn_mask and is_causal parameters" }]
+    },
+    {
+      "questionId": "attention-masks-02", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-additive-mask-order", "reason": "The prompt explicitly asks about an additive mask, whose conventional application is to pre-softmax scores.", "evidence": "Official SDPA adds attn_bias to scaled attention weights before torch.softmax.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, attn_weight += attn_bias before softmax" }]
+    },
+    {
+      "questionId": "attention-masks-03", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-causal-mask-properties", "reason": "The revised two-answer set is complete: past/diagonal visibility and the lower triangle are true, while per-head materialization and padding equivalence are false.", "evidence": "A square causal mask is lower triangular and permits the diagonal and earlier keys. A shared mask is broadcastable across heads; padding masks encode separate sample-specific exclusions.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "is_causal reference implementation and attn_mask broadcast shape" }]
+    },
+    {
+      "questionId": "attention-masks-04", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-explicit-mask-flow", "reason": "The revised item narrows the prompt to an explicitly materialized boolean-mask implementation, making the sequence defensible.", "evidence": "Visibility is constructed, aligned/broadcast to scores, converted to a negative score bias, and applied before key-axis softmax.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, boolean mask to -infinity bias and pre-softmax addition" }]
+    },
+    {
+      "questionId": "attention-masks-05", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-right-padding-positions", "reason": "The revised prompt now states right padding, which fixes the absolute padded-key positions and aligns with the explanation.", "evidence": "For effective length three right-padded to length five, key positions four and five are padding and must be ignored by attention queries.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention", "sourceLocator": "key_padding_mask shape and semantics: True key positions are ignored" }]
+    },
+    {
+      "questionId": "attention-masks-06", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-post-softmax-zeroing-effect", "reason": "The no-renormalization condition makes the selected consequence unavoidable for finite, previously unmasked future logits.", "evidence": "Finite softmax assigns positive mass to future entries; setting that mass to zero without redistribution leaves remaining weights summing to less than one and scales the weighted output.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax", "sourceLocator": "Softmax definition; direct normalization consequence" }]
+    },
+    {
+      "questionId": "attention-masks-07", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-mask-composition", "reason": "The boolean and additive formulations are equivalent and retain key-axis normalization.", "evidence": "Allowed positions satisfy both constraints, equivalently forbidden positions are their union. PyTorch MultiheadAttention merges attention and padding masks with logical OR after expansion.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention", "sourceLocator": "merge_masks and mask parameter semantics" }]
+    },
+    {
+      "questionId": "attention-masks-08", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-api-mask-portability", "reason": "The selected checks directly cover two documented cross-API incompatibilities.", "evidence": "PyTorch SDPA boolean True means participate, while MultiheadAttention boolean True means forbidden; both APIs also document distinct accepted mask shapes.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "attn_mask parameter; compare torch.nn.MultiheadAttention attn_mask/key_padding_mask parameters" }]
+    },
+    {
+      "questionId": "attention-masks-09", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-cross-padding-axis", "reason": "The selected axis follows the encoder-decoder source assignment.", "evidence": "Encoder outputs supply cross-attention keys and values, so encoder padding occupies source/key positions S=Lk and is excluded for decoder queries.", "sourceUrl": "https://arxiv.org/abs/1706.03762", "sourceLocator": "Section 3.2.3; cross-checked with PyTorch SDPA L/S shape legend" }]
+    },
+    {
+      "questionId": "attention-masks-10", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-fully-masked-row-boundary", "reason": "The revised two-answer set is complete: NaN risk and an explicit row policy are valid, while finite-minimum and float32-only guarantees are false.", "evidence": "For an all--infinity row, naive max subtraction computes -infinity - -infinity. A finite equal sentinel can normalize to a semantically invalid nonzero distribution, and float32 testing does not establish behavior for half/bfloat16 or fused kernels.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation uses -infinity mask bias followed by softmax; notes on backend and precision differences" }]
+    },
+    {
+      "questionId": "attention-masks-11", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-kv-cache-causal-offset", "reason": "The answer correctly identifies non-square causal alignment with cached history.", "evidence": "For four new queries against 104 keys, causal visibility must be aligned to their full-sequence positions. PyTorch exposes lower-right causal bias specifically for non-square query/key lengths.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.attention.bias.CausalBias.html", "sourceLocator": "causal_lower_right factory and non-square example" }]
+    },
+    {
+      "questionId": "attention-masks-12", "questionVersion": 2, "verdict": "pass",
+      "gates": { "factuallyCorrect": true, "conditionsComplete": true, "sourcesVerifiable": true },
+      "findings": [{ "code": "verified-mask-recall-rubric", "reason": "The rubric covers all requested implementation boundaries and correctly rejects the two stated misconceptions.", "evidence": "Official APIs support pre-softmax score masks broadcast to attention shape, distinguish padding and causal constraints, and document differing boolean polarity; all-masked rows require explicit policy/testing beyond the basic formula.", "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention", "sourceLocator": "Reference implementation, attn_mask/is_causal parameters; compare MultiheadAttention mask parameters" }]
+    }
+  ]
+}

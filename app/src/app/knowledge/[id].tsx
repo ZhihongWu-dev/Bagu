@@ -1,8 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAnalytics } from '@/analytics/analytics-context';
 import { AppIcon } from '@/components/app-icon';
 import { MathFormula } from '@/components/math-formula';
 import { ScreenShell } from '@/components/screen-shell';
@@ -13,7 +14,15 @@ import { colors } from '@/theme/colors';
 export default function KnowledgeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const card = useMemo(() => knowledgeById[id], [id]);
+  const { track } = useAnalytics();
+  const trackedCard = useRef<string | null>(null);
   const { favoriteKnowledgeIds, reviewQueue, toggleFavorite, addToReview } = useProgress();
+
+  useEffect(() => {
+    if (!card || trackedCard.current === card.id) return;
+    trackedCard.current = card.id;
+    track('knowledge_opened', { knowledge_id: card.id });
+  }, [card, track]);
 
   if (!card) {
     return (
@@ -32,7 +41,7 @@ export default function KnowledgeDetailScreen() {
         <View style={styles.header}>
           <Pressable accessibilityLabel="返回" onPress={() => router.back()} hitSlop={12}><AppIcon name="chevron-left" size={26} color={colors.text} /></Pressable>
           <Text style={styles.headerTitle}>知识手册</Text>
-          <Pressable accessibilityLabel={favorite ? '取消收藏' : '收藏'} onPress={() => toggleFavorite(card.id)} hitSlop={12}><AppIcon name="star" size={25} color={favorite ? colors.current : '#B8B0C4'} strokeWidth={favorite ? 2.7 : 2.2} /></Pressable>
+          <Pressable accessibilityLabel={favorite ? '取消收藏' : '收藏'} onPress={() => { toggleFavorite(card.id); track('knowledge_favorited', { knowledge_id: card.id, favorited: !favorite }); }} hitSlop={12}><AppIcon name="star" size={25} color={favorite ? colors.current : '#B8B0C4'} strokeWidth={favorite ? 2.7 : 2.2} /></Pressable>
         </View>
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -81,7 +90,7 @@ export default function KnowledgeDetailScreen() {
         </ScrollView>
 
         <View style={styles.actionArea}>
-          <Pressable accessibilityRole="button" disabled={scheduled} onPress={() => addToReview(card.id)} style={[styles.reviewButton, scheduled && styles.scheduledButton]}>
+          <Pressable accessibilityRole="button" disabled={scheduled} onPress={() => { addToReview(card.id); track('review_added', { target_id: card.id, review_source: 'knowledge' }); }} style={[styles.reviewButton, scheduled && styles.scheduledButton]}>
             <View style={styles.buttonContent}>{scheduled ? <AppIcon name="check" size={18} color={colors.successDark} /> : null}<Text style={[styles.reviewButtonText, scheduled && styles.scheduledText]}>{scheduled ? '已加入复习' : '加入复习'}</Text></View>
           </Pressable>
         </View>

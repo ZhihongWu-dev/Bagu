@@ -33,7 +33,7 @@ export function CoursePath({ unit, completedLessonIds, isUnlocked, onSelect }: P
                     completed={completed}
                     current={current}
                     unlocked={unlocked}
-                    offset={offsets[index] ?? 0}
+                    offset={offsets[index % offsets.length]}
                     accentColor={section.color}
                     accentDarkColor={section.darkColor}
                     onPress={() => onSelect(node)}
