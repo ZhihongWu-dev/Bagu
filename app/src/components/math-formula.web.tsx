@@ -46,19 +46,24 @@ export function MathFormula({ expression, color = colors.text, compact = false, 
       width: 'max-content',
     },
   });
+  const scrollElement = createElement(
+    'div',
+    { style: { overflowX: 'auto', overflowY: 'hidden', width: '100%' } },
+    formulaElement,
+  );
 
   return (
     <View
       accessible
       accessibilityLabel={`公式：${expression.plainText}`}
       style={[styles.container, compact && styles.compact, style]}>
-      {formulaElement}
+      {scrollElement}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', alignSelf: 'stretch', overflowX: 'auto', overflowY: 'hidden' },
+  container: { width: '100%', alignSelf: 'stretch', overflow: 'hidden' },
   compact: { minHeight: 38 },
   fallback: { minHeight: 42, alignItems: 'center', justifyContent: 'center' },
   fallbackText: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
