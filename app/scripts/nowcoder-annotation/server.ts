@@ -4,11 +4,13 @@ import { fileURLToPath } from 'node:url';
 import { loadManifest } from '../nowcoder-intake/manifest';
 import { createRequestHandler } from './routes';
 import { AnnotationStore } from './store';
+import { ANNOTATION_SUBMISSION_APP_PATH } from './submission';
 
 export interface AnnotationServerOptions {
   manifestPath?: string;
   dataPath?: string;
   exportRoot?: string;
+  submissionPath?: string;
   uiRoot?: string;
   port?: number;
   now?: () => Date;
@@ -26,11 +28,12 @@ export async function startAnnotationServer(options: AnnotationServerOptions = {
   const manifestPath = resolve(options.manifestPath ?? 'quality/nowcoder-intake/manifests/pilot-100.json');
   const dataPath = resolve(options.dataPath ?? 'quality/nowcoder-intake/manual-data/annotations.json');
   const exportRoot = resolve(options.exportRoot ?? 'quality/nowcoder-intake/manual-data/exports');
+  const submissionPath = resolve(options.submissionPath ?? ANNOTATION_SUBMISSION_APP_PATH);
   const uiRoot = resolve(options.uiRoot ?? resolve(MODULE_ROOT, 'ui'));
   const manifest = await loadManifest(manifestPath);
   const store = new AnnotationStore(dataPath, manifest);
   await store.load();
-  const server = createServer(createRequestHandler({ manifest, store, exportRoot, uiRoot, now: options.now }));
+  const server = createServer(createRequestHandler({ manifest, store, exportRoot, submissionPath, uiRoot, now: options.now }));
   await new Promise<void>((resolveListen, reject) => {
     server.once('error', reject);
     server.listen(options.port ?? 4178, '127.0.0.1', () => {

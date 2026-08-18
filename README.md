@@ -47,6 +47,8 @@ npm run test:application
 npm run test:analytics
 npm run test:annotations
 npm run test:annotation-tool
+npm run test:annotation-submission
+npm run annotation:validate-submission
 npm run test:intake
 npx expo-doctor
 ```
@@ -60,6 +62,8 @@ npx expo-doctor
 ## 题目与外部资料
 
 Bagu 可以利用公开技术报告、开源项目和公开面经总结考点分布，但正式题库内容应由项目重新组织和审核。仓库不收录从牛客等平台批量复制的受限题目正文，也不提交人工标注原文、登录状态、Cookie 或用户个人信息。
+
+牛客人工标注的本地运行、脱敏提交和协作者 Pull Request 流程见 [`app/quality/nowcoder-intake/README.md`](app/quality/nowcoder-intake/README.md)。公开提交文件只包含规范化标签，并由 CI 校验完整性和隐私边界。
 
 ## 协作与 `push`
 

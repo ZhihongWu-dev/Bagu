@@ -6,6 +6,8 @@ import { exportAnnotations } from './export';
 import { annotationProgress } from './progress';
 import { applySecurityHeaders, readJsonBody, validateRequestOrigin } from './security';
 import { AnnotationStore } from './store';
+import { ANNOTATION_SUBMISSION_REPOSITORY_PATH } from './submission';
+import { writeAnnotationSubmission } from './submission-writer';
 import { taxonomyPayload } from './taxonomy';
 import type { AnnotationCandidate } from './types';
 
@@ -13,6 +15,7 @@ export interface RouteContext {
   manifest: SourceManifest;
   store: AnnotationStore;
   exportRoot: string;
+  submissionPath: string;
   uiRoot: string;
   now?: () => Date;
 }
@@ -77,6 +80,21 @@ export function createRequestHandler(context: RouteContext) {
         const dataset = await context.store.load();
         const directory = await exportAnnotations(context.exportRoot, context.manifest, dataset, (context.now ?? (() => new Date()))());
         json(response, 201, { directory });
+        return;
+      }
+      if (method === 'POST' && requestUrl.pathname === '/api/submission') {
+        await readJsonBody(request);
+        const dataset = await context.store.load();
+        await writeAnnotationSubmission(context.submissionPath, context.manifest, dataset, (context.now ?? (() => new Date()))());
+        json(response, 201, {
+          path: ANNOTATION_SUBMISSION_REPOSITORY_PATH,
+          validationCommand: 'npm run annotation:validate-submission',
+          gitCommands: [
+            'git add app/quality/nowcoder-intake/submissions/pilot-100-v1.json',
+            'git commit -m "data: submit pilot annotation signals"',
+            'git push -u origin annotation/pilot-100-v1',
+          ],
+        });
         return;
       }
       if (['GET', 'HEAD', 'PUT', 'POST'].includes(method)) json(response, 404, { error: 'not_found' });

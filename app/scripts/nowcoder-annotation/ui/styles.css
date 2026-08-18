@@ -27,6 +27,7 @@ h1 { margin: 0; font-size: 22px; line-height: 1.2; }
 h2 { margin: 4px 0 0; font-size: 21px; line-height: 1.35; }
 .metrics { display: flex; gap: 18px; color: #777481; font-size: 13px; white-space: nowrap; }
 .metrics strong { color: #24212f; font-size: 18px; margin-right: 3px; }
+.topbar-actions { display: flex; gap: 8px; }
 
 .workspace { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100vh - 88px); }
 .source-panel { border-right: 1px solid #dddce5; background: #ffffff; padding: 18px 14px; overflow: auto; }
@@ -75,12 +76,14 @@ legend, .summary-field { display: flex; justify-content: space-between; width: 1
 .secondary-button { border: 1px solid #cbc9d4; background: #fff; color: #3d3948; }
 .danger-button { border: 1px solid #c8a785; background: #fffaf5; color: #8a5317; }
 button:disabled { cursor: wait; opacity: .55; }
-.status-message { min-height: 24px; margin: 16px 0 0; color: #13795b; font-size: 13px; }
+.status-message { min-height: 24px; margin: 16px 0 0; color: #13795b; font-size: 13px; white-space: pre-line; }
 .status-message.error { color: #b42318; }
 
 @media (max-width: 780px) {
-  .topbar { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; }
-  .metrics { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; gap: 8px; overflow-x: auto; }
+  .topbar { grid-template-columns: 1fr; gap: 12px; padding: 14px 16px; }
+  .metrics { justify-content: space-between; gap: 8px; overflow-x: auto; }
+  .topbar-actions { width: 100%; flex-direction: column; }
+  .topbar-actions button { width: 100%; }
   .workspace { grid-template-columns: 1fr; }
   .source-panel { border-right: 0; border-bottom: 1px solid #dddce5; max-height: 220px; }
   .annotation-panel { padding: 22px 16px 44px; }
