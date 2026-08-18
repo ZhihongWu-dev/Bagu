@@ -1,0 +1,173 @@
+import { router } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useAnalytics } from '@/analytics/analytics-context';
+import { AppIcon } from '@/components/app-icon';
+import { ScreenShell } from '@/components/screen-shell';
+import { useProgress } from '@/context/progress-context';
+import { knowledgeCards, knowledgeDomains } from '@/data/knowledge-base';
+import { colors } from '@/theme/colors';
+import type { KnowledgeDomainId } from '@/types/course';
+
+type Filter = 'role' | 'all' | 'favorite' | KnowledgeDomainId;
+
+export default function LibraryScreen() {
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<Filter>('role');
+  const { track } = useAnalytics();
+  const { favoriteKnowledgeIds, resumeAnalysis, targetRole, toggleFavorite } = useProgress();
+  const showDomainOverview = filter === 'all' && !query.trim();
+
+  const visibleCards = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    return knowledgeCards.filter((card) => {
+      const matchesFilter = filter === 'all'
+        || (filter === 'role' && (!card.roles?.length || card.roles.includes(targetRole!)))
+        || (filter === 'favorite' && favoriteKnowledgeIds.includes(card.id))
+        || card.domainId === filter;
+      const haystack = [card.title, card.summary, card.answer, ...card.aliases, ...card.keyPoints, ...(card.relatedIds ?? [])].join(' ').toLowerCase();
+      return matchesFilter && (!normalized || haystack.includes(normalized));
+    }).sort((left, right) => {
+      const recommendedIds = resumeAnalysis?.confirmed ? new Set(resumeAnalysis.topicIds.map((id) => `kb-${id}`)) : null;
+      const recommendationDifference = Number(Boolean(recommendedIds?.has(right.id))) - Number(Boolean(recommendedIds?.has(left.id)));
+      if (recommendationDifference) return recommendationDifference;
+      const leftPriority = left.roles?.includes(targetRole!) ? 0 : left.roles?.length ? 2 : 1;
+      const rightPriority = right.roles?.includes(targetRole!) ? 0 : right.roles?.length ? 2 : 1;
+      return leftPriority - rightPriority;
+    });
+  }, [favoriteKnowledgeIds, filter, query, resumeAnalysis, targetRole]);
+
+  return (
+    <ScreenShell>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <Text style={styles.title}>知识</Text>
+
+          <View style={styles.searchBox}>
+            <AppIcon name="search" size={20} color={colors.primary} />
+            <TextInput
+              accessibilityLabel="搜索知识点"
+              value={query}
+              onChangeText={setQuery}
+              placeholder="搜索 Attention、LoRA、PPO…"
+              placeholderTextColor="#9A92A7"
+              style={styles.searchInput}
+            />
+            {query ? <Pressable accessibilityLabel="清空搜索" hitSlop={10} onPress={() => setQuery('')}><AppIcon name="close" size={19} color={colors.textMuted} /></Pressable> : null}
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>
+            <FilterChip label="当前方向" active={filter === 'role'} onPress={() => setFilter('role')} />
+            <FilterChip label="全部领域" active={filter === 'all'} onPress={() => setFilter('all')} />
+            <FilterChip label={`收藏 ${favoriteKnowledgeIds.length}`} active={filter === 'favorite'} onPress={() => setFilter('favorite')} />
+            {knowledgeDomains.map((domain) => (
+              <FilterChip key={domain.id} label={domain.shortLabel} active={filter === domain.id} onPress={() => setFilter(domain.id)} />
+            ))}
+          </ScrollView>
+
+          <View style={styles.resultHeader}>
+            <Text style={styles.resultTitle}>{showDomainOverview ? '六大方向' : filter === 'role' ? '当前方向' : filter === 'favorite' ? '我的收藏' : '知识专题'}</Text>
+            <Text style={styles.count}>{showDomainOverview ? knowledgeCards.length : visibleCards.length} 篇</Text>
+          </View>
+
+          {showDomainOverview ? (
+            <View style={styles.domainGrid}>
+              {knowledgeDomains.map((domain) => {
+                const count = knowledgeCards.filter((card) => card.domainId === domain.id).length;
+                return (
+                  <Pressable key={domain.id} accessibilityRole="button" accessibilityLabel={`打开${domain.label}，${count}篇`} onPress={() => setFilter(domain.id)} style={({ pressed }) => [styles.domainCard, { backgroundColor: domain.softColor }, pressed && styles.cardPressed]}>
+                    <View style={[styles.domainCardIcon, { backgroundColor: colors.surface }]}><AppIcon name={domain.icon} size={25} color={domain.color} /></View>
+                    <Text numberOfLines={1} style={styles.domainCardTitle}>{domain.shortLabel}</Text>
+                    <Text style={[styles.domainCardCount, { color: domain.color }]}>{count}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : <View style={styles.cards}>
+            {visibleCards.map((card) => {
+              const domain = knowledgeDomains.find((item) => item.id === card.domainId)!;
+              const favorite = favoriteKnowledgeIds.includes(card.id);
+              return (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`打开知识点：${card.title}`}
+                  key={card.id}
+                  onPress={() => router.push({ pathname: '/knowledge/[id]', params: { id: card.id } })}
+                  style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
+                  <View style={[styles.domainIcon, { backgroundColor: domain.softColor }]}>
+                    <AppIcon name={domain.icon} size={22} color={domain.color} />
+                  </View>
+                  <View style={styles.cardCopy}>
+                    <View style={styles.metaRow}>
+                      <Text style={[styles.domainLabel, { color: domain.color }]}>{domain.shortLabel}</Text>
+                      <Text style={styles.difficulty}>{card.difficulty}</Text>
+                    </View>
+                    <Text style={styles.cardTitle}>{card.title}</Text>
+                    <Text numberOfLines={2} style={styles.cardSummary}>{card.summary}</Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={favorite ? `取消收藏：${card.title}` : `收藏：${card.title}`}
+                    hitSlop={10}
+                    onPress={(event) => { event.stopPropagation(); toggleFavorite(card.id); track('knowledge_favorited', { knowledge_id: card.id, favorited: !favorite }); }}>
+                    <AppIcon name="star" size={23} color={favorite ? colors.current : '#B8B0C4'} strokeWidth={favorite ? 2.7 : 2.2} />
+                  </Pressable>
+                </Pressable>
+              );
+            })}
+          </View>}
+
+          {!showDomainOverview && visibleCards.length === 0 && (
+            <View style={styles.empty}>
+              <AppIcon name="search" size={34} color={colors.primary} />
+              <Text style={styles.emptyTitle}>未找到</Text>
+            </View>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenShell>
+  );
+}
+
+function FilterChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={[styles.filterChip, active && styles.filterChipActive]}>
+      <Text style={[styles.filterText, active && styles.filterTextActive]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
+  content: { padding: 20, paddingBottom: 35 },
+  title: { color: colors.text, fontSize: 29, fontWeight: '900' },
+  searchBox: { height: 50, flexDirection: 'row', alignItems: 'center', gap: 9, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 14, marginTop: 15 },
+  searchInput: { flex: 1, color: colors.text, fontSize: 14, outlineStyle: 'none' } as never,
+  filters: { gap: 8, paddingVertical: 14 },
+  filterChip: { backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 },
+  filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  filterText: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
+  filterTextActive: { color: colors.surface },
+  resultHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 3, marginBottom: 10 },
+  resultTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },
+  count: { color: colors.textMuted, fontSize: 11, fontWeight: '800' },
+  cards: { gap: 10 },
+  domainGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  domainCard: { width: '48%', minHeight: 112, justifyContent: 'center', borderRadius: 19, padding: 15 },
+  domainCardIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  domainCardTitle: { color: colors.text, fontSize: 14, fontWeight: '900', marginTop: 10 },
+  domainCardCount: { fontSize: 11, fontWeight: '900', marginTop: 5 },
+  card: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border, borderRadius: 18, padding: 14 },
+  cardPressed: { transform: [{ scale: 0.99 }], borderColor: colors.primary },
+  domainIcon: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  cardCopy: { flex: 1 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  domainLabel: { fontSize: 10, fontWeight: '900' },
+  difficulty: { color: colors.textMuted, backgroundColor: colors.surfaceMuted, borderRadius: 7, paddingHorizontal: 6, paddingVertical: 3, fontSize: 9, fontWeight: '800' },
+  cardTitle: { color: colors.text, fontSize: 15, lineHeight: 21, fontWeight: '900', marginTop: 5 },
+  cardSummary: { color: colors.textMuted, fontSize: 12, lineHeight: 18, marginTop: 4 },
+  empty: { alignItems: 'center', padding: 35, backgroundColor: colors.surface, borderRadius: 20, borderWidth: 1.5, borderColor: colors.border },
+  emptyTitle: { color: colors.text, fontWeight: '900', marginTop: 9 },
+});

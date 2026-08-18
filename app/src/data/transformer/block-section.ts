@@ -1,0 +1,71 @@
+import { buildNode, type NodeBlueprint } from './build-node';
+import type { CourseSection } from '@/types/course';
+
+const blueprints: NodeBlueprint[] = [
+  {
+    id: 'multi-head-attention', title: '多头注意力', shortTitle: 'Multi-Head', subtitle: '并行学习多种关系', icon: 'network',
+    knowledgeIds: ['multi-head'], keywords: ['head'],
+    core: '多头注意力把隐藏维拆成多个子空间，各头独立投影并建模不同关系，最后拼接融合。',
+    facts: ['每个头通常有独立的 Q/K/V 投影', '各头输出拼接后还要经过 Wᴼ', '总隐藏维固定时单头维度约为 d_model/H'],
+    traps: ['不同头必须学到完全不同的语法功能', '头数增加会让注意力复杂度降为线性', '每个头都保持完整 d_model 且无需融合'],
+    sequence: ['把 Q/K/V 投影并拆分为多头', '各头独立计算注意力', '沿头维拼接输出', '通过 Wᴼ 混合各头信息'],
+    interview: ['说明多子空间而非简单重复计算', '写出 Concat(head₁…headₕ)Wᴼ', '讨论头数过多导致单头维度过小的边界'],
+    scenario: 'd_model=1024、头数=16，常见单头维度是多少？', scenarioAnswer: '常见设置下单头维度是 1024/16=64。',
+    boundary: '注意力头可能冗余，头数更多不保证效果单调提升。',
+    comparison: '单头在一个表示子空间聚合；多头并行使用多个较低维子空间后再融合。', formula: 'MultiHead=Concat(head₁,…,headₕ)Wᴼ',
+  },
+  {
+    id: 'head-splitting', title: '拆头、合头与参数量', shortTitle: '拆头与合头', subtitle: '区分头数、头维和隐藏维', icon: 'split',
+    knowledgeIds: ['head-dimension'], keywords: ['head'],
+    core: '标准 MHA 常保持 d_model=H×d_head，拆头只是重排视图，真正的参数来自线性投影。',
+    facts: ['拆头前投影常得到 H×d_head 维', '合头需要正确转置并保持 token 顺序', '固定 d_model 时增加头数会减小 d_head'],
+    traps: ['reshape 本身会创建新的可学习参数', '头数与 d_model 完全无关', '合头后不允许再做输出投影'],
+    sequence: ['线性投影到总头维', 'reshape 出 head 轴', '转置为适合批量矩阵乘的布局', '计算后反向转置并合并头轴'],
+    interview: ['画出 B×L×D 到 B×H×L×Dh 的变换', '强调 reshape 与投影的区别', '提醒 contiguous/transpose 对内存布局的影响'],
+    scenario: '代码只 reshape 成多头却忘了把 head 轴转到序列轴前，会出现什么风险？', scenarioAnswer: '矩阵乘可能沿错误维度进行，得到形状错误或语义错位的注意力。',
+    boundary: '框架可以使用不同内存布局，但每个轴的语义和配对必须一致。',
+    comparison: '线性投影学习表示；reshape/transpose 只改变张量视图与计算布局。', formula: 'B×L×D ↔ B×H×L×Dh, D=H·Dh',
+  },
+  {
+    id: 'residual-connections', title: '残差连接与深层优化', shortTitle: 'Residual', subtitle: '保留信息与梯度高速路', icon: 'merge',
+    knowledgeIds: ['residual-connection'], keywords: ['residual'],
+    core: '残差连接把子层输入直接加到输出，为信息和梯度提供近似恒等路径，使深层网络更易优化。',
+    facts: ['残差相加要求形状兼容', '子层可学习对输入的增量修正', '恒等路径缓解但不彻底消除梯度问题'],
+    traps: ['残差连接会自动减少一半参数', '有残差就不再需要归一化', '残差意味着跳过所有非线性计算'],
+    sequence: ['保存子层输入 x', '对子层输入做变换 F(x)', '应用 Dropout 等正则', '将 x 与 F(x) 相加'],
+    interview: ['先写 y=x+F(x)', '解释恒等映射为何易于传播信息和梯度', '补充维度变化时需投影或不能直接相加'],
+    scenario: '子层输出维度从 768 变成 1024，还能直接和输入相加吗？', scenarioAnswer: '不能直接相加，需要投影到相同形状或重新设计残差支路。',
+    boundary: '残差能改善优化，但过深模型仍依赖初始化、归一化和缩放策略。',
+    comparison: '残差连接做加法保留原输入；普通串联只把上一层输出交给下一层。', formula: 'y=x+F(x)',
+  },
+  {
+    id: 'layer-normalization', title: 'LayerNorm、Pre-LN 与 Post-LN', shortTitle: 'LayerNorm', subtitle: '理解归一化位置与稳定性', icon: 'sliders',
+    knowledgeIds: ['pre-ln-post-ln'], keywords: ['residual'],
+    core: 'LayerNorm 对单个 token 的特征维归一化；Pre-LN 把归一化放在子层前，深层训练通常更稳定。',
+    facts: ['LayerNorm 不依赖 batch 统计量', 'Pre-LN 的残差主路径更接近恒等映射', 'Post-LN 是原始 Transformer 采用的结构'],
+    traps: ['LayerNorm 在 batch 维统计均值方差', 'Pre-LN 与 Post-LN 推理结果必然相同', '归一化会删除所有幅度信息且无可学习参数'],
+    sequence: ['按特征维计算均值与方差', '标准化当前 token 表示', '应用可学习缩放与偏置', '将结果送入对应子层或残差位置'],
+    interview: ['区分 LayerNorm 与 BatchNorm 的统计轴', '画出 Pre-LN 和 Post-LN 的残差顺序', '说明稳定性与最终表示尺度的取舍'],
+    scenario: '小 batch 或变长序列任务中为何常选 LayerNorm 而不是 BatchNorm？', scenarioAnswer: 'LayerNorm 不依赖 batch 统计，对 batch 大小和序列长度更稳健。',
+    boundary: 'Pre-LN 更易训练不等于任何规模和训练策略下都必然优于 Post-LN。',
+    comparison: 'Pre-LN：x+F(LN(x))；Post-LN：LN(x+F(x))。', formula: 'LN(x)=γ⊙(x−μ)/√(σ²+ε)+β',
+  },
+  {
+    id: 'ffn-swiglu', title: 'FFN、GELU 与 SwiGLU', shortTitle: 'FFN · SwiGLU', subtitle: '逐 token 的非线性变换', icon: 'layers',
+    knowledgeIds: ['ffn', 'activation-functions'],
+    core: 'Attention 在 token 间混合信息，FFN 则对每个 token 独立执行扩维、非线性和降维，提升表示容量。',
+    facts: ['同一层 FFN 对所有位置共享参数', '标准 FFN 常先扩维再投影回 d_model', 'SwiGLU 用门控分支调制信息流'],
+    traps: ['FFN 负责计算 token 之间的注意力权重', '不同位置必须使用不同 FFN 参数', 'SwiGLU 与 ReLU 只差一个函数名字'],
+    sequence: ['把 token 表示投影到中间维', '计算激活或门控分支', '逐元素组合门控与值分支', '投影回模型隐藏维'],
+    interview: ['对比 Attention 的跨 token 混合与 FFN 的逐位置变换', '说明扩维带来的容量', '补充 SwiGLU 的门控结构和参数预算'],
+    scenario: '若移除 FFN，只堆叠注意力层，最直接损失什么？', scenarioAnswer: '模型缺少强力的逐位置非线性特征变换，表达容量会明显受限。',
+    boundary: 'FFN 逐位置独立，但其输入已经包含 Attention 聚合的上下文。',
+    comparison: 'Attention 混合序列维；FFN 混合特征维并引入非线性。', formula: 'FFN(x)=W₂·φ(W₁x+b₁)+b₂',
+  },
+];
+
+export const blockSection: CourseSection = {
+  id: 'transformer-blocks', title: 'Section 2 · 多头与 Transformer Block', shortTitle: 'Transformer Block',
+  description: '多头、残差、归一化和 FFN', color: '#1F9D7A', darkColor: '#16856B', softColor: '#E7FAF4',
+  nodes: blueprints.map(buildNode),
+};

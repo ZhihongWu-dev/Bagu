@@ -1,0 +1,71 @@
+import { buildNode, type NodeBlueprint } from './build-node';
+import type { CourseSection } from '@/types/course';
+
+const blueprints: NodeBlueprint[] = [
+  {
+    id: 'prefill-decode', title: 'Prefill 与 Decode', shortTitle: 'Prefill · Decode', subtitle: '区分两种推理阶段', icon: 'play',
+    knowledgeIds: ['prefill-decode'], keywords: ['cache'],
+    core: 'Prefill 并行处理整段提示并建立 KV Cache；Decode 每步处理少量新 token 并反复读取历史缓存。',
+    facts: ['Prefill 通常更偏计算密集', 'Decode 常更受显存带宽限制', 'TTFT 与 TPOT 分别关注两阶段体验'],
+    traps: ['Prefill 必须逐 token 串行执行', 'Decode 每步都重算全部历史 K/V', '两阶段的最优 batch 策略完全相同'],
+    sequence: ['对完整提示执行 Prefill', '写入每层历史 KV Cache', '采样第一个输出 token', '循环执行单步 Decode 并追加缓存'],
+    interview: ['分别定义 Prefill 和 Decode', '从矩阵规模与缓存读取解释硬件瓶颈', '联系首 token 延迟和逐 token 延迟指标'],
+    scenario: '服务首 token 很慢但后续生成速度正常，应优先检查哪个阶段？', scenarioAnswer: '优先检查 Prefill、排队和提示长度对 TTFT 的影响。',
+    boundary: '实际瓶颈会随模型、batch、硬件和调度变化，计算密集/带宽密集是常见而非绝对结论。',
+    comparison: 'Prefill 处理多 token 大矩阵；Decode 处理新 token 并读取越来越长的历史缓存。', formula: 'TTFT≈queue+prefill, TPOT≈decode step latency',
+  },
+  {
+    id: 'kv-cache', title: 'KV Cache 原理与容量', shortTitle: 'KV Cache', subtitle: '复用历史 Key 与 Value', icon: 'database',
+    knowledgeIds: ['kv-cache'], keywords: ['cache'],
+    core: '自回归 Decode 缓存每层历史 token 的 K/V，新 token 只计算自己的 Q/K/V，再查询全部历史缓存。',
+    facts: ['历史 Query 后续不再需要', '缓存量与层数、长度、KV 头数、头维和精度相关', '缓存减少重复计算但增加显存占用'],
+    traps: ['KV Cache 同时缓存所有历史 Query', '缓存使生成完全不再计算 Attention', '缓存大小只由词表大小决定'],
+    sequence: ['Prefill 生成历史 K/V', '新 token 计算本步 Q/K/V', '把新 K/V 追加到缓存', '用新 Q 查询完整历史 K/V'],
+    interview: ['解释为何缓存 K/V 而不是 Q', '写出容量依赖变量', '说明速度与显存的交换关系'],
+    scenario: '把上下文长度从 4K 提升到 32K，对 KV Cache 容量最直接的影响是什么？', scenarioAnswer: '其他参数不变时容量近似线性增加到 8 倍。',
+    boundary: 'KV Cache 量化、分页和淘汰能缓解容量，但可能引入精度或调度取舍。',
+    comparison: '无缓存会重复投影历史 token；有缓存用显存换取 Decode 计算复用。', formula: 'bytes≈2·L·N·Hkv·Dh·bytes_per_element',
+  },
+  {
+    id: 'mqa-gqa', title: 'MHA、MQA 与 GQA', shortTitle: 'MHA · GQA · MQA', subtitle: '用共享 KV 降低推理带宽', icon: 'branch',
+    knowledgeIds: ['mqa-gqa'], keywords: ['head', 'cache'],
+    core: 'MQA 让所有 Query 头共享一组 K/V，GQA 让若干 Query 头共享一组 K/V，在质量和缓存成本间折中。',
+    facts: ['MHA 的 KV 头数通常等于 Query 头数', 'GQA 的 KV 头数介于 MHA 与 MQA 之间', '减少 KV 头可降低 Cache 和 Decode 带宽'],
+    traps: ['MQA 把 Query 头也压缩为一个', 'GQA 会让模型层数减少', '共享 K/V 保证精度完全不变'],
+    sequence: ['确定 Query 头数', '把 Query 头映射到较少 KV 组', '组内 Query 共享 K/V', '各 Query 头计算后仍拼接输出'],
+    interview: ['按 KV 共享程度比较 MHA/GQA/MQA', '解释为何主要优化缓存和带宽', '讨论质量、并行和部署内核的取舍'],
+    scenario: '一个模型有 32 个 Query 头、8 个 KV 头，它属于哪类结构？', scenarioAnswer: '属于 GQA：多个 Query 头按组共享 8 组 K/V。',
+    boundary: 'KV 头更少通常更省资源，但质量影响需要在具体模型和训练方案中验证。',
+    comparison: 'MHA 不共享 KV；GQA 分组共享；MQA 所有 Query 头共享一组 KV。', formula: 'Hq≥Hkv, group_size=Hq/Hkv',
+  },
+  {
+    id: 'flash-attention', title: 'FlashAttention 与 IO 优化', shortTitle: 'FlashAttention', subtitle: '精确注意力为何更快', icon: 'bolt',
+    knowledgeIds: ['flash-attention'], keywords: ['flash'],
+    core: 'FlashAttention 通过分块和在线 Softmax 减少 HBM 读写，不显式保存完整注意力矩阵，同时保持精确结果。',
+    facts: ['核心收益来自 IO-aware 计算', '分块让数据更多停留在片上 SRAM', '反向可用重计算减少激活存储'],
+    traps: ['FlashAttention 通过丢弃低权重位置做近似', '它把注意力算术复杂度严格降为 O(n)', '它只适用于 CPU 推理'],
+    sequence: ['把 Q/K/V 划分为块', '加载小块到快速片上存储', '在线维护 Softmax 最大值与归一化和', '组合块输出而不落盘完整分数矩阵'],
+    interview: ['先说明标准实现的 HBM 中间矩阵问题', '解释 tiling 与 online softmax', '强调精确结果和复杂度/常数项的区别'],
+    scenario: 'FlashAttention 没有改变理论 O(n²)，为什么仍可能显著加速？', scenarioAnswer: 'GPU 性能常受高带宽显存读写限制，减少 IO 和中间张量能显著提高实际吞吐。',
+    boundary: '收益依赖序列长度、头维、硬件和内核支持，短序列不一定同样明显。',
+    comparison: '标准实现物化 n×n 中间矩阵；FlashAttention 分块在线计算并减少 HBM 往返。', formula: 'exact Attention with tiled online softmax',
+  },
+  {
+    id: 'inference-quantization-batching', title: '量化、批处理与吞吐延迟', shortTitle: '推理系统取舍', subtitle: '从模型算法走向服务系统', icon: 'gauge',
+    knowledgeIds: ['inference-batching', 'quantization'],
+    core: '高效推理需要联合权重/缓存精度、动态批处理和请求调度，在吞吐、延迟、显存与质量间取舍。',
+    facts: ['权重量化主要减少模型存储和读取带宽', '连续批处理可在请求完成后及时插入新请求', '更大 batch 常提高吞吐但可能增加排队延迟'],
+    traps: ['量化只改变磁盘文件大小而不影响显存带宽', 'batch 越大每个请求延迟一定越低', '所有请求必须同长度才能批处理'],
+    sequence: ['设定质量与延迟目标', '选择权重和 KV 精度', '配置批处理与调度上限', '用真实长度分布压测吞吐和尾延迟'],
+    interview: ['区分 throughput、latency、TTFT 与 TPOT', '说明量化和 batching 优化的资源对象', '补充真实流量分布与 P95/P99 压测'],
+    scenario: '吞吐提升但 P99 首 token 延迟恶化，最可能需要调整什么？', scenarioAnswer: '需要检查排队与批处理上限，在吞吐和尾延迟之间重新平衡。',
+    boundary: '离线单 batch benchmark 不能代表在线服务；量化也必须通过任务指标验证质量。',
+    comparison: '量化减少单模型资源；批处理提高硬件利用率；调度决定不同请求如何共享资源。', formula: 'throughput=tokens/time, latency=request completion time',
+  },
+];
+
+export const inferenceSection: CourseSection = {
+  id: 'inference-efficiency', title: 'Section 5 · KV Cache 与高效推理', shortTitle: '高效推理',
+  description: 'Prefill、Decode、GQA、FlashAttention 与服务取舍', color: '#8A55B5', darkColor: '#643987', softColor: '#F4EAFE',
+  nodes: blueprints.map(buildNode),
+};

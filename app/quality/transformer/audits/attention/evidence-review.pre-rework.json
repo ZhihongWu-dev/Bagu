@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "evidence",
+  "reviewerState": "uncalibrated",
+  "reviewedAt": "2026-08-16T11:26:38.9550479+02:00",
+  "scope": "app/src/data/transformer/questions/attention/*.ts (60 exercises)",
+  "publishingPass": false,
+  "overallVerdict": "revise",
+  "summary": {
+    "pass": 59,
+    "revise": 1,
+    "reject": 0,
+    "note": "No human technical gold calibration was available. A pass verdict means the item is supported by the cited primary evidence, not that it is approved for publication."
+  },
+  "sourceCatalog": {
+    "S1": {
+      "title": "Attention Is All You Need",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "locator": "Sections 3.2.1-3.2.3 and Table 1",
+      "kind": "primary-paper"
+    },
+    "S2": {
+      "title": "torch.nn.functional.scaled_dot_product_attention",
+      "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention",
+      "locator": "Reference implementation, Parameters, shape legend, GQA constraints",
+      "kind": "official-documentation"
+    },
+    "S3": {
+      "title": "torch.nn.MultiheadAttention",
+      "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention",
+      "locator": "Definition, attn_mask and key_padding_mask parameters, merge_masks",
+      "kind": "official-documentation"
+    },
+    "S4": {
+      "title": "torch.nn.attention.bias.CausalBias",
+      "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.attention.bias.CausalBias.html",
+      "locator": "causal_upper_left and causal_lower_right; non-square query/key example",
+      "kind": "official-documentation"
+    },
+    "S5": {
+      "title": "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints",
+      "url": "https://arxiv.org/abs/2305.13245",
+      "locator": "Grouped-query attention definition and equal query-head groups",
+      "kind": "primary-paper"
+    },
+    "S6": {
+      "title": "Attention is not Explanation",
+      "url": "https://aclanthology.org/N19-1357/",
+      "locator": "Abstract and Sections 1-4",
+      "kind": "peer-reviewed-primary-paper"
+    }
+  },
+  "questions": [
+    {
+      "questionId": "qkv-roles-01",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["In Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V, V is the representation directly weighted and summed; Q and K determine the weights."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-02",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Standard multi-head self-attention projects a common input through distinct learned Q, K and V projection matrices and applies the resulting weights to V."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-03",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The data dependency is Q/K/V projection, QK score computation, softmax normalization, then multiplication by V."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-04",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["In encoder-decoder attention, queries come from the preceding decoder layer while keys and values come from the encoder output."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-05",
+      "verdict": "pass",
+      "confidence": 0.96,
+      "claims": ["If attention weights respond normally but the output is insensitive to V, the A@V aggregation path is the most direct implementation path to inspect."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-06",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Changing only W_Q directly changes Q and can consequently change QK^T and softmax weights, but does not directly change XW_V."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-v2-07",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Given A=softmax(QK^T/sqrt(d_k)), the context output is AV."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-08",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["Keys supply compatibility representations while values supply the content aggregated after matching, even when both originate at the same positions."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-09",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["Self-attention identifies the common input source; it does not imply equal projected values or shared projection parameters, and architecture variants may differ."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-10",
+      "verdict": "pass",
+      "confidence": 0.96,
+      "claims": ["For the standard deterministic attention equation without position-dependent score constraints, jointly permuting K rows and their corresponding V rows permutes weights and summands identically, leaving the weighted sum invariant."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-11",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["Uniform or nearly uniform weights arise from equal or nearly equal Q-K logits; collapsed Q/K projections can cause that, while V values do not determine the already-computed weights."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "qkv-roles-12",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["The reference points correctly distinguish self- versus cross-attention sources and follow the QK score, normalization and V aggregation path."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+
+    {
+      "questionId": "attention-shapes-01",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["(Lq x Dh)(Dh x Lk) yields an Lq x Lk score matrix."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-02",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["(Lq x Lk)(Lk x Dv) yields Lq x Dv."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-03",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["For [B,H,Lq,Lk], B indexes batches, H heads, Lq query positions and Lk key positions; Lk is not vocabulary size."],
+      "sources": ["S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-04",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Thirty-two decoder queries scored against 128 encoder keys produce a 32 x 128 per-head score matrix; head dimension contracts."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-05",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["The conventional flow is learned projections, reshape to heads, per-head attention, concatenate heads, with Dmodel=H*Dh for equal-width standard heads."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-06",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["For Q and K shaped [B,H,L,Dh], K must be transposed on its last two axes before Q@K^T."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-07",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Q and K require a common dot-product dimension; K and V require a common source-position length; output position length is Lq, while Lq need not equal Lk."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-08",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Under the stated equal-width standard split, Dh=Dmodel/H=768/12=64."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-09",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["An explicitly materialized self-attention score tensor contains B*H*L*L elements, so doubling L multiplies the count by four."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-10",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["[B,1,1,Lk], [1,1,Lq,Lk], and [B,H,Lq,Lk] align explicitly with a [B,H,Lq,Lk] score tensor; bare [B,Lq] trailing-axis broadcasting is not a reliable encoding of key visibility."],
+      "sources": ["S2", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-shapes-11",
+      "verdict": "revise",
+      "confidence": 0.96,
+      "claims": ["GQA maps multiple query heads to fewer shared K/V heads and requires matching Q/K head dimensions.", "Standard equal-group GQA additionally requires Hq to be divisible by Hkv."],
+      "sources": ["S2", "S5"],
+      "issues": [
+        {
+          "severity": "high",
+          "code": "missing-standard-gqa-divisibility-condition",
+          "reason": "The selected answer states only that every query head can map to a K/V head. In standard equal-group GQA, the groups have equal size, so Hq % Hkv == 0 is an explicit compatibility condition. PyTorch's official SDPA GQA constraint states that the number of query heads must be divisible by the number of key/value heads. Add this condition to the answer or narrow the prompt to an abstract, possibly unequal mapping variant."
+        }
+      ]
+    },
+    {
+      "questionId": "attention-shapes-12",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["The reference chain correctly produces scores [B,H,Lq,Lk], preserves Lq through multiplication by V, and concatenates to [B,Lq,Dmodel] in standard equal-width multi-head cross-attention."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+
+    {
+      "questionId": "scaled-dot-product-01",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Scaled dot-product attention multiplies QK^T by 1/sqrt(d_k) before softmax."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-02",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The standard dependency order is QK^T, scale/add mask, softmax, then weighted V aggregation."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-03",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Under independent zero-mean unit-variance component assumptions, division by sqrt(d_k) offsets dot-product standard-deviation growth and reduces softmax saturation; it does not change quadratic score-matrix size."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-04",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["The variance of a sum of d_k independent unit-variance products is d_k, giving standard deviation sqrt(d_k)."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-05",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Changing d_k from 64 to 256 doubles the unscaled standard deviation because sqrt(256)/sqrt(64)=2."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-06",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["Missing 1/sqrt(d_k) scaling is the mechanism-consistent first check when early attention is overly sharp and worsens as d_k grows."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-07",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["Scale and additive masks affect logits before softmax; scale derives from the Q/K feature dimension, and forbidden -infinity entries must retain their exclusion meaning."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-08",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["If the unscaled standard deviation is proportional to sqrt(d_k), dividing by d_k makes it proportional to 1/sqrt(d_k)."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-09",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["QK^T/sqrt(d_k) matches softmax(z/T) with T=sqrt(d_k)."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-10",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The unit-variance conclusion is conditional on simplified component scale and independence assumptions; learned Q/K need not satisfy them, so scaling is not a per-sample variance identity."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-11",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Unit-norm dot products remove vector magnitude and lie in [-1,1], while global 1/sqrt(d_k) scaling preserves input-dependent magnitudes and does not impose that bound."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "scaled-dot-product-12",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The reference points faithfully reproduce the original paper's variance argument, its connection to small softmax gradients, and the fact that the derivation rests on an approximation."],
+      "sources": ["S1"],
+      "issues": []
+    },
+
+    {
+      "questionId": "softmax-attention-01",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Attention softmax is applied over source/key positions so each query row normalizes across Lk."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-02",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["For finite logits, softmax entries are strictly positive, sum to one, and preserve ordering, but do not preserve absolute differences."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-03",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Softmax is invariant to adding a common scalar to every logit in a row."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-04",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Stable softmax finds the row maximum, subtracts it, exponentiates, and divides by the sum."],
+      "sources": ["S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-05",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Reducing positive temperature from 1 to 0.5 doubles logit differences and generally sharpens a non-degenerate distribution while retaining unit sum."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-06",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["If weights sum to one across queries for each key rather than across keys for each query, softmax was applied over Lq instead of Lk."],
+      "sources": ["S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-07",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["For two unmasked positions in one row, a_i/a_j=exp(z_i-z_j); other positions change each absolute probability but cancel from this ratio."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-08",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["A nonnegative unit-sum weighted aggregation is a convex combination of the corresponding value vectors."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-09",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Subtracting the row maximum before exponentiation makes all exponent inputs non-positive and preserves exact mathematical softmax by shift invariance."],
+      "sources": ["S2"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-10",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Attention weights describe a local mixing operation and do not by themselves establish causal contribution to the final prediction; values and downstream computations matter."],
+      "sources": ["S1", "S6"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-11",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The softmax Jacobian has diagonal a_i(1-a_i) and off-diagonal -a_i*a_j terms, so pushing probabilities toward zero or one reduces most local derivatives."],
+      "sources": ["S1"],
+      "issues": []
+    },
+    {
+      "questionId": "softmax-attention-12",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The reference answer correctly combines key-axis normalization, shift-stable evaluation, temperature effects, and the distinction between local attention weights and causal explanation."],
+      "sources": ["S1", "S2", "S6"],
+      "issues": []
+    },
+
+    {
+      "questionId": "attention-masks-01",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Padding masks exclude non-content padded source positions, while causal masks exclude future positions according to autoregressive visibility."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-02",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["An additive exclusion mask must alter logits before softmax so probability mass is normalized over permitted keys."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-03",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The standard decoder causal pattern lets position i attend through i, is lower triangular under the usual row-query convention, and can be shared across heads."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-04",
+      "verdict": "pass",
+      "confidence": 0.98,
+      "claims": ["A typical additive-mask flow constructs visibility, broadcasts/aligned it to scores, fills forbidden logits, then applies softmax along keys."],
+      "sources": ["S2", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-05",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["For effective length 3 padded to length 5, key positions 4 and 5 are padding and must be excluded for every relevant query."],
+      "sources": ["S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-06",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Zeroing previously positive future weights after softmax without renormalization makes the remaining row sum less than one and changes the weighted-output scale."],
+      "sources": ["S1", "S2"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-07",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["Padding and causal exclusions combine by logical union (or equivalent additive masks); causal structure does not infer per-sample padding length."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-08",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Official PyTorch APIs demonstrate the portability hazard: SDPA boolean True means participate, whereas MultiheadAttention boolean True means forbidden; accepted shapes also differ."],
+      "sources": ["S2", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-09",
+      "verdict": "pass",
+      "confidence": 1.0,
+      "claims": ["Encoder padding occupies source/key positions in encoder-decoder attention and is therefore excluded along Lk for every decoder query."],
+      "sources": ["S1", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-10",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["A fully -infinity row makes naive max subtraction undefined (-infinity minus -infinity), while a finite sentinel can yield a semantically invalid distribution and is dtype/kernel dependent; explicit policy and tests are warranted."],
+      "sources": ["S2", "S3"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-11",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["With cached keys, non-square causal alignment must account for the query's offset into the full key sequence; a local upper-left triangle can mask valid history. PyTorch exposes lower-right causal bias for this shape relationship."],
+      "sources": ["S2", "S4"],
+      "issues": []
+    },
+    {
+      "questionId": "attention-masks-12",
+      "verdict": "pass",
+      "confidence": 0.99,
+      "claims": ["The reference checklist covers the evidence-backed distinctions in mask purpose, score-tensor alignment, pre-softmax application, API-specific boolean polarity, and fully masked-row testing."],
+      "sources": ["S1", "S2", "S3", "S4"],
+      "issues": []
+    }
+  ]
+}

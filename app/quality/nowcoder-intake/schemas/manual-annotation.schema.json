@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bagu.local/schemas/manual-annotation.schema.json",
+  "title": "Bagu manual Nowcoder signal annotations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "manifestVersion", "annotations"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "manifestVersion": { "const": 1 },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/annotation" }
+    }
+  },
+  "$defs": {
+    "topicIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["transformer-attention", "position-encoding", "training-objectives", "sft-lora-quantization", "alignment-rlhf-dpo-grpo", "inference-serving-vllm", "kv-cache-performance", "rag-retrieval-rerank", "redis-vector-database", "agent-tool-workflow", "evaluation-safety-observability"] }
+    },
+    "followUpTypes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["principle", "boundary", "debugging", "metrics", "system-design", "tradeoff"] }
+    },
+    "misconceptionTypes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["concept-confusion", "missing-condition", "causal-reversal", "complexity-error", "metric-misuse"] }
+    },
+    "distractorTypes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["implausible", "overlap", "absolute-claim", "different-scope", "missing-condition", "non-unique-answer"] }
+    },
+    "answerCueTypes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["length", "position", "wording", "format", "stem-repeat"] }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "status", "updatedAt"],
+      "properties": {
+        "sourceId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+        "status": { "enum": ["pending", "completed", "skipped"] },
+        "relevance": { "enum": ["relevant", "not-relevant", "uncertain"] },
+        "role": { "enum": ["llm_algorithm", "llm_application", "shared", "unknown"] },
+        "recruitingStage": { "enum": ["campus-autumn", "campus-other", "unknown"] },
+        "topicIds": { "$ref": "#/$defs/topicIds" },
+        "followUpTypes": { "$ref": "#/$defs/followUpTypes" },
+        "misconceptionTypes": { "$ref": "#/$defs/misconceptionTypes" },
+        "choiceSignals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cognitiveLevel", "distractorTypes", "answerCueTypes"],
+          "properties": {
+            "cognitiveLevel": { "enum": ["foundation", "application", "deep"] },
+            "distractorTypes": { "$ref": "#/$defs/distractorTypes" },
+            "answerCueTypes": { "$ref": "#/$defs/answerCueTypes" }
+          }
+        },
+        "summary": { "type": "string", "maxLength": 100 },
+        "skipReason": { "enum": ["login-unavailable", "page-missing", "insufficient-content", "irrelevant", "duplicate", "cannot-assess", "other"] },
+        "skipNote": { "type": "string", "maxLength": 100 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

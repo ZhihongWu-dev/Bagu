@@ -1,8 +1,33 @@
 node_modules/
 node_modules_*/
+.node_modules*/
+.dependency-backups/
 .expo/
 dist/
 web-build/
+coverage/
 .superpowers/
 *.log
+expo-go-qr*.png
+gcm-auth-*.txt
+gh-auth-*.txt
 .DS_Store
+
+# Environment and signing material
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.jks
+*.keystore
+*.p8
+*.p12
+*.pem
+service-account*.json
+serviceAccount*.json
+
+# Local public-signal intake outputs (review before retaining any aggregate)
+app/quality/nowcoder-intake/output*/
+app/quality/nowcoder-intake/runs/
+app/quality/nowcoder-intake/candidate-review.csv
+app/quality/nowcoder-intake/manual-data/

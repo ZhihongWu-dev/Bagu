@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bagu.local/schemas/question-review.schema.json",
+  "title": "Bagu Transformer Question Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "questionId",
+    "questionVersion",
+    "calibrationStatus",
+    "evidenceReview",
+    "itemQualityReview",
+    "hardGates",
+    "anchoredScores",
+    "verdict"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "questionId": { "type": "string", "minLength": 1 },
+    "questionVersion": { "type": "integer", "minimum": 2 },
+    "calibrationStatus": { "enum": ["uncalibrated", "calibrated"] },
+    "evidenceReview": { "$ref": "#/$defs/roleReview" },
+    "itemQualityReview": { "$ref": "#/$defs/roleReview" },
+    "hardGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factuallyCorrect", "uniqueAnswer", "conditionsComplete", "sourcesVerifiable", "noAnswerLeakage", "explanationAligned"],
+      "properties": {
+        "factuallyCorrect": { "type": "boolean" },
+        "uniqueAnswer": { "type": "boolean" },
+        "conditionsComplete": { "type": "boolean" },
+        "sourcesVerifiable": { "type": "boolean" },
+        "noAnswerLeakage": { "type": "boolean" },
+        "explanationAligned": { "type": "boolean" }
+      }
+    },
+    "anchoredScores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reasoningDepth", "distractorQuality", "explanationAlignment", "clarity"],
+      "properties": {
+        "reasoningDepth": { "$ref": "#/$defs/anchoredScore" },
+        "distractorQuality": { "$ref": "#/$defs/anchoredScore" },
+        "explanationAlignment": { "$ref": "#/$defs/anchoredScore" },
+        "clarity": { "$ref": "#/$defs/anchoredScore" }
+      }
+    },
+    "verdict": { "enum": ["pass", "revise", "reject", "uncalibrated"] },
+    "conflictReason": { "type": "string" }
+  },
+  "$defs": {
+    "roleReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewerRole", "verdict", "findings"],
+      "properties": {
+        "reviewerRole": { "enum": ["evidence", "item-quality"] },
+        "verdict": { "enum": ["pass", "revise", "reject", "uncalibrated"] },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "reason", "evidence"],
+            "properties": {
+              "code": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 },
+              "evidence": { "type": "string", "minLength": 1 },
+              "sourceUrl": { "type": "string", "format": "uri" },
+              "sourceLocator": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "anchoredScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "reason"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

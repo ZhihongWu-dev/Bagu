@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "questionId": "attention-shapes-05",
+  "questionVersion": 2,
+  "calibrationStatus": "uncalibrated",
+  "evidenceReview": {
+    "reviewerRole": "evidence",
+    "verdict": "uncalibrated",
+    "findings": [
+      {
+        "code": "verified-multihead-reshape-flow",
+        "reason": "The ordered steps are the conventional implementation of original multi-head attention.",
+        "evidence": "Learned projections precede per-head attention; head outputs are concatenated before the output projection. For the stated standard equal split, Dmodel=H*Dh.",
+        "sourceUrl": "https://arxiv.org/abs/1706.03762",
+        "sourceLocator": "Section 3.2.2"
+      }
+    ]
+  },
+  "itemQualityReview": {
+    "reviewerRole": "item-quality",
+    "verdict": "uncalibrated",
+    "findings": []
+  },
+  "hardGates": {
+    "factuallyCorrect": true,
+    "conditionsComplete": true,
+    "sourcesVerifiable": true,
+    "uniqueAnswer": true,
+    "noAnswerLeakage": true,
+    "explanationAligned": true
+  },
+  "anchoredScores": {
+    "reasoningDepth": {
+      "score": 3,
+      "reason": "需要把定义用于形状、数值或排障场景，符合应用层级。"
+    },
+    "distractorQuality": {
+      "score": 3,
+      "reason": "运行时选项同质且对应可辨认的真实误区；多选正确项数量与组合均无固定捷径。"
+    },
+    "explanationAlignment": {
+      "score": 4,
+      "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+    },
+    "clarity": {
+      "score": 4,
+      "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+    }
+  },
+  "verdict": "uncalibrated"
+}

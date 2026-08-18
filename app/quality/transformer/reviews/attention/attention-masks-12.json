@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "questionId": "attention-masks-12",
+  "questionVersion": 2,
+  "calibrationStatus": "uncalibrated",
+  "evidenceReview": {
+    "reviewerRole": "evidence",
+    "verdict": "uncalibrated",
+    "findings": [
+      {
+        "code": "verified-mask-recall-rubric",
+        "reason": "The rubric covers all requested implementation boundaries and correctly rejects the two stated misconceptions.",
+        "evidence": "Official APIs support pre-softmax score masks broadcast to attention shape, distinguish padding and causal constraints, and document differing boolean polarity; all-masked rows require explicit policy/testing beyond the basic formula.",
+        "sourceUrl": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention",
+        "sourceLocator": "Reference implementation, attn_mask/is_causal parameters; compare MultiheadAttention mask parameters"
+      }
+    ]
+  },
+  "itemQualityReview": {
+    "reviewerRole": "item-quality",
+    "verdict": "uncalibrated",
+    "findings": []
+  },
+  "hardGates": {
+    "factuallyCorrect": true,
+    "conditionsComplete": true,
+    "sourcesVerifiable": true,
+    "uniqueAnswer": true,
+    "noAnswerLeakage": true,
+    "explanationAligned": true
+  },
+  "anchoredScores": {
+    "reasoningDepth": {
+      "score": 4,
+      "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+    },
+    "distractorQuality": {
+      "score": 4,
+      "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+    },
+    "explanationAlignment": {
+      "score": 4,
+      "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+    },
+    "clarity": {
+      "score": 4,
+      "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+    }
+  },
+  "verdict": "uncalibrated"
+}

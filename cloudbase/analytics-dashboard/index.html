@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bagu 匿名体验分析</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Bagu 内部工具</p>
+      <h1>匿名体验分析</h1>
+    </div>
+    <span class="privacy-state">仅显示聚合数据</span>
+  </header>
+
+  <main>
+    <section class="controls" aria-label="数据筛选">
+      <label>接口地址<input id="base-url" type="url" placeholder="https://.../analytics" autocomplete="url" /></label>
+      <label>管理员令牌<input id="admin-token" type="password" placeholder="仅保存在当前页面内存" autocomplete="off" /></label>
+      <label>开始日期<input id="from" type="date" /></label>
+      <label>结束日期<input id="to" type="date" /></label>
+      <label>平台<select id="platform"><option value="">全部</option><option value="android">Android</option><option value="ios">iOS</option><option value="web">Web</option></select></label>
+      <label>应用版本<input id="app-version" type="text" maxlength="30" placeholder="全部" /></label>
+      <button id="load" type="button">加载汇总</button>
+    </section>
+
+    <p id="status" class="status" role="status">输入开发环境接口与管理员令牌后加载。</p>
+
+    <section class="metrics" aria-label="核心指标">
+      <div><span>匿名用户</span><strong id="users">-</strong></div>
+      <div><span>会话</span><strong id="sessions">-</strong></div>
+      <div><span>事件</span><strong id="events">-</strong></div>
+      <div><span>平均会话</span><strong id="duration">-</strong></div>
+    </section>
+
+    <section class="band">
+      <div class="section-heading"><div><p class="eyebrow">首次体验</p><h2>转化漏斗</h2></div></div>
+      <div id="funnel" class="funnel"></div>
+    </section>
+
+    <section class="split">
+      <div class="panel">
+        <div class="section-heading"><h2>回访</h2></div>
+        <div id="retention" class="rows"></div>
+      </div>
+      <div class="panel">
+        <div class="section-heading"><h2>会话结束位置</h2></div>
+        <div id="dropoff" class="rows"></div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="section-heading"><h2>课程完成率</h2></div>
+      <div class="table-wrap"><table><thead><tr><th>课程 ID</th><th>开始</th><th>完成</th><th>完成率</th></tr></thead><tbody id="lessons"></tbody></table></div>
+    </section>
+
+    <section class="band">
+      <div class="section-heading"><h2>练习体验</h2></div>
+      <div class="table-wrap"><table><thead><tr><th>练习 ID</th><th>作答</th><th>首次正确率</th><th>平均尝试</th><th>平均耗时</th></tr></thead><tbody id="exercises"></tbody></table></div>
+    </section>
+
+    <section class="band">
+      <div class="section-heading"><h2>功能使用</h2></div>
+      <div id="features" class="rows"></div>
+    </section>
+  </main>
+  <script src="./dashboard.js"></script>
+</body>
+</html>

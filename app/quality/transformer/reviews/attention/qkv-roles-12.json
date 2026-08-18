@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "questionId": "qkv-roles-12",
+  "questionVersion": 2,
+  "calibrationStatus": "uncalibrated",
+  "evidenceReview": {
+    "reviewerRole": "evidence",
+    "verdict": "uncalibrated",
+    "findings": [
+      {
+        "code": "verified-qkv-recall-rubric",
+        "reason": "The minimum, full-credit and misconception boundaries all align with standard self- and cross-attention.",
+        "evidence": "The rubric requires correct input sources, QK^T normalization, V aggregation, and distinction between same source and shared parameters.",
+        "sourceUrl": "https://arxiv.org/abs/1706.03762",
+        "sourceLocator": "Sections 3.2.1-3.2.3"
+      }
+    ]
+  },
+  "itemQualityReview": {
+    "reviewerRole": "item-quality",
+    "verdict": "uncalibrated",
+    "findings": []
+  },
+  "hardGates": {
+    "factuallyCorrect": true,
+    "conditionsComplete": true,
+    "sourcesVerifiable": true,
+    "uniqueAnswer": true,
+    "noAnswerLeakage": true,
+    "explanationAligned": true
+  },
+  "anchoredScores": {
+    "reasoningDepth": {
+      "score": 4,
+      "reason": "要求组织多步机制并处理边界，最低充分答案与部分掌握已分层。"
+    },
+    "distractorQuality": {
+      "score": 4,
+      "reason": "口述题以明确的关键误区、最低充分答案和部分得分锚点支持稳定判分。"
+    },
+    "explanationAlignment": {
+      "score": 4,
+      "reason": "解析与当前运行时选项一致，说明正确机制并处理关键误区或边界。"
+    },
+    "clarity": {
+      "score": 4,
+      "reason": "条件、符号和所问对象完整；运行时顺序不存在答案预排序、长度或格式泄题。"
+    }
+  },
+  "verdict": "uncalibrated"
+}

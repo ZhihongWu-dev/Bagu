@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bagu.local/schemas/intake-report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "startedAt", "finishedAt", "requested", "processed", "succeeded", "rejected", "duplicateCount", "statusCounts"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": "string", "format": "date-time" },
+    "requested": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "processed": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "succeeded": { "type": "integer", "minimum": 0 },
+    "rejected": { "type": "integer", "minimum": 0 },
+    "duplicateCount": { "type": "integer", "minimum": 0 },
+    "statusCounts": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "stoppedReason": { "type": "string" }
+  }
+}

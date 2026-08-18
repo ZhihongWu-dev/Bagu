@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-08-16",
+  "unitId": "transformer",
+  "nodeCount": 25,
+  "exerciseCount": 300,
+  "exerciseIdSuffixes": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+  "legacyTypeCountsPerNode": {
+    "single-choice": 4,
+    "multiple-choice": 3,
+    "ordering": 2,
+    "self-recall": 3
+  },
+  "legacyFormulaExercisesPerNode": 2,
+  "nodes": [
+    "qkv-roles",
+    "attention-shapes",
+    "scaled-dot-product",
+    "softmax-attention",
+    "attention-masks",
+    "multi-head-attention",
+    "head-splitting",
+    "residual-connections",
+    "layer-normalization",
+    "ffn-swiglu",
+    "absolute-position",
+    "rope",
+    "alibi",
+    "context-extension",
+    "long-context-cost",
+    "encoder-only",
+    "decoder-only",
+    "encoder-decoder",
+    "cross-attention",
+    "training-objectives",
+    "prefill-decode",
+    "kv-cache",
+    "mqa-gqa",
+    "flash-attention",
+    "inference-quantization-batching"
+  ],
+  "knownDefects": [
+    {
+      "exerciseId": "qkv-roles-07",
+      "ruleId": "answer-leakage",
+      "reason": "顶部公式与正确选项重复，用户无需理解即可按视觉匹配作答。"
+    }
+  ],
+  "notes": "每个旧题 ID 由 nodes 中的节点 ID、连字符和 exerciseIdSuffixes 中的后缀组成。本文件记录迁移前的 25 个节点、300 个题目 ID 和结构基线，不代表旧题已通过质量审核。"
+}
