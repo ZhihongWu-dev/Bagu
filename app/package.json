@@ -62,6 +62,8 @@
     "test:application": "tsx ./scripts/test-application-curriculum.ts",
     "test:annotations": "tsx ./scripts/test-question-annotation.ts",
     "test:annotation-tool": "tsx ./scripts/test-nowcoder-annotation.ts",
+    "test:annotation-submission": "tsx ./scripts/test-annotation-submission.ts",
+    "annotation:validate-submission": "tsx ./scripts/validate-annotation-submission.ts",
     "annotation:start": "tsx ./scripts/nowcoder-annotation/server.ts",
     "test:intake": "tsx ./scripts/test-nowcoder-intake.ts",
     "intake:validate": "tsx ./scripts/nowcoder-intake/cli.ts validate",

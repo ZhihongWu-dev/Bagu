@@ -95,7 +95,33 @@ For each source:
 
 Do not paste question stems, choices, answers, explanations, post paragraphs, usernames, resumes, phone numbers, email addresses, WeChat IDs, QQ numbers, passwords, cookies, or access tokens. The short summary is for your own non-expressive paraphrase only.
 
-Progress is stored atomically in `quality/nowcoder-intake/manual-data/annotations.json`. The whole `manual-data` directory is ignored by Git. **导出结果** creates a timestamped directory containing JSON, spreadsheet-safe CSV, topic counts, and an annotation report.
+Progress is stored atomically in `quality/nowcoder-intake/manual-data/annotations.json`. The whole `manual-data` directory is ignored by Git. **导出本地备份** creates a timestamped directory containing JSON, spreadsheet-safe CSV, topic counts, and an annotation report.
+
+### Submit one completed annotation through GitHub
+
+Create a dedicated branch before annotating:
+
+```powershell
+git switch main
+git pull --ff-only
+git switch -c annotation/pilot-100-v1
+cd app
+npm ci
+npm run annotation:start
+```
+
+After all 59 sources are completed or explicitly skipped, click **生成 GitHub 提交文件**. The tool writes only the normalized labels needed for review to `quality/nowcoder-intake/submissions/pilot-100-v1.json`. It excludes free-text summaries, skip notes, source URLs, discovery queries, timestamps per record, credentials, cookies, and login state.
+
+Validate and submit it from `app/`:
+
+```powershell
+npm run annotation:validate-submission
+git add quality/nowcoder-intake/submissions/pilot-100-v1.json
+git commit -m "data: submit pilot Nowcoder annotations"
+git push -u origin annotation/pilot-100-v1
+```
+
+Then open a Pull Request into `main`. A collaborator without repository write access should push the same branch to their fork and open a Pull Request from that fork. Do not add `manual-data/`, a local backup, screenshots, copied source text, or browser data. GitHub Actions rejects incomplete, malformed, extra, renamed, or non-canonical submission files.
 
 Manual labels do not change `pilot-100.json` approval status. They are topic-priority evidence only and must still go through independent technical sources, original question writing, evidence review, item-quality review, deterministic gates, and mobile human review before entering the product.
 
@@ -103,4 +129,6 @@ Run the local test suite with:
 
 ```powershell
 npm run test:annotation-tool
+npm run test:annotation-submission
+npm run annotation:validate-submission
 ```

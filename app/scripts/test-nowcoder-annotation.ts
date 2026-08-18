@@ -10,6 +10,7 @@ import { annotationsToCsv, csvCell } from './nowcoder-annotation/csv';
 import { exportAnnotations } from './nowcoder-annotation/export';
 import { annotationProgress, nextPendingSourceId } from './nowcoder-annotation/progress';
 import { AnnotationStore } from './nowcoder-annotation/store';
+import { ANNOTATION_SUBMISSION_REPOSITORY_PATH, validateAnnotationSubmission } from './nowcoder-annotation/submission';
 import { startAnnotationServer } from './nowcoder-annotation/server';
 import { taxonomyPayload } from './nowcoder-annotation/taxonomy';
 import type { ManualAnnotation, ManualAnnotationDataset } from './nowcoder-annotation/types';
@@ -168,6 +169,7 @@ async function testBrowserApp(): Promise<void> {
   ];
   const annotations: Record<string, ManualAnnotation> = {};
   let savedPayload: ManualAnnotation | undefined;
+  let submissionFails = true;
   const response = (body: unknown, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => body });
   Object.defineProperty(dom.window, 'fetch', { value: async (url: string, init?: RequestInit) => {
     if (url === '/api/bootstrap') return response({ candidates, annotations, progress: { total: 2, completed: 0, pending: 2, skipped: 0, nextSourceId: 'nc-ui-001' }, taxonomy: taxonomyPayload() });
@@ -175,6 +177,14 @@ async function testBrowserApp(): Promise<void> {
       savedPayload = JSON.parse(String(init?.body)) as ManualAnnotation;
       annotations[savedPayload.sourceId] = savedPayload;
       return response({ annotation: savedPayload, progress: { total: 2, completed: 1, pending: 1, skipped: 0, nextSourceId: 'nc-ui-002' } });
+    }
+    if (url === '/api/submission') {
+      if (submissionFails) return response({ error: 'submission_incomplete' }, 400);
+      return response({
+        path: 'app/quality/nowcoder-intake/submissions/pilot-100-v1.json',
+        validationCommand: 'npm run annotation:validate-submission',
+        gitCommands: ['git add app/quality/nowcoder-intake/submissions/pilot-100-v1.json'],
+      }, 201);
     }
     return response({ directory: 'manual-data/exports/test' }, 201);
   } });
@@ -204,12 +214,24 @@ async function testBrowserApp(): Promise<void> {
   assert.deepEqual(savedPayload?.topicIds, ['rag-retrieval-rerank']);
   assert.equal(document.querySelector('#source-query')?.textContent, 'RAG 选择题');
   assert.equal(document.querySelector('#metric-completed')?.textContent, '1');
+  const submissionButton = document.querySelector<HTMLButtonElement>('#submission-button')!;
+  submissionButton.click();
+  await new Promise((resolveWait) => setTimeout(resolveWait, 20));
+  assert(document.querySelector('#status-message')?.textContent?.includes('当前还有 1 条待处理'));
+  assert.equal(submissionButton.disabled, false);
+  submissionFails = false;
+  submissionButton.click();
+  await new Promise((resolveWait) => setTimeout(resolveWait, 20));
+  assert(document.querySelector('#status-message')?.textContent?.includes('app/quality/nowcoder-intake/submissions/pilot-100-v1.json'));
+  assert(document.querySelector('#status-message')?.textContent?.includes('npm run annotation:validate-submission'));
+  assert.equal(submissionButton.disabled, false);
 }
 
 async function testServer(manifestPath: string, root: string): Promise<void> {
   const dataPath = join(root, 'server-data', 'annotations.json');
   const exportsPath = join(root, 'server-data', 'exports');
-  const running = await startAnnotationServer({ manifestPath, dataPath, exportRoot: exportsPath, port: 0, now: () => new Date('2026-08-18T11:00:00.000Z') });
+  const submissionPath = join(root, 'repository', ANNOTATION_SUBMISSION_REPOSITORY_PATH);
+  const running = await startAnnotationServer({ manifestPath, dataPath, exportRoot: exportsPath, submissionPath, port: 0, now: () => new Date('2026-08-18T11:00:00.000Z') });
   try {
     const address = running.server.address();
     assert(address && typeof address !== 'string');
@@ -243,6 +265,10 @@ async function testServer(manifestPath: string, root: string): Promise<void> {
     assert.equal(tooLarge.status, 413);
     assert.equal((await fetch(`${running.url}/package.json`)).status, 404);
     assert.equal((await fetch(`${running.url}/..%2Fpackage.json`)).status, 404);
+    const incompleteSubmission = await fetch(`${running.url}/api/submission`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: running.url }, body: '{}' });
+    assert.equal(incompleteSubmission.status, 400);
+    assert.equal((await incompleteSubmission.json() as { error: string }).error, 'submission_incomplete');
+    await assert.rejects(() => readFile(submissionPath, 'utf8'), /ENOENT/);
     const exported = await fetch(`${running.url}/api/export`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: running.url }, body: '{}' });
     const exportedBody = await exported.text();
     assert.equal(exported.status, 201, exportedBody);
@@ -251,6 +277,28 @@ async function testServer(manifestPath: string, root: string): Promise<void> {
     const after = await fetch(`${running.url}/api/bootstrap`);
     const afterData = await after.json() as { annotations: Record<string, ManualAnnotation> };
     assert.equal(afterData.annotations[first.sourceId].status, 'completed');
+
+    const completeAnnotations: Record<string, ManualAnnotation> = {};
+    for (const source of bootstrap.candidates) {
+      completeAnnotations[source.sourceId] = relevantAnnotation(source.sourceId, source.pageType === 'multiple-choice' ? {
+        choiceSignals: { cognitiveLevel: 'application', distractorTypes: ['overlap'], answerCueTypes: ['length'] },
+      } : {});
+    }
+    await writeFile(dataPath, JSON.stringify({ schemaVersion: 1, manifestVersion: 1, annotations: completeAnnotations }), 'utf8');
+    const submissionResponse = await fetch(`${running.url}/api/submission`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: running.url }, body: '{}' });
+    const submissionBody = await submissionResponse.json() as { path: string; validationCommand: string; gitCommands: string[] };
+    assert.equal(submissionResponse.status, 201);
+    assert.equal(submissionBody.path, ANNOTATION_SUBMISSION_REPOSITORY_PATH);
+    assert.equal(submissionBody.validationCommand, 'npm run annotation:validate-submission');
+    assert(submissionBody.gitCommands.every((command) => !command.includes(root)));
+    const manifest = await loadManifest(manifestPath);
+    const generatedContent = await readFile(submissionPath, 'utf8');
+    validateAnnotationSubmission(JSON.parse(generatedContent), manifest);
+
+    await writeFile(dataPath, JSON.stringify({ schemaVersion: 1, manifestVersion: 1, annotations: {} }), 'utf8');
+    const failedReplacement = await fetch(`${running.url}/api/submission`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: running.url }, body: '{}' });
+    assert.equal(failedReplacement.status, 400);
+    assert.equal(await readFile(submissionPath, 'utf8'), generatedContent);
   } finally {
     await running.close();
   }

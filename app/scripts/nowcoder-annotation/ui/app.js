@@ -220,6 +220,27 @@
     }
   }
 
+  async function generateSubmission() {
+    const button = byId('submission-button');
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/submission', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const result = await response.json();
+      if (!response.ok) {
+        if (result.error === 'submission_incomplete') {
+          const progress = stateTools.progress(state.candidates, state.annotations);
+          throw new Error(`请先处理全部来源，当前还有 ${progress.pending} 条待处理。`);
+        }
+        throw new Error(result.error ?? '生成提交文件失败');
+      }
+      setStatus(`已生成 ${result.path}\n先运行：${result.validationCommand}\n然后在仓库根目录运行：\n${result.gitCommands.join('\n')}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : '生成提交文件失败', true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function bootstrap() {
     try {
       const response = await fetch('/api/bootstrap');
@@ -240,6 +261,7 @@
   byId('annotation-form').addEventListener('submit', submitCompleted);
   byId('skip-button').addEventListener('click', skipSource);
   byId('export-button').addEventListener('click', exportResults);
+  byId('submission-button').addEventListener('click', generateSubmission);
   byId('status-filter').addEventListener('change', renderSourceList);
   byId('annotation-form').addEventListener('input', (event) => {
     state.dirty = true;

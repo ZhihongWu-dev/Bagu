@@ -76,6 +76,8 @@ jobs:
           npm run test:question-quality
           npm run test:annotations
           npm run test:annotation-tool
+          npm run test:annotation-submission
+          npm run annotation:validate-submission
 
       - name: Test public-signal intake
         run: npm run test:intake
